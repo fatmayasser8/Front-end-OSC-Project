@@ -1,0 +1,260 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+
+  background:
+    radial-gradient(circle at top left, #2a2412, transparent 35%),
+    radial-gradient(circle at bottom right, #1f1a0c, transparent 35%),
+    #0b0b0b;
+}
+
+/* Main Card */
+
+.auth-box {
+  width: 100%;
+  max-width: 450px;
+
+  background: #111111;
+
+  padding: 45px;
+
+  border: 1px solid rgba(212, 175, 55, 0.35);
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 35px rgba(212, 175, 55, 0.08);
+}
+
+/* Logo */
+
+.auth-title {
+  text-align: center;
+
+  margin-bottom: 8px;
+
+  color: #d4af37;
+
+  font-size: 36px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+.auth-subtitle {
+  text-align: center;
+
+  color: #a5a5a5;
+
+  margin-bottom: 30px;
+
+  font-size: 14px;
+}
+
+/* Login & Register */
+
+.auth-tabs {
+  display: flex;
+
+  gap: 10px;
+
+  margin-bottom: 30px;
+}
+
+.auth-tabs a {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+
+  border-radius: 10px;
+
+  text-decoration: none;
+
+  color: #aaa;
+
+  background: #1a1a1a;
+
+  border: 1px solid #333;
+
+  transition: 0.3s;
+}
+
+
+.auth-tabs a.active {
+  background: #d4af37;
+
+  color: #0b0b0b;
+
+  border-color: #d4af37;
+
+  font-weight: 700;
+
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+
+.auth-tabs a:hover {
+  border-color: #d4af37;
+
+  color: #d4af37;
+}
+
+.auth-tabs a.active:hover {
+  color: #0b0b0b;
+}
+/* Forms */
+
+.auth-form {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 15px;
+}
+
+.auth-form input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 14px 16px;
+
+  background: #181818;
+
+  border: 1px solid #333;
+
+  border-radius: 10px;
+
+  color: white;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition: 0.3s;
+}
+
+.auth-form input::placeholder {
+  color: #777;
+}
+
+.auth-form input:focus {
+  border-color: #d4af37;
+
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+}
+
+/* Forgot Password */
+
+.forgot-password {
+  text-align: right;
+
+  color: #d4af37;
+
+  font-size: 14px;
+
+  cursor: pointer;
+}
+
+/* Button */
+
+.auth-button {
+  border: none;
+
+  padding: 14px;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    #d4af37,
+    #f0d477
+  );
+
+  color: #0b0b0b;
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  margin-top: 5px;
+
+  transition: 0.3s;
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 25px rgba(212, 175, 55, 0.25);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+  color: #777;
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #333;
+}
+
+/* Social Buttons */
+
+.social-button {
+  width: 100%;
+  padding: 13px;
+
+  border-radius: 10px;
+
+  background: #181818;
+
+  border: 1px solid #333;
+
+  color: #f5f5f5;
+
+  font-size: 15px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+
+}
+
+.social-button:hover {
+  border-color: #d4af37;
+  transform: translateY(-1px);
+}
+
+/* Google */
+
+.google:hover {
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
+}
+
+.fa-google{
+    margin-right: 5px;
+}
+/* Facebook */
+
+.facebook:hover {
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
+}
+
+.fa-facebook{
+    margin-right: 5px;
+}
