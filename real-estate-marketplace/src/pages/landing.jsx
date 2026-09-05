@@ -3,10 +3,10 @@ import "../styles/landing.css";
 function landing(){
     return(
         <div className="landing-container">
-            <img src="../" alt="" />
+            <img src="../assets/witchlogo.png" alt="" />
 
         </div>
 
     );
 }
-export default Landing;
+export default landing;
