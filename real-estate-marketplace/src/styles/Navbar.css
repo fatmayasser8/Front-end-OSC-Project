@@ -1,0 +1,55 @@
+.navbar {
+  height: 70px;
+  background-color: black;
+  border-bottom: 2px solid #d4af37;
+}
+
+.navbar .container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.navbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: auto;
+}
+
+.navbar-icons i {
+  font-size: 21px;
+  color: #d4af37;
+  cursor: pointer;
+}
+
+.navbar .img-outer {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.navbar .img-outer img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mapBtn {
+  padding: 8px 15px;
+  background-color: transparent;
+  color: #d4af37;
+  border: 1px solid #d4af37;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mapBtn i {
+  color: #d4af37;
+  font-size: 20px;
+}

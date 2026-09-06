@@ -1,16 +1,17 @@
 .auth-container {
   min-height: 100vh;
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
+    url("../assets/background-Landing.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-
-  background:
-    radial-gradient(circle at top left, #2a2412, transparent 35%),
-    radial-gradient(circle at bottom right, #1f1a0c, transparent 35%),
-    #0b0b0b;
 }
-
 /* Main Card */
 
 .auth-box {
