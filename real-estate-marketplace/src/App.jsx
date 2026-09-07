@@ -9,7 +9,10 @@ import Navbar from "./components/Navbar/navbar"
 import SearchBar from "./components/searchBar/searchBar"
 import Card from "./components/propertyCard/propertyCard"
 import Home from "./pages/Home/home"; 
-
+import Profile from "./pages/profile/Profile"; 
+import PropertyDetails from "./pages/propertyDetails/PropertyDetails"; 
+import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
+import Favorites from "./pages/favourites/Favourites";
 
 function App() {
   return (
@@ -28,8 +31,10 @@ function App() {
         </Route>
 <Route path="/home" element={<Home />}></Route>
 
-
-
+<Route path="/profile" element={<Profile />} /> 
+<Route path="/propertyDetails" element={<PropertyDetails />} /> 
+<Route path="/sellerDashBoard" element={<SellerDashboard />} /> 
+<Route path="/favorites" element={<Favorites />} /> 
 
       </Routes>
     </BrowserRouter>
@@ -37,3 +42,6 @@ function App() {
 }
 
 export default App;
+
+
+

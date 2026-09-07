@@ -1,0 +1,594 @@
+/* =========================
+   Dashboard Page
+========================= */
+
+.dashboard-page {
+  min-height: 100vh;
+  background: #05090c;
+  color: #fff;
+
+  padding: 28px 34px 50px;
+
+  font-family: Arial, sans-serif;
+}
+
+
+/* =========================
+   Header
+========================= */
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.dashboard-header p {
+
+  color: #7d858c;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.date-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: #0a1015;
+  border: 1px solid #1d2a33;
+  color: #aab2b8;
+
+  border-radius: 6px;
+
+
+  cursor: pointer;
+
+    padding: 10px 14px;
+  font-size: 12px;
+}
+
+.date-btn i:last-child {
+  font-size: 8px;
+}
+
+
+/* =========================
+   Statistics
+========================= */
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.dashboard-stat {
+  display: flex;
+  align-items: center;
+ 
+
+  background: #080e13;
+  border: 1px solid #1c2932;
+  border-radius: 6px;
+
+    gap: 15px;
+  padding: 16px;
+  min-height: 78px;
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(212, 175, 55, 0.13);
+  color: #d4af37;
+
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stat-icon i {
+   font-size: 17px;
+}
+
+.dashboard-stat div:last-child {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-stat span {
+  color: #78828a;
+  font-size: 8px;
+  margin-bottom: 4px;
+}
+
+.dashboard-stat strong {
+ font-size: 21px;
+  line-height: 1;
+}
+
+.dashboard-stat small {
+  color: #28c76f;
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+.dashboard-stat small i {
+  margin-right: 3px;
+}
+
+
+/* =========================
+   General Cards
+========================= */
+
+.dashboard-card {
+  background: #080e13;
+  border: 1px solid #1c2932;
+  border-radius: 6px;
+  padding: 15px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.card-header button {
+  background: #0b131a;
+  border: 1px solid #1c2932;
+  color: #87919a;
+
+  border-radius: 4px;
+  padding: 7px 10px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.card-header button i {
+  margin-left: 5px;
+  font-size: 6px;
+}
+
+
+/* =========================
+   Charts
+========================= */
+
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: 1fr 0.95fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+
+/* =========================
+   Line Chart
+========================= */
+
+.chart-area {
+  display: flex;
+  height: 190px;
+}
+
+.y-axis {
+  width: 32px;
+  font-size: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  color: #69737b;
+  padding-bottom: 16px;
+}
+
+.line-chart {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+.grid-lines {
+  position: absolute;
+  inset: 0 0 18px 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.grid-lines span {
+  display: block;
+  width: 100%;
+  border-top: 1px solid #152029;
+}
+
+.line-chart svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: calc(100% - 18px);
+}
+
+.x-axis {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  justify-content: space-between;
+
+  color: #69737b;
+ font-size: 10px;
+}
+
+
+/* =========================
+   Property Status
+========================= */
+
+.status-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+    min-height: 190px;
+  gap: 55px;
+}
+
+.donut-chart {
+  width: 135px;
+  height: 135px;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      #4da3df 0deg 120deg,
+      #f0bf48 120deg 210deg,
+      #ed7542 210deg 270deg,
+      #152029 270deg 360deg
+    );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+}
+
+.donut-chart::before {
+  content: "";
+  position: absolute;
+
+  width: 88px;
+  height: 88px;
+
+  background: #080e13;
+  border-radius: 50%;
+}
+
+.donut-center {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.donut-center strong {
+  font-size: 22px;
+}
+
+.donut-center span {
+  color: #77818a;
+
+  margin-top: 2px;
+    font-size: 11px;
+}
+
+.status-list {
+  display: flex;
+  flex-direction: column;
+   gap: 18px;
+}
+
+.status-list > div {
+  display: grid;
+  align-items: center;
+
+ grid-template-columns: 9px 1fr 20px;
+  gap: 9px;
+  min-width: 150px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-dot.sale {
+  background: #f0bf48;
+}
+
+.status-dot.sold {
+  background: #0ba5d7;
+}
+
+.status-dot.pending {
+  background: #ed7542;
+}
+
+.status-list p {
+  margin: 0;
+  color: #a5adb3;
+
+
+    font-size: 11px;
+}
+
+.status-list strong {
+  font-size: 12px;
+}
+
+
+/* =========================
+   Bottom Section
+========================= */
+
+.dashboard-bottom {
+  display: grid;
+  grid-template-columns: 1fr 0.95fr;
+  gap: 12px;
+}
+
+
+/* =========================
+   Recent Properties
+========================= */
+
+.property-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.property-row {
+  display: grid;
+  align-items: center;
+
+  grid-template-columns: 60px 1fr auto 65px;
+  gap: 12px;
+  padding: 10px 0;
+
+  border-bottom: 1px solid #142029;
+}
+
+.property-row:last-child {
+  border-bottom: none;
+}
+
+.property-row img {
+  width: 60px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.property-name {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.property-name strong {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.property-name span {
+  color: #6e7880;
+  font-size: 10px;
+}
+
+.property-price {
+  color: #a8afb4;
+  font-size: 10px;
+}
+
+.property-status {
+  text-align: center;
+
+
+  border-radius: 4px;
+
+  padding: 6px 5px;
+  font-size: 9px;
+}
+
+.property-status.for-sale {
+  color: #d4af37;
+  background: rgba(212, 175, 55, 0.13);
+}
+
+.property-status.pending {
+  color: #e7a33b;
+  background: rgba(231, 163, 59, 0.12);
+}
+
+
+/* =========================
+   Recent Inquiries
+========================= */
+
+.inquiry-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.inquiry-row {
+  display: grid;
+
+  align-items: center;
+
+    grid-template-columns: 38px 1fr auto;
+  gap: 10px;
+  padding: 9px 0;
+
+  border-bottom: 1px solid #142029;
+}
+
+.inquiry-row:last-child {
+  border-bottom: none;
+}
+
+.inquiry-row img {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.inquiry-row strong {
+  display: block;
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+.inquiry-row p {
+  margin: 0;
+
+  color: #79838b;
+  font-size: 10px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inquiry-row small {
+  color: #66717a;
+  font-size: 10px;
+  align-self: start;
+  padding-top: 2px;
+}
+
+
+/* =========================
+   View All
+========================= */
+
+.view-all {
+  background: transparent !important;
+  border: none !important;
+  color: #d4af37 !important;
+
+  padding: 0 !important;
+
+  font-size: 8px !important;
+}
+
+
+
+/* =========================
+   Back Button
+========================= */
+
+.dashboard-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #8b949e;
+  text-decoration: none;
+
+  font-size: 13px;
+  margin-bottom: 18px;
+
+  transition: 0.3s;
+}
+
+.dashboard-back:hover {
+  color: #d4af37;
+}
+
+.dashboard-back i {
+  font-size: 13px;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 1000px) {
+
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-charts,
+  .dashboard-bottom {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .dashboard-page {
+    padding: 15px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .status-content {
+    gap: 20px;
+  }
+
+  .property-row {
+    grid-template-columns: 42px 1fr;
+  }
+
+  .property-price,
+  .property-status {
+    display: none;
+  }
+
+}
