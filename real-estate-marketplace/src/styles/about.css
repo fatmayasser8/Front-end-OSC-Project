@@ -1,0 +1,290 @@
+:root {
+  --nova-bg: #0d0d0d;
+  --nova-bg-alt: #141414;
+  --nova-card: #1a1a1a;
+  --nova-border: #2b2b2b;
+  --nova-gold: #f5b301;
+  --nova-gold-hover: #ffc61a;
+  --nova-text: #ffffff;
+  --nova-text-muted: #9b9b9b;
+  --nova-radius: 10px;
+}
+
+.about {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--nova-bg);
+  color: var(--nova-text);
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content.full-width {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------------- BACK TO HOME ---------------- */
+.back-to-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 20px 20px 0;
+  padding: 8px 16px;
+  background-color: var(--nova-card);
+  border: 1px solid var(--nova-border);
+  border-radius: 20px;
+  color: var(--nova-text);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.back-to-home svg {
+  font-size: 14px;
+  color: var(--nova-gold);
+}
+
+.back-to-home:hover {
+  border-color: var(--nova-gold);
+  color: var(--nova-gold);
+}
+
+/* ---------------- HERO ---------------- */
+.about-hero {
+  position: relative;
+  min-height: 320px;
+  border-radius: var(--nova-radius);
+  margin: 20px;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  background:
+    url("../assets/conhero.png") center/100% 100% no-repeat;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 560px;
+  width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+.hero-badge {
+  display: inline-block;
+  background-color: var(--nova-gold);
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.hero-content h1 {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 12px;
+  color: #ffffff;
+}
+
+.hero-content h1 span {
+  color: var(--nova-gold);
+}
+
+.hero-content p {
+  color: #d9d9d9;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 480px;
+}
+
+/* ---------------- OUR STORY / OUR VALUES ---------------- */
+.about-details-wrapper {
+  display: flex;
+  gap: 20px;
+  margin: 0 20px 20px;
+  flex-wrap: wrap;
+}
+
+.our-story-column,
+.our-values-column {
+  background-color: var(--nova-card);
+  border: 1px solid var(--nova-border);
+  border-radius: var(--nova-radius);
+  padding: 24px;
+  flex: 1;
+  min-width: 300px;
+}
+
+.our-story-column h2,
+.our-values-column h2 {
+  color: var(--nova-gold);
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+.our-story-column p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--nova-text-muted);
+  margin: 0 0 14px;
+}
+
+.our-story-icons {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.story-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 90px;
+}
+
+.story-icon {
+  width: 38px;
+  height: 38px;
+  padding: 10px;
+  box-sizing: content-box;
+  background-color: var(--nova-bg-alt);
+  border: 1px solid var(--nova-border);
+  border-radius: 8px;
+  color: var(--nova-gold);
+}
+
+.story-icon-item span {
+  font-size: 12px;
+  color: var(--nova-text-muted);
+}
+
+/* Our Values image - full bleed, no repeat, exact fit */
+.our-values-image {
+  width: 100%;
+  height: 160px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background:
+    url("../assets/about.png") center/100% 100% no-repeat;
+  overflow: hidden;
+}
+
+.values-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.values-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--nova-text);
+}
+
+.check-icon {
+  color: var(--nova-gold);
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ---------------- CTA BANNER ---------------- */
+.cta-banner {
+  position: relative;
+  margin: 0 20px 20px;
+  padding: 50px 24px;
+  border-radius: var(--nova-radius);
+  text-align: center;
+  background-image:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.85) 100%),
+    url("/images/about-cta.jpg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.cta-banner h2 {
+  color: var(--nova-gold);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+
+.cta-banner p {
+  color: #d9d9d9;
+  font-size: 13px;
+  margin: 0 0 20px;
+}
+
+.explore-btn {
+  display: inline-block;
+  background-color: var(--nova-gold);
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.explore-btn:hover {
+  background-color: var(--nova-gold-hover);
+}
+
+/* ---------------- FOOTER ---------------- */
+.footer-bottom {
+  text-align: center;
+  padding: 18px;
+  font-size: 12px;
+  color: var(--nova-text-muted);
+  border-top: 1px solid var(--nova-border);
+  letter-spacing: 0.5px;
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 768px) {
+  .about-hero {
+    margin: 12px;
+    padding: 24px;
+    min-height: 220px;
+  }
+
+  .hero-content h1 {
+    font-size: 26px;
+  }
+
+  .about-details-wrapper {
+    margin: 0 12px 12px;
+    flex-direction: column;
+  }
+
+  .cta-banner {
+    margin: 0 12px 12px;
+    padding: 32px 18px;
+  }
+}
