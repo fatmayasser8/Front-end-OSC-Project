@@ -1,52 +1,60 @@
 import "../../styles/Sidebar.css";
-
+import { Link } from "react-router-dom";
 function Sidebar() {
   return (
     <aside className="sidebar">
 
       {/* Logo */}
-      <a href="/home" className="sidebar-logo">
+      <Link to="/home" className="sidebar-logo">
         <i className="fa-solid fa-house-chimney"></i>
         NOVA
-      </a>
+      </Link>
 
       {/* Navigation */}
       <ul className="sidebar-menu">
 
         <li>
-          <a href="/home">
+          <Link to="/home">
             <i className="fa-solid fa-house"></i>
             <span>Home</span>
-          </a>
+          </Link>
         </li>
 
         <li>
-          <a href="/properties">
-            <i className="fa-solid fa-building"></i>
-            <span>Properties</span>
-          </a>
+          <Link to="/sellerDashboard">
+     <i className="fa-solid fa-chart-line"></i>
+            <span>Dashboard</span>
+          </Link>
         </li>
 
         <li>
-          <a href="/favorites">
+          <Link to="/favorites">
             <i className="fa-regular fa-heart"></i>
             <span>Favorites</span>
-          </a>
+          </Link>
         </li>
 
         <li>
-          <a href="/messages">
+          <Link to="/messages">
             <i className="fa-regular fa-message"></i>
             <span>Messages</span>
-          </a>
+          </Link>
         </li>
 
         <li>
-          <a href="/contact">
+          <Link to="/contact">
             <i className="fa-regular fa-envelope"></i>
             <span>Contact</span>
-          </a>
+          </Link>
         </li>
+
+      <li>
+          <Link to="/profile">
+          <i class="fa-solid fa-circle-user"></i>
+            <span>Profile</span>
+          </Link>
+        </li>
+
 
       </ul>
 
@@ -54,10 +62,10 @@ function Sidebar() {
 
       {/* Logout */}
       <div className="logout">
-        <a href="/login">
+        <Link to="/login">
           <i className="fa-solid fa-right-from-bracket"></i>
           <span>Log out</span>
-        </a>
+        </Link>
       </div>
 
     </aside>

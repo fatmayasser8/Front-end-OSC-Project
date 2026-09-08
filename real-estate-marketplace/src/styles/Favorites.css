@@ -1,0 +1,242 @@
+/* =========================
+   Favorites Page
+========================= */
+
+.favorites-page {
+  min-height: 100vh;
+
+  background-color: #111;
+
+  color: #fff;
+
+  padding: 25px 35px 50px;
+}
+
+
+/* =========================
+   Back Button
+========================= */
+
+.favorites-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #aaa;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  margin-bottom: 30px;
+
+  transition: 0.3s;
+}
+
+.favorites-back:hover {
+  color: #d4af37;
+}
+
+
+
+/* =========================
+   Favorites Header
+========================= */
+
+.favorites-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 25px;
+}
+
+.favorites-header h1 {
+  margin: 0 0 7px;
+
+  font-size: 28px;
+  color: #fff;
+}
+
+.favorites-header p {
+  margin: 0;
+
+  color: #777;
+  font-size: 13px;
+}
+
+
+/* =========================
+   Favorites Counter
+========================= */
+
+.favorites-counter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 15px;
+
+  background-color: #0d0d0d;
+
+  border: 1px solid #292929;
+
+  border-radius: 7px;
+}
+
+.favorites-counter span {
+  color: #888;
+  font-size: 12px;
+}
+
+.favorites-counter strong {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #d4af37;
+  color: #111;
+
+  border-radius: 50%;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   Empty State
+========================= */
+
+.favorites-empty {
+  min-height: 500px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  background-color: #0d0d0d;
+
+  border: 1px solid #292929;
+
+  border-radius: 10px;
+
+  padding: 50px 20px;
+}
+
+
+/* =========================
+   Empty Icon
+========================= */
+
+.empty-icon {
+  width: 85px;
+  height: 85px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background-color: rgba(212, 175, 55, 0.1);
+
+  border: 1px solid rgba(212, 175, 55, 0.25);
+
+  margin-bottom: 22px;
+}
+
+.empty-icon i {
+  color: #d4af37;
+
+  font-size: 35px;
+}
+
+
+/* =========================
+   Empty Text
+========================= */
+
+.favorites-empty h2 {
+  margin: 0 0 10px;
+
+  font-size: 22px;
+
+  color: #fff;
+}
+
+.favorites-empty p {
+  margin: 0 0 25px;
+
+  color: #888;
+
+  font-size: 13px;
+
+  line-height: 1.8;
+}
+
+
+/* =========================
+   Explore Button
+========================= */
+
+.explore-btn {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 11px 20px;
+
+  background-color: #d4af37;
+
+  color: #111;
+
+  border: 1px solid #d4af37;
+
+  border-radius: 6px;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  transition: 0.3s;
+}
+
+.explore-btn:hover {
+  background-color: transparent;
+
+  color: #d4af37;
+}
+
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 750px) {
+
+  .favorites-page {
+    padding: 20px 15px 40px;
+  }
+
+  .favorites-header h1 {
+    font-size: 24px;
+  }
+
+  .favorites-empty {
+    min-height: 400px;
+  }
+
+}
