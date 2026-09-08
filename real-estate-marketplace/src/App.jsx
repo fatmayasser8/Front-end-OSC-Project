@@ -8,15 +8,15 @@ import Register from "./pages/AuthPage/Register";
 import Navbar from "./components/Navbar/navbar"
 import SearchBar from "./components/searchBar/searchBar"
 import Card from "./components/propertyCard/propertyCard"
-import Home from "./pages/Home/home"; 
+import Home from "./pages/Home/home";
+import contact from "./pages/Home/contact" ;
 
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Landing />} />
-
+        <Route path="/" element={<Landing />} > </Route>
         <Route path="/auth" element={<Auth />}>
 
           <Route index element={<Navigate to="login" replace />} />
@@ -26,7 +26,8 @@ function App() {
           <Route path="register" element={<Register />} />
 
         </Route>
-<Route path="/home" element={<Home />}></Route>
+      
+      <Route path="/home" element={<Home />}></Route>
 
 
 
