@@ -15,6 +15,8 @@ import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
 import Favorites from "./pages/favourites/Favourites";
 import Dashboard from "./pages/adminDashboard";
+import NotificationsPanel from "./pages/notification";
+import MessagesPanel from "./pages/message";
 function App() {
   return (
     <BrowserRouter>
@@ -35,6 +37,9 @@ function App() {
         <Route path="/adminDashBoard" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/notification" element={< NotificationsPanel/>} />
+        <Route path="/message" element={<MessagesPanel />} />
+        
       </Routes>
     </BrowserRouter>
   );
