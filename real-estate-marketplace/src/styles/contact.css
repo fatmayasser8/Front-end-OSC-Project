@@ -24,6 +24,40 @@
   flex-direction: column;
 }
 
+.main-content.full-width {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------------- BACK TO HOME ---------------- */
+.back-to-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin: 20px 20px 0;
+  padding: 8px 16px;
+  background-color: var(--nova-card);
+  border: 1px solid var(--nova-border);
+  border-radius: 20px;
+  color: var(--nova-text);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.back-to-home svg {
+  font-size: 14px;
+  color: var(--nova-gold);
+}
+
+.back-to-home:hover {
+  border-color: var(--nova-gold);
+  color: var(--nova-gold);
+}
+
 /* ---------------- HERO ---------------- */
 .hero {
   position: relative;
@@ -32,10 +66,11 @@
   margin: 20px;
   padding: 40px;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-start;
   text-align: left;
-  background: url("../assets/conhero.png") center/cover no-repeat;
+ background:
+    url("../assets/conhero.png") center/100% 100% no-repeat;
   overflow: hidden;
 }
 
@@ -227,7 +262,6 @@
   margin-right: 10px; 
   font-size: 14px;
 }
-
 .submit-btn:hover {
   background-color: var(--nova-gold-hover);
 }

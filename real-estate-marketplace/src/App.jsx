@@ -9,6 +9,7 @@ import SearchBar from "./components/searchBar/searchBar";
 import Card from "./components/propertyCard/propertyCard";
 import Home from "./pages/Home/home";
 import Contact from "./pages/Home/contact";
+import About from "./pages/Home/about"
 import Profile from "./pages/profile/Profile";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
@@ -28,6 +29,7 @@ function App() {
       
         <Route path="/home" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
+         <Route path="/about" element={<About />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/propertyDetails" element={<PropertyDetails />} />
         <Route path="/sellerDashBoard" element={<SellerDashboard />} />
