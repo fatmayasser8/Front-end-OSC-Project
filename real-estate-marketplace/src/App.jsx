@@ -9,12 +9,14 @@ import Navbar from "./components/Navbar/navbar"
 import SearchBar from "./components/searchBar/searchBar"
 import Card from "./components/propertyCard/propertyCard"
 import Home from "./pages/Home/home";
-import contact from "./pages/Home/contact" ;
+import Contact from "./pages/Home/contact";
 
 
 function App() {
   return (
     <BrowserRouter>
+        
+
       <Routes>
         <Route path="/" element={<Landing />} > </Route>
         <Route path="/auth" element={<Auth />}>
@@ -28,6 +30,7 @@ function App() {
         </Route>
       
       <Route path="/home" element={<Home />}></Route>
+      <Route path="/contact" element={<Contact />}></Route>
 
 
 
