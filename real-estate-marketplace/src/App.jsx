@@ -13,6 +13,7 @@ import Profile from "./pages/profile/Profile";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails"; 
 import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
 import Favorites from "./pages/favourites/Favourites";
+import Validation from "./pages/validation/Validation";
 
 function App() {
   return (
@@ -35,7 +36,7 @@ function App() {
 <Route path="/propertyDetails" element={<PropertyDetails />} /> 
 <Route path="/sellerDashBoard" element={<SellerDashboard />} /> 
 <Route path="/favorites" element={<Favorites />} /> 
-
+<Route path="/validation" element={<Validation />} />
       </Routes>
     </BrowserRouter>
   );
