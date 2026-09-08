@@ -14,7 +14,7 @@ import Profile from "./pages/profile/Profile";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
 import Favorites from "./pages/favourites/Favourites";
-
+import Dashboard from "./pages/adminDashboard";
 function App() {
   return (
     <BrowserRouter>
@@ -32,7 +32,8 @@ function App() {
          <Route path="/about" element={<About />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/propertyDetails" element={<PropertyDetails />} />
-        <Route path="/sellerDashBoard" element={<SellerDashboard />} />
+        <Route path="/adminDashBoard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/favorites" element={<Favorites />} />
       </Routes>
     </BrowserRouter>

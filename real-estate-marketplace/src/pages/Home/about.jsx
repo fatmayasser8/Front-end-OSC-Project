@@ -88,7 +88,7 @@ function About() {
             Whether you're buying, renting, or investing — we're here to help
             you every step of the way.
           </p>
-          <Link to="/propertyDetails" className="explore-btn">
+          <Link to="/home" className="explore-btn">
             Explore Properties →
           </Link>
         </section>
@@ -100,5 +100,4 @@ function About() {
     </div>
   );
 }
-
 export default About;
