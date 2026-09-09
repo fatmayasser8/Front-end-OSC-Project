@@ -378,6 +378,16 @@
   cursor: not-allowed;
   opacity: 0.7;
 }
+.error-message {
+  color: #d93025;
+  font-size: 14px;
+  margin: 8px 0;
+  text-align: left;
+  font-weight: 500;
+}
+.forgot-password {
+  cursor: pointer;
+}
 
 .spinner {
   width: 18px;
@@ -395,4 +405,221 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Forgot Password Modal */
+
+.forgot-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 9999;
+  padding: 20px;
+}
+
+.forgot-modal {
+  position: relative;
+
+  width: 100%;
+  max-width: 430px;
+
+  background: #151515;
+  border: 1px solid rgba(232, 200, 119, 0.35);
+  border-radius: 18px;
+
+  padding: 35px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+
+  animation: forgotModal 0.25s ease;
+}
+
+@keyframes forgotModal {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Close button */
+
+.forgot-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+
+  background: transparent;
+  border: none;
+
+  color: #aaa;
+  font-size: 28px;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.forgot-close:hover {
+  color: #e8c877;
+}
+
+/* Title */
+
+.forgot-modal h2 {
+  margin: 0 0 10px;
+
+  color: #e8c877;
+  font-size: 26px;
+  text-align: center;
+}
+
+/* Description */
+
+.forgot-description {
+  margin: 0 0 25px;
+
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Form */
+
+.forgot-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Input */
+
+.forgot-password-form input {
+  width: 100%;
+  height: 48px;
+
+  padding: 0 15px;
+
+  box-sizing: border-box;
+
+  background: #1d1d1d;
+  border: 1px solid #444;
+  border-radius: 8px;
+
+  color: white;
+  font-size: 14px;
+
+  outline: none;
+  transition: 0.3s;
+}
+
+.forgot-password-form input:focus {
+  border-color: #e8c877;
+}
+
+/* Back to login */
+
+.back-login {
+  background: transparent;
+  border: none;
+
+  color: #aaa;
+  font-size: 14px;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.back-login:hover {
+  color: #e8c877;
+}
+
+
+
+/* Success */
+
+.success-message {
+  margin: 0;
+
+  padding: 10px 12px;
+
+  background: #f0fff4;
+  border: 1px solid #b7ebc6;
+  border-radius: 8px;
+
+  color: #218838;
+  font-size: 14px;
+
+  box-sizing: border-box;
+}
+
+.google-button-wrapper {
+  position: relative;
+  width: 100%;
+  height: 47px;
+}
+
+.google-custom-button {
+  width: 100%;
+  height: 47px;
+  padding: 13px;
+  border-radius: 10px;
+  background: #181818;
+  border: 1px solid #333;
+  color: #f5f5f5;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.google-button-wrapper:hover .google-custom-button {
+  border-color: #d4af37;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
+  transform: translateY(-1px);
+}
+
+.google-custom-button i {
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+
+.google-login-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 0;
+}
+
+.google-login-overlay > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.google-login-overlay iframe {
+  width: 100% !important;
+  height: 100% !important;
 }

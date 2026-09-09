@@ -1,6 +1,41 @@
 import "../../styles/Sidebar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+
 function Sidebar() {
+  const navigate = useNavigate();
+
+const handleLogout = async () => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (accessToken) {
+      const response = await fetch(
+        "https://real-estate-market-place-api.vercel.app/api/v1/users/auth/logout",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      console.log("Logout Response:", data);
+    }
+  } catch (error) {
+    console.error("Logout Error:", error);
+  } finally {
+    // Always clear local authentication data
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+
+    // Go to login
+    navigate("/auth/login");
+  }
+};
   return (
     <aside className="sidebar">
 
@@ -22,7 +57,7 @@ function Sidebar() {
 
         <li>
           <Link to="/sellerDashboard">
-     <i className="fa-solid fa-chart-line"></i>
+            <i className="fa-solid fa-chart-line"></i>
             <span>Dashboard</span>
           </Link>
         </li>
@@ -48,24 +83,21 @@ function Sidebar() {
           </Link>
         </li>
 
-      <li>
+        <li>
           <Link to="/profile">
-          <i class="fa-solid fa-circle-user"></i>
+            <i className="fa-solid fa-circle-user"></i>
             <span>Profile</span>
           </Link>
         </li>
 
-
       </ul>
-
-
 
       {/* Logout */}
       <div className="logout">
-        <Link to="/auth/login">
+        <button type="button" onClick={handleLogout}>
           <i className="fa-solid fa-right-from-bracket"></i>
           <span>Log out</span>
-        </Link>
+        </button>
       </div>
 
     </aside>

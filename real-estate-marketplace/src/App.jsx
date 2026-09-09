@@ -18,6 +18,10 @@ import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
 import Favorites from "./pages/favourites/Favourites";
 import Validation from "./pages/validation/Validation";
+import ResetPassword from "./pages/AuthPage/ResetPassword";
+
+
+
 
 import Dashboard from "./pages/adminDashboard";
 
@@ -57,6 +61,12 @@ function App() {
 
         <Route path="/adminDashBoard" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        
+
+<Route
+  path="/reset-password"
+  element={<ResetPassword />}
+/>
       </Routes>
     </BrowserRouter>
   );
