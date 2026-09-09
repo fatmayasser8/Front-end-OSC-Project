@@ -4,42 +4,59 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/AuthPage/Auth";
 import Login from "./pages/AuthPage/Login";
 import Register from "./pages/AuthPage/Register";
+
 import Navbar from "./components/Navbar/navbar";
 import SearchBar from "./components/searchBar/searchBar";
 import Card from "./components/propertyCard/propertyCard";
+
 import Home from "./pages/Home/home";
 import Contact from "./pages/Home/contact";
-import About from "./pages/Home/about"
+import About from "./pages/Home/about";
+
 import Profile from "./pages/profile/Profile";
 import PropertyDetails from "./pages/propertyDetails/PropertyDetails";
 import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
 import Favorites from "./pages/favourites/Favourites";
+import Validation from "./pages/validation/Validation";
+
 import Dashboard from "./pages/adminDashboard";
-import NotificationsPanel from "./pages/notification";
-import MessagesPanel from "./pages/message";
+
 function App() {
   return (
+    
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
-        
+
         <Route path="/auth" element={<Auth />}>
           <Route index element={<Navigate to="login" replace />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
-      
+
         <Route path="/home" element={<Home />} />
+
         <Route path="/contact" element={<Contact />} />
-         <Route path="/about" element={<About />} />
+        <Route path="/about" element={<About />} />
+
         <Route path="/profile" element={<Profile />} />
-        <Route path="/propertyDetails" element={<PropertyDetails />} />
+
+        <Route
+          path="/propertyDetails"
+          element={<PropertyDetails />}
+        />
+
+        <Route
+          path="/sellerDashBoard"
+          element={<SellerDashboard />}
+        />
+
+        <Route path="/favorites" element={<Favorites />} />
+
+        <Route path="/validation" element={<Validation />} />
+
         <Route path="/adminDashBoard" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/notification" element={< NotificationsPanel/>} />
-        <Route path="/message" element={<MessagesPanel />} />
-        
       </Routes>
     </BrowserRouter>
   );

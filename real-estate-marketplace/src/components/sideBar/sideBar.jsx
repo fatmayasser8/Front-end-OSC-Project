@@ -62,7 +62,7 @@ function Sidebar() {
 
       {/* Logout */}
       <div className="logout">
-        <Link to="/login">
+        <Link to="/auth/login">
           <i className="fa-solid fa-right-from-bracket"></i>
           <span>Log out</span>
         </Link>
