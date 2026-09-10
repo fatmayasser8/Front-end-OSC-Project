@@ -1,28 +1,8 @@
+import React,{Suspense,lezy, useState,useEffect} from 'react';
 import { Link } from "react-router-dom";
+import { FaArrowLeft,FaUsers, FaHome, FaStore, FaUserTie, FaFileAlt, FaSearch,FaBell, FaEye,FaEllipsisH,} from "react-icons/fa";
 import {
-  FaArrowLeft,
-  FaUsers,
-  FaHome,
-  FaStore,
-  FaUserTie,
-  FaFileAlt,
-  FaSearch,
-  FaBell,
-  FaEye,
-  FaEllipsisH,
-} from "react-icons/fa";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from "recharts";
+ AreaChart, Area,XAxis, YAxis, CartesianGrid, Tooltip,ResponsiveContainer,PieChart,Pie,Cell,} from "recharts";
 import "../styles/adminDashboard.css";
 
 const growthData = [
