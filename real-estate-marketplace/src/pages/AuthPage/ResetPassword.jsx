@@ -17,7 +17,6 @@ function ResetPassword() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  // Password Validation
   const isPasswordValid =
     newPassword.length >= 8 &&
     newPassword.length <= 12 &&
@@ -26,7 +25,6 @@ function ResetPassword() {
     /[!@#$%^&*(),.?":{}|<>_\-]/.test(newPassword) &&
     !/\s/.test(newPassword);
 
-  // Confirm Password Validation
   const isConfirmPasswordValid =
     confirmPassword.length > 0 &&
     confirmPassword === newPassword;
@@ -83,12 +81,10 @@ function ResetPassword() {
 
       const data = await response.json();
 
-      console.log("Reset Password Status:", response.status);
-      console.log("Reset Password Response:", data);
-
       if (!response.ok) {
         setError(
-          data.message || "Reset token is invalid or has expired."
+          data.message ||
+            "Reset token is invalid or has expired."
         );
         return;
       }
@@ -106,29 +102,39 @@ function ResetPassword() {
     }
   };
 
+  const inputClass = (value, valid) =>
+    `w-full rounded-[10px] border bg-[#181818] px-4 py-3.5 pr-[45px] text-[15px] text-white outline-none transition duration-300 placeholder:text-[#777] focus:border-[#d4af37] ${
+      value.length === 0
+        ? "border-[#333]"
+        : valid
+        ? "border-[1.5px] border-[#c9952e]"
+        : "border-[1.5px] border-[#dc3545]"
+    }`;
+
   return (
-    <div className="verification-page">
+    <div className="min-h-[60vh] w-full flex items-center justify-center">
       <form
         onSubmit={handleResetPassword}
-        className="verification-form"
+        className="flex w-full max-w-[450px] flex-col gap-[15px]"
       >
-        <h2>Reset Password</h2>
+        <h2 className="text-center text-2xl font-bold text-[#e8c877] sm:text-[28px]">
+          Reset Password
+        </h2>
 
-        <p>Enter your new password below.</p>
+        <p className="mb-2 text-center text-sm text-[#aaa]">
+          Enter your new password below.
+        </p>
 
         {/* New Password */}
-        <div className="password-container">
+        <div className="relative w-full">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="New Password"
             value={newPassword}
-            className={
-              newPassword.length === 0
-                ? ""
-                : isPasswordValid
-                ? "input-valid"
-                : "input-invalid"
-            }
+            className={inputClass(
+              newPassword,
+              isPasswordValid
+            )}
             onChange={(e) => {
               setNewPassword(e.target.value);
               setError("");
@@ -138,33 +144,32 @@ function ResetPassword() {
           <i
             className={`fa-solid ${
               showPassword ? "fa-eye" : "fa-eye-slash"
-            } eye-icon`}
-            onClick={() => setShowPassword(!showPassword)}
+            } absolute right-[15px] top-1/2 -translate-y-1/2 cursor-pointer text-base text-[#777] hover:text-[#c9952e]`}
+            onClick={() =>
+              setShowPassword(!showPassword)
+            }
           ></i>
         </div>
 
-        {/* Password Warning */}
-        {newPassword.length > 0 && !isPasswordValid && (
-          <p className="password-warning">
-            Password must be 8–12 characters, contain at least one
-            uppercase letter, one number, one special character, and
-            no spaces.
-          </p>
-        )}
+        {newPassword.length > 0 &&
+          !isPasswordValid && (
+            <p className="ml-1 -mt-2.5 mb-2.5 text-left text-[12px] leading-[1.5] text-[#dc3545]">
+              Password must be 8–12 characters, contain at least
+              one uppercase letter, one number, one special
+              character, and no spaces.
+            </p>
+          )}
 
         {/* Confirm Password */}
-        <div className="password-container">
+        <div className="relative w-full">
           <input
             type={showConfirmPassword ? "text" : "password"}
             placeholder="Confirm Password"
             value={confirmPassword}
-            className={
-              confirmPassword.length === 0
-                ? ""
-                : isConfirmPasswordValid
-                ? "input-valid"
-                : "input-invalid"
-            }
+            className={inputClass(
+              confirmPassword,
+              isConfirmPasswordValid
+            )}
             onChange={(e) => {
               setConfirmPassword(e.target.value);
               setError("");
@@ -173,32 +178,35 @@ function ResetPassword() {
 
           <i
             className={`fa-solid ${
-              showConfirmPassword ? "fa-eye" : "fa-eye-slash"
-            } eye-icon`}
+              showConfirmPassword
+                ? "fa-eye"
+                : "fa-eye-slash"
+            } absolute right-[15px] top-1/2 -translate-y-1/2 cursor-pointer text-base text-[#777] hover:text-[#c9952e]`}
             onClick={() =>
-              setShowConfirmPassword(!showConfirmPassword)
+              setShowConfirmPassword(
+                !showConfirmPassword
+              )
             }
           ></i>
         </div>
 
-        {/* Confirm Password Warning */}
         {confirmPassword.length > 0 &&
           !isConfirmPasswordValid && (
-            <p className="input-warning">
+            <p className="ml-1 -mt-2.5 mb-2.5 text-left text-[12px] leading-[1.5] text-[#dc3545]">
               Passwords do not match.
             </p>
           )}
 
         {/* Error */}
         {error && (
-          <p className="error-message">
+          <p className="my-2 text-left text-sm font-medium text-[#d93025]">
             {error}
           </p>
         )}
 
         {/* Success */}
         {success && (
-          <p className="success-message">
+          <p className="m-0 rounded-lg border border-[#b7ebc6] bg-[#f0fff4] px-3 py-2.5 text-sm text-[#218838]">
             {success}
           </p>
         )}
@@ -206,12 +214,12 @@ function ResetPassword() {
         {/* Button */}
         <button
           type="submit"
-          className="auth-button"
           disabled={loading}
+          className="mt-[5px] flex cursor-pointer items-center justify-center rounded-[10px] border-0 bg-gradient-to-br from-[#d4af37] to-[#f0d477] p-3.5 text-base font-bold text-[#0b0b0b] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(212,175,55,0.25)] disabled:cursor-not-allowed disabled:opacity-70"
         >
           {loading ? (
             <>
-              <span className="spinner"></span>
+              <span className="mr-2 inline-block h-[18px] w-[18px] animate-spin rounded-full border-[3px] border-white/40 border-t-white"></span>
               Updating...
             </>
           ) : (

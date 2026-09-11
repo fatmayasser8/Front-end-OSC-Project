@@ -63,7 +63,7 @@
   text-transform: capitalize;
 }
 
-.on-miniCards .right i {
+.on-miniCards .right .fa-heart{
   color: #d4af37;
   font-size: 24px;
 
@@ -72,7 +72,7 @@
   transition: 0.3s;
 }
 
-.on-miniCards .right i:hover {
+.on-miniCards .right .fa-heart:hover {
   color: #292929;
   transform: scale(1.1);
 }

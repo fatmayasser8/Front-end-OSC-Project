@@ -1,15 +1,18 @@
+// apiFetch.js 
 import { refreshAccessToken } from "./refreshToken";
 
 export const apiFetch = async (url, options = {}) => {
   let accessToken = localStorage.getItem("accessToken");
 
-  const makeRequest = async (token) => {
+const makeRequest = async (token) => {
+    const isFormData = options.body instanceof FormData;
+
     return fetch(url, {
       ...options,
       headers: {
         ...options.headers,
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        ...(isFormData ? {} : { "Content-Type": "application/json" }),
       },
     });
   };
@@ -19,14 +22,11 @@ export const apiFetch = async (url, options = {}) => {
   if (response.status === 401) {
     const newAccessToken = await refreshAccessToken();
 
-   
     if (!newAccessToken) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-
       return response;
     }
-
 
     response = await makeRequest(newAccessToken);
   }

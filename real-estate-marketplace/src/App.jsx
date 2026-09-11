@@ -19,7 +19,7 @@ import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
 import Favorites from "./pages/favourites/Favourites";
 import Validation from "./pages/validation/Validation";
 import ResetPassword from "./pages/AuthPage/ResetPassword";
-
+import SellProperty from "./pages/SellProperty/SellProperty";
 
 
 
@@ -61,12 +61,14 @@ function App() {
 
         <Route path="/adminDashBoard" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        
-
 <Route
   path="/reset-password"
   element={<ResetPassword />}
 />
+
+<Route path="/sell-property" element={<SellProperty />} />
+
+
       </Routes>
     </BrowserRouter>
   );
