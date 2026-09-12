@@ -63,7 +63,7 @@
   text-transform: capitalize;
 }
 
-.on-miniCards .right i {
+/* .on-miniCards .right .fa-heart{
   color: #d4af37;
   font-size: 24px;
 
@@ -72,10 +72,10 @@
   transition: 0.3s;
 }
 
-.on-miniCards .right i:hover {
+.on-miniCards .right .fa-heart:hover {
   color: #292929;
   transform: scale(1.1);
-}
+} */
 
 
 /* =========================
@@ -199,3 +199,257 @@
   font-size: 11px;
   white-space: nowrap;
 }
+.property-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.property-link:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.upper-part {
+  position: relative;
+}
+
+
+.favorite-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 20;
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  font-size: 20px;
+  color: #d4af37;
+
+
+  transition: 0.3s;
+}
+
+.favorite-btn:hover{
+  color: #292929;
+  transform: scale(1.1);
+}
+
+
+/* =========================
+   PROPERTY CARD
+========================= */
+
+.card-property {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+
+  /* Hover animation */
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* =========================
+   CARD HOVER
+========================= */
+
+.card-property:hover {
+  transform: translateY(-7px);
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+
+/* =========================
+   IMAGE
+========================= */
+
+.img-outer {
+  overflow: hidden;
+}
+
+.img-outer img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+
+  transition: transform 0.45s ease;
+}
+
+.card-property:hover .img-outer img {
+  transform: scale(1.06);
+}
+
+
+/* =========================
+   MIDDLE PART
+========================= */
+
+.middle-part {
+  padding: 15px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+
+/* Location */
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  height: 24px;
+  margin-bottom: 8px;
+
+  overflow: hidden;
+}
+
+.location i {
+  color: #d4af37;
+  flex-shrink: 0;
+}
+
+.location h3 {
+  margin: 0;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   PROPERTY TITLE
+========================= */
+
+.middle-part > div:last-child {
+  min-height: 48px;
+}
+
+.middle-part p:first-child {
+  margin: 0;
+
+  height: 44px;
+
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22px;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+
+  overflow: hidden;
+}
+
+
+/* =========================
+   PRICE
+========================= */
+
+.middle-part .price {
+  margin: 6px 0 0;
+
+  font-size: 17px;
+  font-weight: 700;
+  color: #d4af37;
+}
+
+
+/* =========================
+   LOWER PART
+========================= */
+
+.lower-part {
+  min-height: 45px;
+  padding: 10px 16px 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.lower-part .left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bedRooms,
+.bathRooms,
+.area {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  font-size: 13px;
+}
+
+.bedRooms i,
+.bathRooms i {
+  color: #d4af37;
+}
+
+
+/* Time */
+
+.time {
+  color: #888;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+
+/* =========================
+   FAVORITE BUTTON
+========================= */
+
+.favorite-btn {
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.15);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 767px) {
+
+  .img-outer img {
+    height: 210px;
+  }
+
+  .middle-part p:first-child {
+    font-size: 15px;
+  }
+
+  .middle-part .price {
+    font-size: 16px;
+  }
+
+}
+

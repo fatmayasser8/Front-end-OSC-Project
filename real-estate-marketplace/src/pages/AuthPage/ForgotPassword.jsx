@@ -31,9 +31,6 @@ function ForgotPassword({ closeModal }) {
 
       const data = await response.json();
 
-      console.log("Forgot Password Status:", response.status);
-      console.log("Forgot Password Response:", data);
-
       if (!response.ok) {
         setError(data.message || "Please enter a valid email.");
         return;
@@ -52,7 +49,7 @@ function ForgotPassword({ closeModal }) {
   };
 
   return (
-    <div className="forgot-password-form">
+    <div className="flex flex-col gap-[15px]">
       <input
         type="email"
         placeholder="Email"
@@ -62,22 +59,30 @@ function ForgotPassword({ closeModal }) {
           setError("");
           setSuccess("");
         }}
+        className="h-12 w-full rounded-lg border border-[#444] bg-[#1d1d1d] px-[15px] text-sm text-white outline-none transition focus:border-[#e8c877] placeholder:text-[#777]"
       />
 
-      {error && <p className="error-message">{error}</p>}
+      {error && (
+        <p className="my-2 text-left text-sm font-medium text-[#d93025]">
+          {error}
+        </p>
+      )}
 
-      {success && <p className="success-message">{success}</p>}
+      {success && (
+        <p className="m-0 rounded-lg border border-[#b7ebc6] bg-[#f0fff4] px-3 py-2.5 text-sm text-[#218838]">
+          {success}
+        </p>
+      )}
 
-      {/* Send Reset Link */}
       <button
         type="button"
-        className="auth-button"
         disabled={loading}
         onClick={handleForgotPassword}
+        className="mt-[5px] flex cursor-pointer items-center justify-center rounded-[10px] border-0 bg-gradient-to-br from-[#d4af37] to-[#f0d477] p-3.5 text-base font-bold text-[#0b0b0b] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(212,175,55,0.25)] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {loading ? (
           <>
-            <span className="spinner"></span>
+            <span className="mr-2 inline-block h-[18px] w-[18px] animate-spin rounded-full border-[3px] border-white/40 border-t-white"></span>
             Sending...
           </>
         ) : (
@@ -85,11 +90,10 @@ function ForgotPassword({ closeModal }) {
         )}
       </button>
 
-      {/* Back to Login */}
       <button
         type="button"
-        className="back-login"
         onClick={closeModal}
+        className="cursor-pointer border-0 bg-transparent text-sm text-[#aaa] transition hover:text-[#e8c877]"
       >
         Back to Login
       </button>

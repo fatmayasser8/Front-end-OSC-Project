@@ -4,6 +4,7 @@ import Landing from "./pages/landing";
 import Auth from "./pages/AuthPage/Auth";
 import Login from "./pages/AuthPage/Login";
 import Register from "./pages/AuthPage/Register";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Navbar from "./components/Navbar/navbar";
 import SearchBar from "./components/searchBar/searchBar";
@@ -19,10 +20,12 @@ import SellerDashboard from "./pages/sellerDashboard/SellerDashboard";
 import Favorites from "./pages/favourites/Favourites";
 import Validation from "./pages/validation/Validation";
 import ResetPassword from "./pages/AuthPage/ResetPassword";
+import SellProperty from "./pages/SellProperty/SellProperty";
 
+import ErrorPage from "./pages/ErrorPage/ErrorPage"; 
+import NotFound from "./pages/NotFound/NotFound";
 
-
-
+import AdminRoute from "./routes/AdminRoute"
 import Dashboard from "./pages/adminDashboard";
 
 function App() {
@@ -43,30 +46,52 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
 
-        <Route path="/profile" element={<Profile />} />
+<Route
+  path="/property/:id"
+  element={<PropertyDetails />}
+/>
 
-        <Route
-          path="/propertyDetails"
-          element={<PropertyDetails />}
-        />
+{/* ========================= PROTECTED ROUTES ========================= */}
+ <Route element={<ProtectedRoute />}>
+  <Route path="/profile" element={<Profile />} />
+  <Route path="/favorites" element={<Favorites/>} /> 
+  <Route path="/seller-dashboard" element={<SellerDashboard />} /> 
+  </Route>
 
-        <Route
-          path="/sellerDashBoard"
-          element={<SellerDashboard />}
-        />
+        
 
-        <Route path="/favorites" element={<Favorites />} />
+  
 
         <Route path="/validation" element={<Validation />} />
 
-        <Route path="/adminDashBoard" element={<Dashboard />} />
+   <Route element={<AdminRoute />}>
+         <Route path="/adminDashBoard" element={<Dashboard />} />
+   </Route>
         <Route path="/dashboard" element={<Dashboard />} />
-        
-
 <Route
   path="/reset-password"
   element={<ResetPassword />}
 />
+
+<Route
+  path="/sell-property"
+  element={<SellProperty />}
+/>
+
+<Route
+  path="/edit-property/:id"
+  element={<SellProperty />}
+/>
+
+
+{/* ========================= ERROR PAGE ========================= */}
+ <Route path="/error" element={<ErrorPage />} /> 
+
+ {/* ========================= 404 ========================= */}
+
+  <Route path="*" element={<NotFound />} />
+
+
       </Routes>
     </BrowserRouter>
   );

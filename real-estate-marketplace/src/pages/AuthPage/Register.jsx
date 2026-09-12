@@ -157,13 +157,17 @@ try {
   };
 
   return (
-    <form onSubmit={handleRegister} className="auth-form">
+<form
+  onSubmit={handleRegister}
+   className="auth-form max-sm:gap-[9px]"
+>
 
       {/* Full Name */}
       <input
         type="text"
         placeholder="Full Name"
         value={name}
+      className=" max-sm:!py-2.5 max-sm:!px-3 max-sm:!text-[13px]"
         onChange={(e) => {
           setName(e.target.value);
           setErrors({ ...errors, name: "" });
@@ -180,22 +184,22 @@ try {
   type="email"
   placeholder="Email"
   value={email}
-  className={
+  className={`max-sm:!py-2.5 max-sm:!px-3 max-sm:!text-[13px] ${
     email.length === 0
       ? ""
       : isEmailValid
       ? "input-valid"
       : "input-invalid"
-  }
+  }`}
   onChange={(e) => setEmail(e.target.value)}
 />
 
 {errors.email && email.length === 0 && (
-  <p className="input-error">{errors.email}</p>
+  <p className="input-error max-sm:text-xs">{errors.email}</p>
 )}
 
 {email.length > 0 && !isEmailValid && (
-  <p className="input-warning">
+  <p className="input-warning max-sm:text-xs">
     Please enter a valid email address.
   </p>
 )}
@@ -207,13 +211,13 @@ try {
     type={showPassword ? "text" : "password"}
     placeholder="Password"
     value={password}
-    className={
+    className={`max-sm:!py-2.5 max-sm:!px-3 max-sm:!text-[13px] max-sm:!pr-10 ${
       password.length === 0
         ? ""
         : isPasswordValid
         ? "input-valid"
         : "input-invalid"
-    }
+    }`}
     onChange={(e) => setPassword(e.target.value)}
   />
 
@@ -244,13 +248,13 @@ try {
     type={showConfirmPassword ? "text" : "password"}
     placeholder="Confirm Password"
     value={confirmPassword}
-    className={
+    className={`max-sm:!py-2.5 max-sm:!px-3 max-sm:!text-[13px] max-sm:!pr-10${
       confirmPassword.length === 0
         ? ""
         : isConfirmPasswordValid
         ? "input-valid"
         : "input-invalid"
-    }
+    }`}
     onChange={(e) => setConfirmPassword(e.target.value)}
   />
 
@@ -283,13 +287,13 @@ try {
   placeholder="Phone Number"
   value={phoneNumber}
   maxLength={11}
-  className={
+  className={`max-sm:!py-2.5 max-sm:!px-3 max-sm:!text-[13px] ${
     phoneNumber.length === 0
       ? ""
       : isPhoneValid
       ? "input-valid"
       : "input-invalid"
-  }
+  }`}
   onChange={(e) => {
     const value = e.target.value.replace(/\D/g, "");
     setPhoneNumber(value);
@@ -310,8 +314,11 @@ try {
 
 
       {/* Role */}
-      <div className="role-options">
-        <label htmlFor="seller">
+<div className="role-options max-sm:gap-4">
+<label
+  htmlFor="seller"
+  className="max-sm:text-[13px]"
+>
           <input
             type="radio"
             id="seller"
@@ -326,7 +333,7 @@ try {
           Seller
         </label>
 
-        <label htmlFor="buyer">
+        <label htmlFor="buyer"   className="max-sm:text-[13px]">
           <input
             type="radio"
             id="buyer"
@@ -349,7 +356,9 @@ try {
 
       {/* Terms */}
       <div className="terms">
-        <label htmlFor="register-checkbox">
+        <label htmlFor="register-checkbox"
+          className="max-sm:gap-1.5 max-sm:text-[12px]"
+        >
           <input
             type="checkbox"
             id="register-checkbox"
@@ -365,7 +374,7 @@ try {
       </div>
 
       {errors.termsAccepted && (
-        <p className="input-error">
+        <p className="input-error max-sm:text-xs">
           {errors.termsAccepted}
         </p>
       )}
@@ -373,7 +382,7 @@ try {
 
       {/* General Error */}
       {errors.general && (
-        <p className="input-error general-error">
+        <p className="input-error general-error max-sm:text-xs">
           {errors.general}
         </p>
       )}
@@ -381,7 +390,7 @@ try {
 
 <button
   type="submit"
-  className="auth-button"
+  className="auth-button max-sm:mt-0 max-sm:py-2.5 max-sm:text-[14px]"
   disabled={isLoading}
 >
   {isLoading ? (

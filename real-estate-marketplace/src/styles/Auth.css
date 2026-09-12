@@ -1,143 +1,122 @@
 .auth-container {
-  min-height: 100vh;
-  background-image: 
+  background-image:
     linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
     url("../assets/background-Landing.png");
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
-/* Main Card */
-
-.auth-box {
-  width: 100%;
-  max-width: 450px;
-
-  background: #111111;
-
-  padding: 45px;
-
-  border: 1px solid rgba(212, 175, 55, 0.35);
-
-  border-radius: 22px;
-
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.6),
-    0 0 35px rgba(212, 175, 55, 0.08);
+a{
+  text-decoration: none;
+  ;
 }
-
-/* Logo */
-
-.auth-title {
-  text-align: center;
-
-  margin-bottom: 8px;
-
-  color: #d4af37;
-
-  font-size: 36px;
-
-  font-weight: 700;
-
-  letter-spacing: 2px;
-}
-
-.auth-subtitle {
-  text-align: center;
-
-  color: #a5a5a5;
-
-  margin-bottom: 30px;
-
-  font-size: 14px;
-}
-
-/* Login & Register */
-
 .auth-tabs {
   display: flex;
-
   gap: 10px;
-
   margin-bottom: 30px;
 }
 
 .auth-tabs a {
   flex: 1;
-  text-align: center;
   padding: 12px;
-
-  border-radius: 10px;
-
+  text-align: center;
   text-decoration: none;
-
-  color: #aaa;
-
-  background: #1a1a1a;
-
   border: 1px solid #333;
-
-  transition: 0.3s;
+  border-radius: 12px;
+  background-color: #1a1a1a;
+  color: #aaa;
+  font-size: 16px;
+  transition: all 0.3s ease;
 }
 
-
-.auth-tabs a.active {
-  background: #d4af37;
-
-  color: #0b0b0b;
-
-  border-color: #d4af37;
-
-  font-weight: 700;
-
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
-}
-
-
+/* Hover */
 .auth-tabs a:hover {
   border-color: #d4af37;
+  color: #d4af37;
+  background-color: #222;
+}
 
+/* Active */
+.auth-tabs a.active {
+  border-color: #d4af37;
+  background-color: #d4af37;
+  color: #0b0b0b;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+.google-login-wrapper {
+  position: relative;
+  width: 100%;
+  height: 47px;
+}
+
+.google-login-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+
+.google-login-button {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  width: 100%;
+  height: 47px;
+
+  border: 1px solid #333;
+  border-radius: 10px;
+  background-color: #181818;
+
+  color: #f5f5f5;
+  font-size: 15px;
+
+  transition: all 0.3s ease;
+}
+
+.google-login-button:hover {
+  transform: translateY(-1px);
+  color: #d4af37;
+  border-color: #d4af37;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
+}
+
+.google-login-button i {
+  transition: color 0.3s ease;
+}
+
+.google-login-button:hover i {
   color: #d4af37;
 }
-
-.auth-tabs a.active:hover {
-  color: #0b0b0b;
-}
-/* Forms */
+/* =========================
+   Register Form
+========================= */
 
 .auth-form {
   display: flex;
-
   flex-direction: column;
-
   gap: 15px;
 }
 
-.auth-form input {
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="tel"],
+.auth-form input[type="password"] {
   width: 100%;
-
-  box-sizing: border-box;
-
   padding: 14px 16px;
-
-  background: #181818;
-
   border: 1px solid #333;
-
   border-radius: 10px;
-
-  color: white;
-
+  background-color: #181818;
+  color: #fff;
   font-size: 15px;
-
   outline: none;
-
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .auth-form input::placeholder {
@@ -146,160 +125,13 @@
 
 .auth-form input:focus {
   border-color: #d4af37;
-
   box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
 }
 
-/* Forgot Password */
 
-.forgot-password {
-  text-align: right;
-
-  color: #d4af37;
-
-  font-size: 14px;
-
-  cursor: pointer;
-}
-
-/* Button */
-
-.auth-button {
-  border: none;
-
-  padding: 14px;
-
-  border-radius: 10px;
-
-  background: linear-gradient(
-    135deg,
-    #d4af37,
-    #f0d477
-  );
-
-  color: #0b0b0b;
-
-  font-size: 16px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-
-  margin-top: 5px;
-
-  transition: 0.3s;
-}
-
-.auth-button:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 8px 25px rgba(212, 175, 55, 0.25);
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 10px 0;
-  color: #777;
-  font-size: 13px;
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #333;
-}
-
-/* Social Buttons */
-
-.social-button {
-  width: 100%;
-  padding: 13px;
-
-  border-radius: 10px;
-
-  background: #181818;
-
-  border: 1px solid #333;
-
-  color: #f5f5f5;
-
-  font-size: 15px;
-
-  cursor: pointer;
-
-  transition: 0.3s;
-
-}
-
-.social-button:hover {
-  border-color: #d4af37;
-  transform: translateY(-1px);
-}
-
-/* Google */
-
-.google:hover {
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
-}
-
-.fa-google{
-    margin-right: 5px;
-}
-/* Facebook */
-
-.facebook:hover {
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
-}
-
-.fa-facebook{
-    margin-right: 5px;
-}
-.role-options {
-  display: flex;
-  gap: 30px;
-}
-
-.role-options label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  color: #f5f5f5;
-}
-
-.role-options input {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-    accent-color:#d4af37;
-}
-
-.terms {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 15px;
-  font-size: 14px;
-  color: #666;
-}
-
-.terms input {
-  width: 16px;
-  height: 16px;
-  cursor: pointer;
-  accent-color:#d4af37;
-  margin-top: 3px;
-  margin-right: 10px;
-}
-
-.terms label {
-  cursor: pointer;
-}
+/* =========================
+   Password
+========================= */
 
 .password-container {
   position: relative;
@@ -307,9 +139,7 @@
 }
 
 .password-container input {
-  width: 100%;
   padding-right: 45px;
-  box-sizing: border-box;
 }
 
 .eye-icon {
@@ -320,85 +150,173 @@
   cursor: pointer;
   color: #777;
   font-size: 16px;
+  transition: color 0.3s ease;
 }
 
 .eye-icon:hover {
   color: #c9952e;
 }
-.input-error {
-  color: #d9534f;
-  font-size: 13px;
-  margin: -10px 0 10px 4px;
-  text-align: left;
-}
 
-.general-error {
-  text-align: center;
-  margin: 10px 0;
-}
-.password-hint {
-  font-size: 12px;
-  color: #777;
-  margin: -8px 0 12px 4px;
-  text-align: left;
-  line-height: 1.5;
-}
 
-.password-warning {
-  color: #dc3545;
-  font-size: 12px;
-  margin: -8px 0 12px 4px;
-  line-height: 1.5;
-  text-align: left;
-}
-
-.password-container input.input-invalid {
-  border: 1.5px solid #dc3545;
-}
-
-.password-container input.input-valid {
-  border: 1.5px solid #c9952e;
-}
-.input-warning {
-  color: #dc3545;
-  font-size: 12px;
-  margin: -8px 0 12px 4px;
-  line-height: 1.5;
-  text-align: left;
-}
+/* =========================
+   Validation
+========================= */
 
 .input-valid {
-  border: 1.5px solid #c9952e !important;
+  border-color: #4caf50 !important;
 }
 
 .input-invalid {
-  border: 1.5px solid #dc3545 !important;
+  border-color: #d93025 !important;
 }
+
+
+/* Error message */
+
+.input-error {
+  margin: 3px 0;
+  text-align: left;
+  color: #d93025;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+
+/* Warning message */
+
+.input-warning,
+.password-warning {
+  margin: 3px 0;
+  text-align: left;
+  color: #d93025;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* General error */
+
+.general-error {
+  text-align: center;
+}
+
+
+/* =========================
+   Seller / Buyer
+========================= */
+
+.role-options {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 4px 0;
+}
+
+.role-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #aaa;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.role-options input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #d4af37;
+}
+
+
+/* =========================
+   Terms
+========================= */
+
+.terms {
+  padding: 4px 0;
+}
+
+.terms label {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.terms input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: #d4af37;
+}
+
+
+/* =========================
+   Create Account Button
+========================= */
+
+.auth-button {
+  width: 100%;
+  margin-top: 5px;
+  padding: 14px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    #d4af37,
+    #f0d477
+  );
+  color: #0b0b0b;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.25);
+}
+
 .auth-button:disabled {
   cursor: not-allowed;
   opacity: 0.7;
 }
-.error-message {
-  color: #d93025;
-  font-size: 14px;
-  margin: 8px 0;
-  text-align: left;
-  font-weight: 500;
+
+
+
+.login-input:focus {
+  border-color: #d4af37 !important;
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
 }
-.forgot-password {
-  cursor: pointer;
-}
+/* =========================
+   Loading Spinner
+========================= */
 
 .spinner {
   width: 18px;
   height: 18px;
-  border: 3px solid rgba(255, 255, 255, 0.4);
-  border-top-color: white;
-  border-radius: 50%;
-  display: inline-block;
   margin-right: 8px;
-  vertical-align: middle;
-  animation: spin 0.8s linear infinite;
+
+  border: 2px solid rgba(11, 11, 11, 0.3);
+  border-top-color: #0b0b0b;
+  border-radius: 50%;
+
+  display: inline-block;
+
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
@@ -407,219 +325,4 @@
   }
 }
 
-/* Forgot Password Modal */
 
-.forgot-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  z-index: 9999;
-  padding: 20px;
-}
-
-.forgot-modal {
-  position: relative;
-
-  width: 100%;
-  max-width: 430px;
-
-  background: #151515;
-  border: 1px solid rgba(232, 200, 119, 0.35);
-  border-radius: 18px;
-
-  padding: 35px;
-
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-
-  animation: forgotModal 0.25s ease;
-}
-
-@keyframes forgotModal {
-  from {
-    opacity: 0;
-    transform: translateY(-15px) scale(0.97);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Close button */
-
-.forgot-close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-
-  background: transparent;
-  border: none;
-
-  color: #aaa;
-  font-size: 28px;
-
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.forgot-close:hover {
-  color: #e8c877;
-}
-
-/* Title */
-
-.forgot-modal h2 {
-  margin: 0 0 10px;
-
-  color: #e8c877;
-  font-size: 26px;
-  text-align: center;
-}
-
-/* Description */
-
-.forgot-description {
-  margin: 0 0 25px;
-
-  color: #aaa;
-  font-size: 14px;
-  line-height: 1.6;
-  text-align: center;
-}
-
-/* Form */
-
-.forgot-password-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-/* Input */
-
-.forgot-password-form input {
-  width: 100%;
-  height: 48px;
-
-  padding: 0 15px;
-
-  box-sizing: border-box;
-
-  background: #1d1d1d;
-  border: 1px solid #444;
-  border-radius: 8px;
-
-  color: white;
-  font-size: 14px;
-
-  outline: none;
-  transition: 0.3s;
-}
-
-.forgot-password-form input:focus {
-  border-color: #e8c877;
-}
-
-/* Back to login */
-
-.back-login {
-  background: transparent;
-  border: none;
-
-  color: #aaa;
-  font-size: 14px;
-
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.back-login:hover {
-  color: #e8c877;
-}
-
-
-
-/* Success */
-
-.success-message {
-  margin: 0;
-
-  padding: 10px 12px;
-
-  background: #f0fff4;
-  border: 1px solid #b7ebc6;
-  border-radius: 8px;
-
-  color: #218838;
-  font-size: 14px;
-
-  box-sizing: border-box;
-}
-
-.google-button-wrapper {
-  position: relative;
-  width: 100%;
-  height: 47px;
-}
-
-.google-custom-button {
-  width: 100%;
-  height: 47px;
-  padding: 13px;
-  border-radius: 10px;
-  background: #181818;
-  border: 1px solid #333;
-  color: #f5f5f5;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.3s;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
-
-.google-button-wrapper:hover .google-custom-button {
-  border-color: #d4af37;
-  box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
-  transform: translateY(-1px);
-}
-
-.google-custom-button i {
-  margin-right: 5px;
-  font-size: 16px;
-}
-
-
-.google-login-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  opacity: 0;
-}
-
-.google-login-overlay > div {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.google-login-overlay iframe {
-  width: 100% !important;
-  height: 100% !important;
-}
