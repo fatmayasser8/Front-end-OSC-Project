@@ -63,7 +63,20 @@
   color: var(--nova-gold);
 }
 
-/* ---------------- TOP BAR ---------------- */
+/* ---------------- TOP ROW: Back to Home + Admin, side by side ---------------- */
+.dashboard-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 20px 20px 0;
+}
+
+.dashboard-top-row .back-to-home {
+  margin: 0;
+}
+
+/* ---------------- OLD TOP BAR (kept, no longer used for search) ---------------- */
 .dashboard-topbar {
   display: flex;
   align-items: center;
@@ -337,8 +350,26 @@
 .card-header-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.card-header-row h2 {
+  margin: 0;
+  flex: 1;
+  min-width: fit-content;
+}
+
+
+.listings-search-box {
+  flex: 0 1 220px;
+  min-width: 160px;
+  max-width: 220px;
+}
+
+.listings-search-box input {
+  padding: 8px 12px 8px 34px;
 }
 
 .view-all-link {
@@ -460,6 +491,7 @@
 
 .status-active { background-color: rgba(53, 193, 122, 0.15); color: var(--nova-green); }
 .status-pending { background-color: rgba(245, 179, 1, 0.15); color: var(--nova-gold); }
+.status-rejected { background-color: rgba(242, 109, 109, 0.15); color: var(--nova-red); }
 
 .actions-cell {
   display: flex;
@@ -483,6 +515,30 @@
 .icon-action:hover {
   border-color: var(--nova-gold);
   color: var(--nova-gold);
+}
+
+/* ---------------- THIN SCROLLBAR (for View All expand) ---------------- */
+.recent-users-list::-webkit-scrollbar,
+.listings-table-wrapper::-webkit-scrollbar {
+  width: 5px;
+}
+
+.recent-users-list::-webkit-scrollbar-track,
+.listings-table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.recent-users-list::-webkit-scrollbar-thumb,
+.listings-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #333;
+  border-radius: 10px;
+}
+
+/* Firefox */
+.recent-users-list,
+.listings-table-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
 }
 
 /* ---------------- FOOTER ---------------- */
@@ -536,4 +592,61 @@
   .back-to-home {
     margin-left: 12px;
   }
+}
+/* ---------------- USER NAME CLICKABLE ---------------- */
+.user-name-clickable {
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+/* ---------------- DELETE USER BUTTON ---------------- */
+.delete-user-btn {
+  margin-left: 6px;
+  color: var(--nova-red);
+}
+
+/* ---------------- USER DETAILS MODAL ---------------- */
+.user-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.user-modal {
+  position: relative;
+  background-color: var(--nova-card);
+  border: 1px solid var(--nova-border);
+  border-radius: var(--nova-radius);
+  padding: 24px;
+  width: 90%;
+  max-width: 340px;
+}
+
+.user-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--nova-text-muted);
+  cursor: pointer;
+}
+
+.user-modal h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.user-modal p {
+  font-size: 13px;
+  color: var(--nova-text-muted);
+  margin: 6px 0;
+}
+
+.user-modal p strong {
+  color: var(--nova-text);
 }

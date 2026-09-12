@@ -31,6 +31,7 @@ const handleLogout = async () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
+    localStorage.removeItem("role");
 
     // Go to login
     navigate("/auth/login");
@@ -55,12 +56,26 @@ const handleLogout = async () => {
           </Link>
         </li>
 
-        <li>
-          <Link to="/sellerDashboard">
-            <i className="fa-solid fa-chart-line"></i>
-            <span>Dashboard</span>
-          </Link>
-        </li>
+        {/* ده شرط بيخفي الـ Dashboard لو المستخدم buyer أو مش مسجل، ويظهرها للـ admin أو seller */}
+{(() => {
+  const userRole = localStorage.getItem("role");
+
+  if (!userRole || userRole === "buyer") return null;
+   const normalizedRole = userRole ? userRole.toLowerCase().trim() : "";
+   console.log("Current userRole from localStorage:", userRole); // ⬅️ زودي دي
+   console.log("Chosen dashboardPath:", normalizedRole === "admin" ? "/adminDashboard" : "/sellerDashboard"); // ⬅️ وزودي دي
+   const dashboardPath = userRole === "admin" ? "/adminDashboard" : "/sellerDashboard";
+   const dashboardName = userRole === "admin" ? "Admin Dashboard" : "Dashboard";
+
+  return (
+    <li>
+      <Link to={dashboardPath}>
+        <i className="fa-solid fa-chart-line"></i>
+        <span>{dashboardName}</span>
+      </Link>
+    </li>
+  );
+})()}
 
         <li>
           <Link to="/favorites">
@@ -70,9 +85,9 @@ const handleLogout = async () => {
         </li>
 
         <li>
-          <Link to="/messages">
+          <Link to="/about">
             <i className="fa-regular fa-message"></i>
-            <span>Messages</span>
+            <span>About</span>
           </Link>
         </li>
 

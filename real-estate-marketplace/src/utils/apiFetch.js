@@ -2,6 +2,7 @@ import { refreshAccessToken } from "./refreshToken";
 
 export const apiFetch = async (url, options = {}) => {
   let accessToken = localStorage.getItem("accessToken");
+  
 
   const makeRequest = async (token) => {
     return fetch(url, {
