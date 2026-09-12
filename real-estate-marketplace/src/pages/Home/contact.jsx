@@ -1,9 +1,44 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaArrowLeft,FaPaperPlane } from 'react-icons/fa';
+import { FaFacebookF, FaTwitter, FaInstagram, FaLinkedinIn, FaArrowLeft, FaPaperPlane, FaWhatsapp } from 'react-icons/fa';
 import { MdEmail, MdPhone, MdLocationOn } from 'react-icons/md';
 import "../../styles/contact.css";
  
 function Contact() {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const phoneNumber = "201116440515"; 
+
+    
+    const text = `*New Message from Contact Form*\n\n` +
+                 `*Name:* ${formData.fullName}\n` +
+                 `*Email:* ${formData.email}\n` +
+                 `*Subject:* ${formData.subject}\n` +
+                 `*Message:* ${formData.message}`;
+
+  
+    const encodedText = encodeURIComponent(text);
+
+  
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedText}`;
+    window.open(whatsappUrl, '_blank');
+
+    setFormData({ fullName: '', email: '', subject: '', message: '' });
+  };
+
   return (
     <div className="contact">
       <div className="main-content full-width">
@@ -43,7 +78,7 @@ function Contact() {
               <MdEmail className="info-icon" />
               <div>
                 <strong>Email</strong>
-                <p>support@nova.com (Responds within 24h)</p>
+                <p>fatma3p0@gmail.com</p>
               </div>
             </div>
  
@@ -68,20 +103,52 @@ function Contact() {
  
           <div className="contact-form-column">
             <h2>Send Us a Message</h2>
-            <form className="contact-form">
-              <input type="text" placeholder="Full Name" className="form-input" />
-              <input type="email" placeholder="Email Address" className="form-input" />
+            
+            <form className="contact-form" onSubmit={handleSubmit}>
+              <input 
+                type="text" 
+                name="fullName"
+                placeholder="Full Name" 
+                className="form-input" 
+                value={formData.fullName}
+                onChange={handleChange}
+                required 
+              />
+              <input 
+                type="email" 
+                name="email"
+                placeholder="Email Address" 
+                className="form-input" 
+                value={formData.email}
+                onChange={handleChange}
+                required 
+              />
  
-              <select className="form-input select-placeholder" defaultValue="">
+              <select 
+                name="subject"
+                className="form-input select-placeholder" 
+                value={formData.subject}
+                onChange={handleChange}
+                required
+              >
                 <option value="" disabled>Select a subject</option>
-                <option value="general">General Inquiry</option>
-                <option value="support">Support</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Support">Support</option>
               </select>
  
-              <textarea placeholder="Message" rows="3" className="form-textarea"></textarea>
+              <textarea 
+                name="message"
+                placeholder="Message" 
+                rows="3" 
+                className="form-textarea"
+                value={formData.message}
+                onChange={handleChange}
+                required
+              ></textarea>
+
               <button type="submit" className="submit-btn">
                 <FaPaperPlane className="send-icon" />
-                <span>Send Message</span>
+                <span>Send message</span>
               </button>
             </form>
           </div>
@@ -96,4 +163,3 @@ function Contact() {
 }
  
 export default Contact;
- 

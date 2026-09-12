@@ -35,9 +35,9 @@ const handleGoogleSuccess = async (credentialResponse) => {
       return;
     }
 
-    localStorage.setItem("user", JSON.stringify(data.user));
-    localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
+    localStorage.setItem("user", JSON.stringify(result.user));
+    localStorage.setItem("accessToken", result.accessToken);
+    localStorage.setItem("refreshToken", result.refreshToken);
 
     navigate("/home");
   } catch (error) {
@@ -73,13 +73,13 @@ const handleLogin = async (e) => {
 
      // If login failed
 if (!response.ok) { 
-  setError( data.message || "Invalid email, password, or credentials." );
+  setError( result.message || "Invalid email, password, or credentials." );
    return; }
 
-console.log("Login successful:", data);
+console.log("Login successful:", result);
 // Save JWT token
-localStorage.setItem("accessToken", data.accessToken);
-localStorage.setItem("refreshToken", data.refreshToken);
+localStorage.setItem("accessToken", result.accessToken);
+localStorage.setItem("refreshToken", result.refreshToken);
 // Go to Home
 navigate("/home");
 }catch (error)
@@ -87,7 +87,6 @@ navigate("/home");
    setError("Something went wrong. Please try again.");
    } 
    finally { setLoading(false); }
-  }
 };
 
   return (
