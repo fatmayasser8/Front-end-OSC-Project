@@ -27,12 +27,13 @@ import NotFound from "./pages/NotFound/NotFound";
 
 import AdminRoute from "./routes/AdminRoute"
 import Dashboard from "./pages/adminDashboard";
-
+import Layout from "./components/footer/footer";
 function App() {
   return (
     
     <BrowserRouter>
       <Routes>
+        <Route element={<Layout />}>
         <Route path="/" element={<Landing />} />
 
         <Route path="/auth" element={<Auth />}>
@@ -91,7 +92,7 @@ function App() {
 
   <Route path="*" element={<NotFound />} />
 
-
+</Route>
       </Routes>
     </BrowserRouter>
   );
