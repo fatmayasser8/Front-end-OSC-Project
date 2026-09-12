@@ -59,10 +59,6 @@ function App() {
   <Route path="/seller-dashboard" element={<SellerDashboard />} /> 
   </Route>
 
-        
-
-  
-
         <Route path="/validation" element={<Validation />} />
 
    <Route element={<AdminRoute />}>
@@ -76,7 +72,7 @@ function App() {
 
 <Route
   path="/sell-property"
-  element={<SellProperty />}
+  element={<SellProperty />}     
 />
 
 <Route
