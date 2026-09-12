@@ -35,9 +35,9 @@ const handleGoogleSuccess = async (credentialResponse) => {
       return;
     }
 
-    localStorage.setItem("user", JSON.stringify(result.user));
-    localStorage.setItem("accessToken", result.accessToken);
-    localStorage.setItem("refreshToken", result.refreshToken);
+    localStorage.setItem("user", JSON.stringify(result.data.user));
+    localStorage.setItem("accessToken", result.data.accessToken);
+    localStorage.setItem("refreshToken", result.data.refreshToken); 
 
     navigate("/home");
   } catch (error) {
@@ -78,8 +78,9 @@ if (!response.ok) {
 
 console.log("Login successful:", result);
 // Save JWT token
-localStorage.setItem("accessToken", result.accessToken);
-localStorage.setItem("refreshToken", result.refreshToken);
+localStorage.setItem("user", JSON.stringify(result.data.user));
+localStorage.setItem("accessToken", result.data.accessToken);
+localStorage.setItem("refreshToken", result.data.refreshToken);
 // Go to Home
 navigate("/home");
 }catch (error)
