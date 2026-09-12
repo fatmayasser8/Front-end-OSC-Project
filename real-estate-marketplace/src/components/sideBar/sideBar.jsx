@@ -15,9 +15,13 @@ try {
   console.error("Invalid user data in localStorage:", error);
   localStorage.removeItem("user");
 }
+
 const sidebarRef = useRef(null);
 
 const isSeller = user?.role === "seller";
+
+const accessToken = localStorage.getItem("accessToken");
+const isAuthenticated = !!accessToken;
 
 
 console.log("USER:", user);
@@ -169,12 +173,12 @@ max-lg:!w-[210px]
             </Link>
           </li>
 
-        <li>
-          <Link to="/about">
-            <i className="fa-regular fa-message"></i>
-            <span>About</span>
-          </Link>
-        </li>
+ <li>
+  <Link to="/about">
+    <i className="fa-solid fa-circle-info"></i>
+    <span>About</span>
+  </Link>
+</li>
 
           <li>
             <Link
@@ -197,13 +201,28 @@ max-lg:!w-[210px]
           </li>
         </ul>
 
-        {/* Logout */}
-        <div className="logout">
-          <button type="button" onClick={handleLogout}>
-            <i className="fa-solid fa-right-from-bracket"></i>
-            <span>Log out</span>
-          </button>
-        </div>
+
+
+{/* Auth Button */}
+<div className="logout">
+  {isAuthenticated ? (
+    <button type="button" onClick={handleLogout}>
+      <i className="fa-solid fa-right-from-bracket"></i>
+      <span>Log out</span>
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={() => {
+        setIsOpen(false);
+        navigate("/auth/login");
+      }}
+    >
+      <i className="fa-solid fa-right-to-bracket"></i>
+      <span>Login</span>
+    </button>
+  )}
+</div>
       </aside>
     </>
   );

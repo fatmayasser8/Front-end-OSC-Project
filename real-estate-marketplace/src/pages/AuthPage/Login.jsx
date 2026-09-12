@@ -75,14 +75,19 @@ const handleLogin = async (e) => {
 if (!response.ok) { 
   setError( result.message || "Invalid email, password, or credentials." );
    return; }
-
 console.log("Login successful:", result);
-// Save JWT token
+
+// Save user and tokens
 localStorage.setItem("user", JSON.stringify(result.data.user));
 localStorage.setItem("accessToken", result.data.accessToken);
 localStorage.setItem("refreshToken", result.data.refreshToken);
-// Go to Home
-navigate("/home");
+
+// Redirect based on user role
+if (result.data.user.role === "admin") {
+  navigate("/adminDashBoard");
+} else {
+  navigate("/home");
+}
 }catch (error)
  { console.error("Login error:", error);
    setError("Something went wrong. Please try again.");

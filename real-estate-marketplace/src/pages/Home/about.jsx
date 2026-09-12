@@ -12,7 +12,7 @@ function About() {
   return (
     <div className="about">
       <div className="main-content full-width">
-        <Link to="/" className="back-to-home">
+        <Link to="/home" className="back-to-home">
           <FaArrowLeft />
           <span>Back to Home</span>
         </Link>

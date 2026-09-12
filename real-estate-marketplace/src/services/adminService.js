@@ -1,6 +1,7 @@
 import { apiFetch } from "../utils/apiFetch";
 
-const BASE = import.meta.env.VITE_API_BASE_URL;
+const BASE =
+  "https://real-estate-market-place-api.vercel.app/api/v1";
 
 async function handle(res) {
   const data = await res.json();

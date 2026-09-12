@@ -1,10 +1,13 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { isAuthenticated } from "../utils/auth";
 
 function AdminRoute() {
   const location = useLocation();
 
-  if (!isAuthenticated()) {
+  // Get access token
+  const token = localStorage.getItem("accessToken");
+
+  // Not logged in
+  if (!token) {
     return (
       <Navigate
         to="/auth/login"
@@ -17,17 +20,18 @@ function AdminRoute() {
     );
   }
 
+  // Get logged-in user
   let user = {};
 
   try {
     user = JSON.parse(localStorage.getItem("user") || "{}");
-  } catch {
+  } catch (error) {
+    console.error("Invalid user data:", error);
     user = {};
   }
 
-  const isAdmin = user?.role === "admin";
-
-  if (!isAdmin) {
+  // Check admin role
+  if (user.role !== "admin") {
     return <Navigate to="/home" replace />;
   }
 

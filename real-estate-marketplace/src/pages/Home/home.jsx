@@ -8,6 +8,7 @@ import Sidebar from "../../components/sideBar/sideBar";
 import "../../styles/Home.css";
 import { apiFetch } from "../../utils/apiFetch";
 import { isAuthenticated } from "../../utils/auth";
+import villa1 from "../../assets/hero.png";
 
 import {
   MapContainer,
@@ -138,6 +139,57 @@ const getNearbyProperties = (
 
     return distance <= radius;
   });
+};
+
+
+const API_ORIGIN =
+  "https://real-estate-market-place-api.vercel.app";
+
+const getPropertyImage = (property) => {
+  let image = null;
+
+  if (
+    Array.isArray(property?.images) &&
+    property.images.length > 0
+  ) {
+    image = property.images[0];
+  }
+
+  if (!image && property?.image) {
+    image = property.image;
+  }
+
+  if (image && typeof image === "object") {
+    image =
+      image.url ||
+      image.secure_url ||
+      image.path ||
+      image.src ||
+      null;
+  }
+
+  // مفيش صورة أصلاً → Villa 1
+  if (
+    typeof image !== "string" ||
+    !image.trim()
+  ) {
+    return villa1;
+  }
+
+  image = image.trim();
+
+  if (
+    image.startsWith("http://") ||
+    image.startsWith("https://")
+  ) {
+    return image;
+  }
+
+  if (image.startsWith("/")) {
+    return `${API_ORIGIN}${image}`;
+  }
+
+  return `${API_ORIGIN}/${image}`;
 };
 
 /* =========================================================
@@ -1318,16 +1370,15 @@ useEffect(() => {
                           }
                         >
 
-                          <img
-                            src={
-                              property
-                                .images?.[0] ||
-                              "/placeholder.jpg"
-                            }
-                            alt={
-                              property.title
-                            }
-                          />
+<img
+  src={getPropertyImage(property)}
+  alt={property.title || "Property"}
+  onError={(e) => {
+    console.log("Broken image:", e.currentTarget.src);
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = villa1;
+  }}
+/>
 
                           <div>
 
@@ -1409,17 +1460,15 @@ useEffect(() => {
                         ×
                       </button>
 
-                      <img
-                        src={
-                          selectedProperty
-                            .images?.[0] ||
-                          "/placeholder.jpg"
-                        }
-                        alt={
-                          selectedProperty.title
-                        }
-                      />
-
+<img
+  src={getPropertyImage(selectedProperty)}
+  alt={selectedProperty.title || "Property"}
+  onError={(e) => {
+    console.log("Broken image:", e.currentTarget.src);
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = villa1;
+  }}
+/>
                       <div className="map-preview-info">
 
                         <span>

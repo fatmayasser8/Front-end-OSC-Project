@@ -12,7 +12,17 @@ const navigate=useNavigate()
         <h3>PREMIER LIVING DESTINATIONS</h3>
         <p>Welcome to the Art of Living</p>
         <p>Explore an exclusive portfolio of homes designed for luxury and tranquility.</p>
-<button onClick={() => navigate("/home")}>
+<button
+  onClick={() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (user.role === "admin") {
+      navigate("/adminDashBoard");
+    } else {
+      navigate("/home");
+    }
+  }}
+>
   Start Exploring
 </button>
       </div>

@@ -3,7 +3,7 @@ import "../../styles/PropertyDetails.css";
 import villa1 from "../../assets/hero.png";
 
 import userImg from "../../assets/user-img.jpg";
-import { Link, useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../utils/apiFetch";
 import { isAuthenticated } from "../../utils/auth";
@@ -14,6 +14,7 @@ function PropertyDetails() {
   const { id } = useParams();
 
 const navigate = useNavigate();
+const location = useLocation();
 
 const showLoginPrompt = (action) => {
   Swal.fire({
@@ -225,8 +226,21 @@ useEffect(() => {
 
   const fetchSeller = async () => {
     try {
+      const ownerId =
+        typeof property.owner === "object"
+          ? property.owner._id || property.owner.id
+          : property.owner;
+
+      console.log("SELLER OWNER:", property.owner);
+      console.log("SELLER OWNER ID:", ownerId);
+
+      if (!ownerId) {
+        console.error("Seller ID not found");
+        return;
+      }
+
       const response = await apiFetch(
-        `https://real-estate-market-place-api.vercel.app/api/v1/users/${property.owner}/profile`,
+        `https://real-estate-market-place-api.vercel.app/api/v1/users/${ownerId}/profile`,
         {
           method: "GET",
         }
@@ -240,7 +254,11 @@ useEffect(() => {
         throw new Error(result.message || "Failed to load seller");
       }
 
-      setSeller(result.data?.user ?? result.data);
+setSeller({
+  ...property.owner,
+  ...(result.data?.user ?? result.data),
+});
+
     } catch (error) {
       console.error("Seller error:", error);
     }
@@ -334,10 +352,20 @@ if (errorType) {
         </div>
         <h2>{title}</h2>
         <p>{text}</p>
-        <Link to="/home" className="error-back-btn">
-          <i className="fa-solid fa-arrow-left"></i>
-          Back to Listings
-        </Link>
+<button
+  type="button"
+  className="back-link"
+  onClick={() =>
+    navigate(
+      location.state?.from === "admin"
+        ? "/adminDashBoard"
+        : "/home"
+    )
+  }
+>
+  <i className="fa-solid fa-arrow-left"></i>
+  Back to Listings
+</button>
       </div>
     </div>
   );
@@ -351,10 +379,20 @@ if (!property) {
           <i className="fa-solid fa-house-circle-xmark"></i>
         </div>
         <h2>Property not found</h2>
-        <Link to="/home" className="error-back-btn">
-          <i className="fa-solid fa-arrow-left"></i>
-          Back to Listings
-        </Link>
+<button
+  type="button"
+  className="back-link"
+  onClick={() =>
+    navigate(
+      location.state?.from === "admin"
+        ? "/adminDashBoard"
+        : "/home"
+    )
+  }
+>
+  <i className="fa-solid fa-arrow-left"></i>
+  Back to Listings
+</button>
       </div>
     </div>
   );
@@ -365,10 +403,20 @@ const latitude = property.location?.coordinates?.[1];
     <div className="property-details-page">
 
       {/* ================= BACK ================= */}
-      <Link to="/home" className="back-link">
-        <i className="fa-solid fa-arrow-left"></i>
-        Back to Listings
-      </Link>
+<button
+  type="button"
+  className="back-link"
+  onClick={() =>
+    navigate(
+      location.state?.from === "admin"
+        ? "/adminDashBoard"
+        : "/home"
+    )
+  }
+>
+  <i className="fa-solid fa-arrow-left"></i>
+  Back to Listings
+</button>
 
 
       {/* ================= TOP ================= */}

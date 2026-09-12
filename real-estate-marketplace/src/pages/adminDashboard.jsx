@@ -5,6 +5,8 @@ import {AreaChart, Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer, P
 import "../styles/adminDashboard.css";
 import { getAdminDashboardStats, getAllListings, getAllUsers,getUserById, deleteUser, approveListing, rejectListing,deleteListing,getAllRequests, approveRequest,rejectRequest,} from "../services/adminService";
 import Swal from 'sweetalert2';
+import villa1 from "../assets/hero.png";
+
 
 const showAlert = () => {
   Swal.fire({
@@ -47,12 +49,16 @@ function unwrapObject(res) {
 }
 function Dashboard() {
   const navigate = useNavigate();
-  useEffect(() => {
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token"); 
-    if (!token) {
-      navigate("/login"); 
-    }
-  }, [navigate]);
+
+useEffect(() => {
+  const token =
+    localStorage.getItem("accessToken") ||
+    sessionStorage.getItem("accessToken");
+
+  if (!token) {
+    navigate("/auth/login");
+  }
+}, [navigate]);
   const [stats, setStats] = useState(null);
   const [listings, setListings] = useState([]);
   const [users, setUsers] = useState([]);
@@ -70,6 +76,15 @@ function Dashboard() {
   const [requests, setRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(true);
   const [openRequestMenuId, setOpenRequestMenuId] = useState(null);
+const [rejectModal, setRejectModal] = useState({
+  open: false,
+  id: null,
+  type: null,
+});
+
+const [rejectionReason, setRejectionReason] = useState("");
+const [rejecting, setRejecting] = useState(false);
+
 
   async function loadRequests() {
     try {
@@ -90,21 +105,69 @@ function Dashboard() {
       setOpenRequestMenuId(null);
       await loadRequests();
     } catch (err) {
-      showAlertalert(err.message || "Couldn't approve this request.");
+showAlert(err.message || "Couldn't approve this request.");
     }
   }
 
-  async function handleRejectRequest(id) {
-    const rejectionReason = window.prompt("Why are you rejecting this request?");
-    if (rejectionReason === null) return;
-    try {
-      await rejectRequest(id, rejectionReason || "No reason provided");
-      setOpenRequestMenuId(null);
-      await loadRequests();
-    } catch (err) {
-      showAlertalert(err.message || "Couldn't reject this request.");
-    }
+function handleRejectRequest(id) {
+  setOpenRequestMenuId(null);
+
+  setRejectionReason("");
+
+  setRejectModal({
+    open: true,
+    id,
+    type: "request",
+  });
+}
+const reasonLength = rejectionReason.trim().length;
+
+const isReasonValid =
+  reasonLength >= 2 && reasonLength <= 10;
+
+async function confirmReject() {
+  if (!isReasonValid) {
+    return;
   }
+
+  try {
+    setRejecting(true);
+
+    if (rejectModal.type === "request") {
+      await rejectRequest(
+        rejectModal.id,
+        rejectionReason.trim()
+      );
+
+      await loadRequests();
+    }
+
+    if (rejectModal.type === "listing") {
+      await rejectListing(
+        rejectModal.id,
+        rejectionReason.trim()
+      );
+
+      await loadListings();
+    }
+
+    setRejectModal({
+      open: false,
+      id: null,
+      type: null,
+    });
+
+    setRejectionReason("");
+  } catch (err) {
+    console.error("Reject failed:", err);
+    setActionError(
+      err.message || "Couldn't reject this item. Please try again."
+    );
+  } finally {
+    setRejecting(false);
+  }
+}
+
 
   async function handleViewUser(id) {
     try {
@@ -112,7 +175,7 @@ function Dashboard() {
       const data = await getUserById(id);
       setSelectedUser(unwrapObject(data));
     } catch (err) {
-      showalert(err.message || "Couldn't load this user's details.");
+showAlert(err.message || "Couldn't load this user's details.");
     } finally {
       setUserDetailsLoading(false);
     }
@@ -128,7 +191,7 @@ function Dashboard() {
       const refreshed = await getAllUsers({ limit: 20 });
       setUsers(unwrapArray(refreshed));
     } catch (err) {
-      showAlertalert(err.message || "Couldn't delete this user. Please try again.");
+showAlert(err.message || "Couldn't delete this user. Please try again.");
     } finally {
       setDeletingUserId(null);
     }
@@ -208,20 +271,17 @@ function Dashboard() {
     }
   }
 
-  async function handleReject(id) {
-    const reason = window.prompt("Why are you rejecting this listing?");
-    if (reason === null) return; 
+function handleReject(id) {
+  setOpenMenuId(null);
 
-    try {
-      setActionError("");
-      await rejectListing(id, reason || "No reason provided");
-      setOpenMenuId(null);
-      await loadListings();
-    } catch (err) {
-      console.error("Reject failed:", err);
-      setActionError("Couldn't reject this listing. Please try again.");
-    }
-  }
+  setRejectionReason("");
+
+  setRejectModal({
+    open: true,
+    id,
+    type: "listing",
+  });
+}
 
   const totalUsersCount = stats?.totalUsers ?? (Array.isArray(users) ? users.length : 0);
   const sellersCount = stats?.totalSellers ?? (Array.isArray(users) ? users.filter(u => u.role === "seller").length : 0);
@@ -255,15 +315,23 @@ function Dashboard() {
     { icon: <FaHome />, label: "Total Favorites", value: stats?.totalFavorites ?? stats?.favorites ?? 0, tone: "gold" },
   ];
 
-  if (loading) {
-    return (
-      <div className="dashboard">
-        <div className="main-content full-width">
-          <p style={{ padding: 24, color: "#9b9b9b" }}>Loading dashboard…</p>
+if (loading) {
+  return (
+    <div className="admin-loading">
+      <div className="admin-loading-content">
+        <div className="admin-loading-logo">
+          <FaHome />
         </div>
+
+        <h2>NOVA ESTATES</h2>
+
+        <div className="admin-spinner"></div>
+
+        <p>Loading your dashboard...</p>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   if (error) {
     return (
@@ -279,10 +347,24 @@ function Dashboard() {
     <div className="dashboard">
       <div className="main-content full-width">
         <div className="dashboard-top-row">
-          <Link to="/" className="back-to-home">
-            <FaArrowLeft />
-            <span>Back to Home</span>
-          </Link>
+<button
+  type="button"
+  className="back-to-home"
+  onClick={() => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("user");
+
+    navigate("/auth/login");
+  }}
+>
+  <FaArrowLeft />
+  <span>Logout</span>
+</button>
 
           <div className="topbar-right">
             <button className="icon-btn" aria-label="Notifications">
@@ -535,7 +617,15 @@ function Dashboard() {
                 {(showAllListings ? listings : (Array.isArray(listings) ? listings : []).slice(0, 4)).map((item) => (
                   <tr key={item._id || item.id}>
                     <td>
-                      <img src={item.image} alt={item.title} className="listing-thumb" />
+<img
+  className="property-table-image"
+  src={item.images?.[0] || villa1}
+  alt={item.title || "Property"}
+  onError={(e) => {
+    e.currentTarget.onerror = null;
+    e.currentTarget.src = villa1;
+  }}
+/>
                     </td>
                     <td>{item.title}</td>
                     <td>
@@ -563,12 +653,17 @@ function Dashboard() {
                       </span>
                     </td>
                     <td className="actions-cell" style={{ position: "relative", display: "flex", gap: "8px", alignItems: "center" }}>
-                      <button
-                        className="icon-action"
-                        aria-label="View"
-                        onClick={() => navigate(`../pages/propertyDetails/PropertyDetails.jsx${item._id || item.id}`)}>
-                        <FaEye />
-                      </button>
+<button
+  className="icon-action"
+  aria-label="View"
+  onClick={() =>
+    navigate(`/property/${item._id || item.id}`, {
+      state: { from: "admin" },
+    })
+  }
+>
+  <FaEye />
+</button>
 
                       <button
                         className="icon-action delete-listing-btn"
@@ -675,7 +770,93 @@ function Dashboard() {
               )}
             </div>
           </div>
-        )}
+        )}{rejectModal.open && (
+  <div className="reject-modal-overlay">
+    <div className="reject-modal">
+
+      <button
+        type="button"
+        className="reject-modal-close"
+        onClick={() => {
+          if (rejecting) return;
+
+          setRejectModal({
+            open: false,
+            id: null,
+            type: null,
+          });
+
+          setRejectionReason("");
+        }}
+      >
+        ✕
+      </button>
+
+      <div className="reject-modal-icon">
+        <FaFileAlt />
+      </div>
+
+      <h2>Reject Request</h2>
+
+      <p className="reject-modal-subtitle">
+        Please provide a reason for rejecting this{" "}
+        {rejectModal.type === "listing"
+          ? "property listing"
+          : "seller request"}.
+      </p>
+
+      <textarea
+        className={`reject-reason-input ${
+          rejectionReason.length > 0 && !isReasonValid
+            ? "input-invalid"
+            : rejectionReason.length > 0 && isReasonValid
+            ? "input-valid"
+            : ""
+        }`}
+        placeholder="Enter rejection reason..."
+        value={rejectionReason}
+        onChange={(e) => setRejectionReason(e.target.value)}
+        disabled={rejecting}
+        rows={5}
+      />
+
+      {rejectionReason.trim().length > 0 && !isReasonValid && (
+        <p className="reject-reason-error">
+          Reason must be between 2 and 10 characters.
+        </p>
+      )}
+
+      <div className="reject-modal-actions">
+        <button
+          type="button"
+          className="reject-cancel-btn"
+          disabled={rejecting}
+          onClick={() => {
+            setRejectModal({
+              open: false,
+              id: null,
+              type: null,
+            });
+
+            setRejectionReason("");
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="reject-confirm-btn"
+          disabled={!isReasonValid || rejecting}
+          onClick={confirmReject}
+        >
+          {rejecting ? "Rejecting..." : "Confirm Reject"}
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
       </div>
     </div>
   );
