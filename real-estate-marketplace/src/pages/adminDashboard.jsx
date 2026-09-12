@@ -4,6 +4,18 @@ import { FaArrowLeft,  FaTrash, FaUsers,FaHome,FaStore,FaUserTie, FaFileAlt, FaS
 import {AreaChart, Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer, PieChart,Pie,Cell,} from "recharts";
 import "../styles/adminDashboard.css";
 import { getAdminDashboardStats, getAllListings, getAllUsers,getUserById, deleteUser, approveListing, rejectListing,deleteListing,getAllRequests, approveRequest,rejectRequest,} from "../services/adminService";
+import Swal from 'sweetalert2';
+
+const showAlert = () => {
+  Swal.fire({
+    title: 'Success!',
+    text: 'Your message has been sent successfully via WhatsApp!',
+    icon: 'success',
+    confirmButtonText: 'OK',
+    color: '#c9a24b',
+    confirmButtonColor: '#c9a24b'
+  });
+};
 const CANDIDATE_KEYS = ["data", "listings", "users", "results", "items"];
 function unwrapArray(res) {
   if (Array.isArray(res)) return res;
@@ -35,6 +47,12 @@ function unwrapObject(res) {
 }
 function Dashboard() {
   const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token"); 
+    if (!token) {
+      navigate("/login"); 
+    }
+  }, [navigate]);
   const [stats, setStats] = useState(null);
   const [listings, setListings] = useState([]);
   const [users, setUsers] = useState([]);
@@ -72,7 +90,7 @@ function Dashboard() {
       setOpenRequestMenuId(null);
       await loadRequests();
     } catch (err) {
-      alert(err.message || "Couldn't approve this request.");
+      showAlertalert(err.message || "Couldn't approve this request.");
     }
   }
 
@@ -84,7 +102,7 @@ function Dashboard() {
       setOpenRequestMenuId(null);
       await loadRequests();
     } catch (err) {
-      alert(err.message || "Couldn't reject this request.");
+      showAlertalert(err.message || "Couldn't reject this request.");
     }
   }
 
@@ -94,7 +112,7 @@ function Dashboard() {
       const data = await getUserById(id);
       setSelectedUser(unwrapObject(data));
     } catch (err) {
-      alert(err.message || "Couldn't load this user's details.");
+      showalert(err.message || "Couldn't load this user's details.");
     } finally {
       setUserDetailsLoading(false);
     }
@@ -110,7 +128,7 @@ function Dashboard() {
       const refreshed = await getAllUsers({ limit: 20 });
       setUsers(unwrapArray(refreshed));
     } catch (err) {
-      alert(err.message || "Couldn't delete this user. Please try again.");
+      showAlertalert(err.message || "Couldn't delete this user. Please try again.");
     } finally {
       setDeletingUserId(null);
     }

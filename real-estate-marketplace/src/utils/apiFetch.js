@@ -26,9 +26,10 @@ const makeRequest = async (token) => {
     if (!newAccessToken) {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
+      window.location.href = "/login";
       return response;
     }
-
+    localStorage.setItem("accessToken", newAccessToken);
     response = await makeRequest(newAccessToken);
   }
 
