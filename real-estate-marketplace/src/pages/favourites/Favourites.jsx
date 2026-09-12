@@ -37,7 +37,7 @@ const getFavorites = async () => {
       );
     }
 
-    setFavorites(result.data.favorites || []);
+  setFavorites(Array.isArray(result.data) ? result.data : []);
 
   } catch (error) {
     console.error("Favorites error:", error);
@@ -165,6 +165,7 @@ catch (error)
           <strong>
             {favorites.length}
           </strong>
+
 {favorites.length > 0 && ( <button type="button" onClick={handleClearFavorites} 
 disabled={clearingFavorites} 
 className="clear-favorites-btn" > 
@@ -220,14 +221,18 @@ className="clear-favorites-btn" >
               favorite;
 
             return (
-              <div
-                className="favorite-card"
-                key={
-                  property?._id ||
-                  property?.id ||
-                  favorite?._id
-                }
-              >
+  <div
+    key={property._id}
+    className="favorite-card"
+    onClick={() => navigate(`/property/${property._id}`)}
+    role="button"
+    tabIndex={0}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        navigate(`/property/${property._id}`);
+      }
+    }}
+  >
 
                 {/* Property Image */}
 
@@ -247,14 +252,14 @@ className="clear-favorites-btn" >
 
                   {/* Favorite Heart */}
 
-                  <button
-                    type="button"
-                    className="favorite-heart active"
-                    aria-label="Remove from favorites"
-                  >
-                    <i className="fa-solid fa-heart"></i>
-                  </button>
-
+           <button
+  type="button"
+  className="favorite-heart active"
+  aria-label="Remove from favorites"
+  onClick={(e) => e.stopPropagation()}
+>
+  <i className="fa-solid fa-heart"></i>
+</button>
                 </div>
 
 
@@ -268,13 +273,13 @@ className="clear-favorites-btn" >
                       "Property"}
                   </h3>
 
-                  <p className="favorite-location">
-                    <i className="fa-solid fa-location-dot"></i>
+            <p className="favorite-location">
+  <i className="fa-solid fa-location-dot"></i>
 
-                    {property?.location ||
-                      property?.address ||
-                      "Location not available"}
-                  </p>
+  {property?.location?.address ||
+    property?.location?.city ||
+    "Location not available"}
+</p>
 
 
                   <div className="favorite-details">
@@ -292,22 +297,20 @@ className="clear-favorites-btn" >
                         {property.bathrooms} Baths
                       </span>
                     )}
-
-                    {property?.area != null && (
-                      <span>
-                        <i className="fa-solid fa-ruler-combined"></i>
-                        {property.area} m²
-                      </span>
-                    )}
+{property?.areaSqMeters != null && (
+  <span>
+    <i className="fa-solid fa-ruler-combined"></i>
+    {property.areaSqMeters} m²
+  </span>
+)}
 
                   </div>
 
-
-                  {property?.price != null && (
-                    <div className="favorite-price">
-                      {property.price} EGP
-                    </div>
-                  )}
+{property?.price != null && (
+  <div className="favorite-price">
+    EGP {property.price.toLocaleString()}
+  </div>
+)}
 
                 </div>
 

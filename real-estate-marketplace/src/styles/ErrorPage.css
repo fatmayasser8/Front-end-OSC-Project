@@ -1,0 +1,179 @@
+/* =========================================================
+   ERROR PAGE
+========================================================= */
+
+.error-page {
+  min-height: 100vh;
+  background: #090909;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px 20px;
+}
+
+.error-content {
+  width: min(480px, 100%);
+  text-align: center;
+
+  background: #111;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+
+  padding: 40px 30px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.error-icon {
+  width: 75px;
+  height: 75px;
+
+  margin: 0 auto 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(212, 175, 55, 0.12);
+  color: #d4af37;
+
+  font-size: 30px;
+}
+
+.error-content h1 {
+  margin: 0 0 10px;
+
+  color: #fff;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.error-content p {
+  margin: 0 0 25px;
+
+  color: #999;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.error-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.error-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 0;
+  border-radius: 10px;
+
+  padding: 12px 22px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.error-actions button:not(.secondary) {
+  background: #d4af37;
+  color: #111;
+}
+
+.error-actions button:not(.secondary):hover {
+  background: #f0d477;
+  transform: translateY(-1px);
+}
+
+.error-actions button.secondary {
+  background: transparent;
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+}
+
+.error-actions button.secondary:hover {
+  background: rgba(212, 175, 55, 0.08);
+}
+
+
+/* =========================================================
+   MEDIA QUERIES
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .error-content {
+    padding: 30px 20px;
+    border-radius: 16px;
+  }
+
+  .error-icon {
+    width: 65px;
+    height: 65px;
+    font-size: 26px;
+  }
+
+  .error-content h1 {
+    font-size: 20px;
+  }
+
+  .error-content p {
+    font-size: 13px;
+  }
+
+  .error-actions {
+    gap: 10px;
+  }
+
+  .error-actions button {
+    padding: 11px 18px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .error-page {
+    padding: 15px;
+  }
+
+  .error-content {
+    padding: 25px 15px;
+  }
+
+  .error-icon {
+    width: 58px;
+    height: 58px;
+    font-size: 22px;
+  }
+
+  .error-content h1 {
+    font-size: 18px;
+  }
+
+  .error-content p {
+    font-size: 12px;
+  }
+
+  .error-actions {
+    flex-direction: column;
+  }
+
+  .error-actions button {
+    width: 100%;
+  }
+}

@@ -14,3 +14,21 @@
 .mapBtn i {
   color: #d4af37;
   font-size: 20px;}
+  .btn-pic{
+    border-radius: 50%;
+  }
+
+.nav-icons{
+  gap: 10px;
+}
+
+  @media (max-width: 768px){
+     .mapBtn{
+      font-size: 12px;
+      padding: 4px;
+      /* margin-left: 4px; */
+     }
+     .nav-icons{
+      gap: 1px;
+     }
+  }

@@ -3,12 +3,17 @@ import userImg from "../../assets/user-img.jpg";
 import "../../styles/Profile.css";
 import { Link, useNavigate } from "react-router-dom";
 import { apiFetch } from "../../utils/apiFetch";
+import { useSellerVerification } from "../../utils/useSellerVerification";
+import IdentityVerificationModal from "../../components/IdentityVerificationModal/IdentityVerificationModal";
 
 function Profile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+const { verification, isApproved, loading: verifyLoading, refetch } = useSellerVerification();
+const [showVerificationModal, setShowVerificationModal] = useState(false);
+
 
   // ================= Edit Profile State =================
   const [isEditing, setIsEditing] = useState(false);
@@ -23,6 +28,24 @@ function Profile() {
 // ================= Image Delete State =================
   const [deletingImage, setDeletingImage] = useState(false);
   const [originalImage, setOriginalImage] = useState(null);
+
+const handleSellClick = (e) => {
+  e.preventDefault(); 
+
+  if (verifyLoading) return;
+
+  if (isApproved) {
+    navigate("/sell-property");
+  } else {
+    setShowVerificationModal(true);
+  }
+};
+useEffect(() => {
+  if (isApproved && showVerificationModal) {
+    setShowVerificationModal(false);
+    navigate("/sell-property");
+  }
+}, [isApproved, showVerificationModal, navigate]);
 
   const getProfile = async () => {
     try {
@@ -992,28 +1015,17 @@ const handleDeleteImage = () => {
 
 
     {/* Sell Your Property */}
-    {isSeller && (
-      <Link
-        to="/sell-property"
-        className="
-          sell-property-btn
-          flex
-          items-center
-          justify-center
-          gap-2
-          px-5
-          py-3
-          rounded-md
-          no-underline
-          text-sm
-          font-medium
-          flex-1
-        "
-      >
-        <i className="fa-solid fa-plus"></i>
-        Sell Your Property
-      </Link>
-    )}
+{isSeller && (
+  <button
+    type="button"
+    onClick={handleSellClick}
+    disabled={verifyLoading}
+    className="sell-property-btn flex items-center justify-center gap-2 px-5 py-3 rounded-md no-underline text-sm font-medium flex-1"
+  >
+    <i className="fa-solid fa-plus"></i>
+    {verifyLoading ? "Checking..." : "Sell Your Property"}
+  </button>
+)}
 
   </div>
 
@@ -1022,6 +1034,13 @@ const handleDeleteImage = () => {
 
 
       </section>
+      {showVerificationModal && (
+        <IdentityVerificationModal
+          verification={verification}
+          onClose={() => setShowVerificationModal(false)}
+          refetch={refetch}
+        />
+      )}
 
     </div>
   );

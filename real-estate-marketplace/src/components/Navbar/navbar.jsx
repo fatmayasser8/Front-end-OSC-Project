@@ -1,14 +1,21 @@
 import userImg from "../../assets/user-img.jpg";
 import "../../styles/Navbar.css";
+import { useNavigate } from "react-router-dom";
 
-function Navbar({ onMenuClick }) {
+function Navbar({ onMenuClick, onMapClick, showMap })  {
+const navigate = useNavigate();
+
+const user = JSON.parse(localStorage.getItem("user") || "{}");
+const profileImage = user?.userImage || userImg;
+
+
   return (
-<nav className="fixed left-0 top-0 z-[1050] h-[70px] w-full border-b-2 border-[#d4af37] bg-black md:relative">
+<nav className="fixed left-0 top-0 z-[1050] h-[70px] w-full border-b-2 border-[#d4af37] bg-black lg:relative">
       
-      <div className="flex h-full w-full items-center justify-between px-4 sm:px-6 md:justify-end md:px-8">
+  <div className="flex h-full w-full items-center justify-between px-4 sm:px-6 lg:justify-end lg:px-8">
 
         {/* Mobile Logo + Toggle */}
-        <div className="flex items-center gap-4 md:hidden">
+       <div className="flex items-center gap-4 lg:hidden">
 
           <button
             type="button"
@@ -26,12 +33,16 @@ function Navbar({ onMenuClick }) {
         </div>
 
         {/* Navbar Icons */}
-        <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
+        <div className="nav-icons  flex items-center ">
 
-          <button className="mapBtn sm:gap-2 sm:px-3 sm:py-2 sm:text-sm md:px-[15px]">
-            <i className="fa-regular fa-map text-base sm:text-lg md:text-xl"></i>
-            <span>Show Map</span>
-          </button>
+      <button
+        type="button"
+        onClick={onMapClick}
+        className="mapBtn sm:gap-2 sm:px-3 sm:py-2 sm:text-sm md:px-[15px]"
+      >
+        <i className="fa-regular fa-map text-base sm:text-lg md:text-xl"></i>
+        <span>{showMap ? "Hide Map" : "Show Map"}</span>
+      </button>
 
           <i
             className="
@@ -45,13 +56,17 @@ function Navbar({ onMenuClick }) {
             "
           ></i>
 
-          <div className="h-8 w-8 overflow-hidden rounded-full sm:h-9 sm:w-9 md:h-10 md:w-10">
-            <img
-              src={userImg}
-              alt="User"
-              className="h-full w-full object-cover"
-            />
-          </div>
+<button
+  type="button"
+  onClick={() => navigate("/profile")}
+  className="h-8 w-8 overflow-hidden btn-pic border-2 border-[#d4af37] sm:h-9 sm:w-9 md:h-10 md:w-10"
+>
+  <img
+    src={profileImage}
+    alt="User"
+    className="h-full w-full object-cover"
+  />
+</button>
 
         </div>
 

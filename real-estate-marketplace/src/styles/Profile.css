@@ -47,6 +47,38 @@
 
 
 /* =========================
+   Back Button
+========================= */
+
+.profile-back {
+  position: absolute;
+  top: 20px;
+  left: 30px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #aaa;
+  text-decoration: none;
+
+  font-size: 13px;
+
+  z-index: 10;
+
+  transition: 0.3s;
+}
+
+.profile-back:hover {
+  color: #d4af37;
+}
+
+.profile-back i {
+  font-size: 13px;
+}
+
+
+/* =========================
    Left Profile
 ========================= */
 
@@ -94,6 +126,21 @@
   color: #aaa;
 
   font-size: 14px;
+}
+
+.role-badge {
+  display: inline-block;
+  margin-top: 6px;
+
+  padding: 3px 10px;
+
+  background-color: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 20px;
+
+  font-size: 11px;
+  text-transform: capitalize;
 }
 
 
@@ -181,6 +228,11 @@
   font-size: 12px;
 }
 
+.stat .status-not-submitted { color: #777; }
+.stat .status-submitted     { color: #4caf50; }
+.stat .status-pending       { color: #d4af37; }
+.stat .status-rejected      { color: #e05252; }
+
 
 /* =========================
    Details Section
@@ -197,6 +249,10 @@
 
   gap: 25px;
   padding-bottom: 30px;
+}
+
+.profile-details .profile-box:only-child {
+  grid-column: 1 / -1;
 }
 
 
@@ -298,6 +354,11 @@
   color: #111;
 }
 
+
+/* =========================
+   Activity
+========================= */
+
 .activity-box {
   min-height: 330px;
 }
@@ -365,92 +426,39 @@
 }
 
 
-.upper-profile {
-  position: relative;
-}
-
-.profile-back {
-  position: absolute;
-  top: 20px;
-  left: 30px;
-
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  color: #aaa;
-  text-decoration: none;
-
-  font-size: 13px;
-
-  z-index: 10;
-
-  transition: 0.3s;
-}
-
-.profile-back:hover {
-  color: #d4af37;
-}
-
-.profile-back i {
-  font-size: 13px;
-}
-.profile-details .profile-box:only-child {
-  grid-column: 1 / -1;
-}
-
-.stat .status-not-submitted { color: #777; }
-.stat .status-submitted     { color: #4caf50; }
-.stat .status-pending       { color: #d4af37; }
-.stat .status-rejected      { color: #e05252; }
-
-.role-badge {
-  display: inline-block;
-  margin-top: 6px;
- 
-  padding: 3px 10px;
- 
-  background-color: rgba(212, 175, 55, 0.1);
-  color: #d4af37;
-  border: 1px solid rgba(212, 175, 55, 0.35);
-  border-radius: 20px;
- 
-  font-size: 11px;
-  text-transform: capitalize;
-}
 /* =========================
    Loading State
 ========================= */
- 
+
 .profile-loading {
   min-height: 100vh;
- 
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 16px;
- 
+
   background-color: #111;
   color: #aaa;
 }
- 
+
 .profile-spinner {
   width: 40px;
   height: 40px;
- 
+
   border: 4px solid #292929;
   border-top-color: #d4af37;
   border-radius: 50%;
- 
+
   animation: profile-spin 0.8s linear infinite;
 }
- 
+
 .profile-loading p {
   font-size: 14px;
   margin: 0;
 }
- 
+
 @keyframes profile-spin {
   to {
     transform: rotate(360deg);
@@ -526,9 +534,140 @@
   border: 1px solid #d4af37;
   color: #d4af37;
   background: transparent;
+  border-radius: 10px;
 }
 
 .sell-property-btn:hover {
   background: #d4af37;
   color: #111;
+}
+
+
+/* =========================================================
+   MEDIA QUERIES
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .upper-profile .wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 0 25px 20px;
+  }
+
+  .profile-details {
+    grid-template-columns: 1fr;
+    width: 92%;
+    gap: 20px;
+  }
+
+  .profile-box,
+  .activity-box {
+    min-height: auto;
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .upper-profile {
+    min-height: 220px;
+  }
+
+  .upper-profile .wrapper {
+    padding: 0 15px 15px;
+  }
+
+  .profile-back {
+    top: 15px;
+    left: 15px;
+  }
+
+  .left-profile {
+    gap: 12px;
+  }
+
+  .content h2 {
+    font-size: 20px;
+  }
+
+  .content p {
+    font-size: 12px;
+  }
+
+  .editeBtn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .profile-stats {
+    width: 100%;
+  }
+
+  .stat {
+    padding: 15px 5px;
+  }
+
+  .stat h3 {
+    font-size: 20px;
+  }
+
+  .stat p {
+    font-size: 11px;
+  }
+
+  .profile-details {
+    width: 90%;
+    margin: 20px auto;
+    gap: 15px;
+  }
+
+  .profile-box {
+    padding: 18px;
+  }
+
+  .profile-box h2 {
+    font-size: 16px;
+    margin-bottom: 18px;
+  }
+
+  .quick-action-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 22px;
+  }
+
+  .explore-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 18px;
+  }
+}
+
+
+@media (max-width: 400px) {
+
+  .content h2 {
+    font-size: 18px;
+  }
+
+  .stat h3 {
+    font-size: 17px;
+  }
+
+  .stat p {
+    font-size: 10px;
+  }
+
+  .activity-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .quick-action-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
 }

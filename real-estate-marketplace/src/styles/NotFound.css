@@ -1,0 +1,142 @@
+/* =========================================================
+   NOT FOUND PAGE
+========================================================= */
+
+.not-found-page {
+  min-height: 100vh;
+  background: #090909;
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px 20px;
+}
+
+.not-found-content {
+  width: min(480px, 100%);
+  text-align: center;
+
+  background: #111;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 20px;
+
+  padding: 45px 30px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.not-found-number {
+  color: #d4af37;
+
+  font-size: 90px;
+  font-weight: 800;
+  line-height: 1;
+
+  margin-bottom: 10px;
+
+  text-shadow: 0 0 40px rgba(212, 175, 55, 0.35);
+}
+
+.not-found-content h1 {
+  margin: 0 0 10px;
+
+  color: #fff;
+
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.not-found-content p {
+  margin: 0 0 28px;
+
+  color: #999;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.not-found-content button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: 0;
+  border-radius: 10px;
+
+  padding: 12px 24px;
+
+  background: #d4af37;
+  color: #111;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.not-found-content button:hover {
+  background: #f0d477;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   MEDIA QUERIES
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .not-found-content {
+    padding: 35px 20px;
+    border-radius: 16px;
+  }
+
+  .not-found-number {
+    font-size: 70px;
+  }
+
+  .not-found-content h1 {
+    font-size: 20px;
+  }
+
+  .not-found-content p {
+    font-size: 13px;
+  }
+
+  .not-found-content button {
+    padding: 11px 20px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .not-found-page {
+    padding: 15px;
+  }
+
+  .not-found-content {
+    padding: 28px 15px;
+  }
+
+  .not-found-number {
+    font-size: 55px;
+  }
+
+  .not-found-content h1 {
+    font-size: 18px;
+  }
+
+  .not-found-content p {
+    font-size: 12px;
+  }
+
+  .not-found-content button {
+    width: 100%;
+  }
+}

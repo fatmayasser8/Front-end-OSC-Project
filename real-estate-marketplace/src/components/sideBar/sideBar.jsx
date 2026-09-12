@@ -5,9 +5,23 @@ import { Link, useNavigate } from "react-router-dom";
 function Sidebar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+const storedUser = localStorage.getItem("user");
 
-  const sidebarRef = useRef(null);
+let user = {};
 
+try {
+  user = storedUser ? JSON.parse(storedUser) : {};
+} catch (error) {
+  console.error("Invalid user data in localStorage:", error);
+  localStorage.removeItem("user");
+}
+const sidebarRef = useRef(null);
+
+const isSeller = user?.role === "seller";
+
+
+console.log("USER:", user);
+console.log("ROLE:", user?.userRole);
   // Close sidebar when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -63,7 +77,7 @@ function Sidebar() {
 
 {/* Mobile Header */}
 {!isOpen && (
-  <div className="fixed left-0 top-0 z-[1100] flex h-[70px] w-[190px] items-center border-b-2 border-[#d4af37] bg-black px-4 md:hidden">
+  <div className="fixed left-0 top-0 z-[1100] flex h-[70px] w-[190px] items-center border-b-2 border-[#d4af37] bg-black px-4 lg:hidden">
     <button
       type="button"
       onClick={() => setIsOpen(true)}
@@ -86,7 +100,7 @@ function Sidebar() {
 {isOpen && (
   <div
     onClick={() => setIsOpen(false)}
-    className="fixed inset-0 z-[1100] bg-black/60 md:hidden"
+    className="fixed inset-0 z-[1100] bg-black/60 lg:hidden"
   ></div>
 )}
 
@@ -95,16 +109,17 @@ function Sidebar() {
   ref={sidebarRef}
   className={`sidebar
     transition-transform duration-300
-max-md:!fixed
-max-md:!left-0
-max-md:!top-0
-max-md:!z-[1200]
-max-md:!h-screen
-max-md:!w-[210px]
+max-lg:!fixed
+max-lg:!left-0
+max-lg:!top-0
+max-lg:!z-[1200]
+max-lg:!h-screen
+max-lg:!w-[210px]
     ${
       isOpen
-        ? "max-md:translate-x-0"
-        : "max-md:-translate-x-full"
+        ? "max-lg:translate-x-0"
+        : "max-lg:-translate-x-full"
+
     }`}
 >
         {/* Logo */}
@@ -121,7 +136,7 @@ max-md:!w-[210px]
   <button
     type="button"
     onClick={() => setIsOpen(false)}
-    className="ml-auto flex shrink-0 items-center mt-1 text-2xl text-[#d4af37] md:hidden"
+    className="ml-auto flex shrink-0 items-center mt-1 text-2xl text-[#d4af37] lg:hidden"
   >
     <i className="fa-solid fa-xmark"></i>
   </button>
@@ -136,15 +151,17 @@ max-md:!w-[210px]
             </Link>
           </li>
 
-          <li>
-            <Link
-              to="/sellerDashboard"
-              onClick={() => setIsOpen(false)}
-            >
-              <i className="fa-solid fa-chart-line"></i>
-              <span>Dashboard</span>
-            </Link>
-          </li>
+  {isSeller && (
+  <li>
+    <Link
+      to="/sellerDashboard"
+      onClick={() => setIsOpen(false)}
+    >
+      <i className="fa-solid fa-chart-line"></i>
+      <span>Dashboard</span>
+    </Link>
+  </li>
+)}
 
           <li>
             <Link
@@ -156,7 +173,7 @@ max-md:!w-[210px]
             </Link>
           </li>
 
-          <li>
+          {/* <li>
             <Link
               to="/messages"
               onClick={() => setIsOpen(false)}
@@ -164,7 +181,7 @@ max-md:!w-[210px]
               <i className="fa-regular fa-message"></i>
               <span>Messages</span>
             </Link>
-          </li>
+          </li> */}
 
           <li>
             <Link
