@@ -163,6 +163,9 @@ if (!isAuthenticated()) {
     }
   };
 
+  console.log("PROPERTY:", property);
+console.log("PROPERTY IMAGES:", property?.images);
+
   return (
     <div className="col-12 col-md-6 col-lg-3">
       <div
@@ -219,18 +222,16 @@ if (!isAuthenticated()) {
             )}
           </button>
 
-          <div className="img-outer">
-            <img
-              src={
-                property?.images?.[0] ||
-                HomeImg
-              }
-              alt={
-                property?.title ||
-                "estate"
-              }
-            />
-          </div>
+<div className="img-outer">
+  <img
+    src={property?.images?.[0] || HomeImg}
+    alt={property?.title || "estate"}
+    onError={(e) => {
+      e.currentTarget.onerror = null;
+      e.currentTarget.src = HomeImg;
+    }}
+  />
+</div>
         </div>
 
         {/* =========================

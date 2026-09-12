@@ -56,7 +56,7 @@ function App() {
  <Route element={<ProtectedRoute />}>
   <Route path="/profile" element={<Profile />} />
   <Route path="/favorites" element={<Favorites/>} /> 
-  <Route path="/seller-dashboard" element={<SellerDashboard />} /> 
+  <Route path="/sellerDashboard" element={<SellerDashboard />} /> 
   </Route>
 
         <Route path="/validation" element={<Validation />} />
@@ -64,7 +64,7 @@ function App() {
    <Route element={<AdminRoute />}>
          <Route path="/adminDashBoard" element={<Dashboard />} />
    </Route>
-        <Route path="/dashboard" element={<Dashboard />} />
+     
 <Route
   path="/reset-password"
   element={<ResetPassword />}
