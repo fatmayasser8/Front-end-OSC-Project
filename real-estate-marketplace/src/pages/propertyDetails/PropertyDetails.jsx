@@ -46,6 +46,11 @@ const [errorType, setErrorType] = useState(null);
 
 const images = property?.images || [];
 
+const handleImageError = (e) => {
+  e.currentTarget.onerror = null;
+  e.currentTarget.src = villa1;
+};
+
 const nextImage = () => {
   if (images.length <= 1) return;
 
@@ -376,14 +381,11 @@ const latitude = property.location?.coordinates?.[1];
     {images.map((image, index) => (
 <img
   key={index}
-  src={image}
+  src={image || villa1}
   alt={`${property.title} ${index + 1}`}
   className={currentImage === index ? "active-thumbnail" : ""}
   onClick={() => setCurrentImage(index)}
-  onError={(e) => {
-    e.currentTarget.onerror = null;
-    e.currentTarget.src = villa1;
-  }}
+  onError={handleImageError}
 />
     ))}
   </div>
@@ -393,10 +395,7 @@ const latitude = property.location?.coordinates?.[1];
 <img
   src={images[currentImage] || villa1}
   alt={property.title}
-  onError={(e) => {
-    e.currentTarget.onerror = null;
-    e.currentTarget.src = villa1;
-  }}
+  onError={handleImageError}
 />
     <span className="image-count">
       {images.length ? currentImage + 1 : 1} / {images.length || 1}
@@ -608,8 +607,9 @@ const latitude = property.location?.coordinates?.[1];
   {property.images?.slice(0, 4).map((image, index) => (
     <img
       key={index}
-      src={image}
+      src={image || villa1}
       alt={`${property.title} ${index + 1}`}
+      onError={handleImageError}
     />
   ))}
 </div>
