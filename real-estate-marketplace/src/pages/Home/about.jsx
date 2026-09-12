@@ -93,9 +93,6 @@ function About() {
           </Link>
         </section>
 
-        <footer className="footer-bottom">
-          NOVA | Find Your Dream Home
-        </footer>
       </div>
     </div>
   );

@@ -170,9 +170,9 @@ max-lg:!w-[210px]
           </li>
 
         <li>
-          <Link to="/messages">
+          <Link to="/about">
             <i className="fa-regular fa-message"></i>
-            <span>Messages</span>
+            <span>About</span>
           </Link>
         </li>
 

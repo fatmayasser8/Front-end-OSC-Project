@@ -154,9 +154,6 @@ function Contact() {
           </div>
         </div>
  
-        <footer className="footer-bottom">
-          NOVA | Find Your Dream Home
-        </footer>
       </div>
     </div>
   );
