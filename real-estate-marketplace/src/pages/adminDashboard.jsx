@@ -123,40 +123,32 @@ function handleRejectRequest(id) {
 const reasonLength = rejectionReason.trim().length;
 
 const isReasonValid =
-  reasonLength >= 2 && reasonLength <= 10;
-
+  reasonLength >2 ;
 async function confirmReject() {
   if (!isReasonValid) {
     return;
   }
-
   try {
     setRejecting(true);
-
     if (rejectModal.type === "request") {
       await rejectRequest(
         rejectModal.id,
-        rejectionReason.trim()
+        { rejectionReason: rejectionReason.trim() }
       );
-
       await loadRequests();
     }
-
     if (rejectModal.type === "listing") {
       await rejectListing(
         rejectModal.id,
-        rejectionReason.trim()
+        { rejectionReason: rejectionReason.trim() }
       );
-
       await loadListings();
     }
-
     setRejectModal({
       open: false,
       id: null,
       type: null,
     });
-
     setRejectionReason("");
   } catch (err) {
     console.error("Reject failed:", err);
@@ -169,17 +161,6 @@ async function confirmReject() {
 }
 
 
-  async function handleViewUser(id) {
-    try {
-      setUserDetailsLoading(true);
-      const data = await getUserById(id);
-      setSelectedUser(unwrapObject(data));
-    } catch (err) {
-showAlert(err.message || "Couldn't load this user's details.");
-    } finally {
-      setUserDetailsLoading(false);
-    }
-  }
 
   async function handleDeleteUser(u) {
     const id = u._id || u.id;
