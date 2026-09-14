@@ -343,8 +343,6 @@ function handleReject(id) {
     { icon: <FaStore />, label: "Sellers", value: sellersCount, tone: "green" },
     { icon: <FaUserTie />, label: "Buyers", value: buyersCount, tone: "red" },
     {icon: <FaFileAlt />,label: "Pending Requests",value: pendingRequestsCount,tone: "purple"},
-    { icon: <FaEye />, label: "Total Views", value: stats?.totalViews ?? stats?.views ?? 0, tone: "blue" },
-    { icon: <FaHome />, label: "Total Favorites", value: stats?.totalFavorites ?? stats?.favorites ?? 0, tone: "gold" },
   ];
 
 if (loading) {
