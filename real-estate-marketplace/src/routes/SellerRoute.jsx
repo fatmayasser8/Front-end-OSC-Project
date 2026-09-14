@@ -32,4 +32,5 @@ function SellerRoute() {
   return <Outlet />;
 }
 
-export default SellerRoute;
+export default SellerRoute; 
+
