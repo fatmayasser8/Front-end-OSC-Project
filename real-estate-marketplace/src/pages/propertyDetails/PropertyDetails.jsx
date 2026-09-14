@@ -125,28 +125,38 @@ const handleShare = async () => {
   }
 };
 const handleWhatsAppMessage = () => {
-    if (!isAuthenticated()) {
-      showLoginPrompt("message the seller");
-      return;
-    }
+  if (!isAuthenticated()) {
+    showLoginPrompt("message the seller");
+    return;
+  }
 
-    const rawPhone = seller?.phoneNumber || property?.owner?.phone || "201116440515";
-    let cleanPhone = (typeof rawPhone === "string" ? rawPhone : String(rawPhone)).replace(/\D/g, "");
+  const rawPhone = seller?.phoneNumber || property?.owner?.phone || "201116440515";
+  let cleanPhone = (typeof rawPhone === "string" ? rawPhone : String(rawPhone)).replace(/\D/g, "");
 
-    if (cleanPhone.startsWith("0")) {
-      cleanPhone = "20" + cleanPhone.substring(1);
-    } else if (!cleanPhone.startsWith("20") && cleanPhone.length === 10) {
-      cleanPhone = "20" + cleanPhone;
-    }
+  if (cleanPhone.startsWith("0")) {
+    cleanPhone = "20" + cleanPhone.substring(1);
+  } else if (!cleanPhone.startsWith("20") && cleanPhone.length === 10) {
+    cleanPhone = "20" + cleanPhone;
+  }
 
-    const propertyTitle = property?.title || "Property";
-    const propertyPrice = property?.price ? `EGP ${property.price.toLocaleString()}` : "";
-    
-    const message = `Hello, I'm interested in your property "${propertyTitle}" (${propertyPrice}). Is it still available?`;
-    
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, "_blank");
-  };
+  const propertyTitle = property?.title || "Property";
+  const propertyPrice = property?.price ? `EGP ${property.price.toLocaleString()}` : "";
+  const propertyLocation = property?.location?.city ? `${property.location.city}${property.location?.address ? `, ${property.location.address}` : ""}` : "";
+  const bedrooms = property?.bedrooms ?? 0;
+  const bathrooms = property?.bathrooms ?? 0;
+  const area = property?.areaSqMeters ?? 0;
+
+  const message = `Hello, I'm interested in your property listed on NOVA ESTATES:
+- Title: ${propertyTitle}
+- Price: ${propertyPrice}
+- Location: ${propertyLocation}
+- Details: ${bedrooms} Beds | ${bathrooms} Baths | ${area} sqm
+
+Is it still available?`;
+
+  const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, "_blank");
+};
 const handleContactSeller = () => {
   if (!isAuthenticated()) {
     showLoginPrompt("contact the seller");
