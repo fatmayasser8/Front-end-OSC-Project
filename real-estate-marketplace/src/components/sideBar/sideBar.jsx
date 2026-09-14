@@ -156,12 +156,25 @@ max-lg:!w-[210px]
             </Link>
           </li>
 
-        <li>
-          <Link to="/sellerDashboard">
-            <i className="fa-solid fa-chart-line"></i>
-            <span>Dashboard</span>
-          </Link>
-        </li>
+        {/* إظهار الداشبورد للسيلر فقط */}
+        {user?.role === "seller" && (
+          <li>
+            <Link to="/sellerDashboard" onClick={() => setIsOpen(false)}>
+              <i className="fa-solid fa-chart-line"></i>
+              <span>Dashboard</span>
+            </Link>
+          </li>
+        )}
+
+        {/* إظهار داشبورد الأدمن لو المستخدم أدمن */}
+        {user?.role === "admin" && (
+          <li>
+            <Link to="/adminDashBoard" onClick={() => setIsOpen(false)}>
+              <i className="fa-solid fa-shield-halved"></i>
+              <span>Admin Dashboard</span>
+            </Link>
+          </li>
+        )}
 
           <li>
             <Link

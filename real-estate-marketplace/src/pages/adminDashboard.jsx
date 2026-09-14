@@ -75,7 +75,8 @@ useEffect(() => {
   const [requests, setRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(true);
   const [openRequestMenuId, setOpenRequestMenuId] = useState(null);
-const [rejectModal, setRejectModal] = useState({
+  const [selectedRequest, setSelectedRequest] = useState(null); 
+  const [rejectModal, setRejectModal] = useState({
   open: false,
   id: null,
   type: null,
@@ -198,7 +199,7 @@ async function confirmReject() {
 }
 
  function handleDeleteListing(id) {
-  console.log("DELETE CLICKED:", id);
+ 
 
   setDeleteModal({
     open: true,
@@ -390,11 +391,11 @@ if (loading) {
     sessionStorage.removeItem("refreshToken");
     sessionStorage.removeItem("user");
 
-    navigate("/auth/login");
+    navigate("/src/pages/Home/home.jsx");
   }}
 >
   <FaArrowLeft />
-  <span>Logout</span>
+  <span>Back to Home</span>
 </button>
 
           <div className="topbar-right">
@@ -554,41 +555,54 @@ if (loading) {
               <li style={{ color: "#9b9b9b", fontSize: 12 }}>No requests yet.</li>
             )}
             {requests.map((r) => (
-              <li key={r._id || r.id} style={{ position: "relative" }}>
-                <span className="user-name">
-                  {r.fullName || r.user?.fullName || `Request #${(r._id || r.id || "").toString().slice(-6)}`}
-                </span>
-                <span className={`status-tag ${r.status === "approved" ? "status-active" : r.status === "rejected" ? "status-rejected" : "status-pending"}`}>
-                  {r.status}
-                </span>
+  <li key={r._id || r.id} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+    <span className="user-name">
+      {r.fullName || r.user?.fullName || r.name || `Request #${(r._id || r.id || "").toString().slice(-6)}`}
+    </span>
+    
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <span className={`status-tag ${r.status === "approved" ? "status-active" : r.status === "rejected" ? "status-rejected" : "status-pending"}`}>
+        {r.status}
+      </span>
 
-                <button
-                  className="icon-action"
-                  aria-label="More"
-                  style={{ marginLeft: 8 }}
-                  onClick={() =>
-                    setOpenRequestMenuId((current) => (current === (r._id || r.id) ? null : r._id || r.id))
-                  }
-                >
-                  <FaEllipsisH />
-                </button>
+      {/* زر العين الجديد */}
+      <button
+        className="icon-action"
+        aria-label="View request details"
+        title="View request details"
+        onClick={() => setSelectedRequest(r)}
+      >
+        <FaEye />
+      </button>
 
-                {openRequestMenuId === (r._id || r.id) && (
-                  <div style={{ position: "absolute", top: "100%", right: 0, background: "#1a1a1a", border: "1px solid #2b2b2b", borderRadius: 8, zIndex: 10, minWidth: 120 }}>
-                    {r.status !== "approved" && (
-                      <button onClick={() => handleApproveRequest(r._id || r.id)} style={{ display: "block", width: "100%", padding: "8px 12px", background: "none", border: "none", color: "#35c17a", fontSize: 12, textAlign: "left", cursor: "pointer" }}>
-                        Approve
-                      </button>
-                    )}
-                    {r.status !== "rejected" && (
-                      <button onClick={() => handleRejectRequest(r._id || r.id)} style={{ display: "block", width: "100%", padding: "8px 12px", background: "none", border: "none", color: "#f26d6d", fontSize: 12, textAlign: "left", cursor: "pointer" }}>
-                        Reject
-                      </button>
-                    )}
-                  </div>
-                )}
-              </li>
-            ))}
+      <button
+        className="icon-action"
+        aria-label="More"
+        onClick={() =>
+          setOpenRequestMenuId((current) => (current === (r._id || r.id) ? null : r._id || r.id))
+        }
+      >
+        <FaEllipsisH />
+      </button>
+    </div>
+
+    {openRequestMenuId === (r._id || r.id) && (
+      <div style={{ position: "absolute", top: "100%", right: 0, background: "#1a1a1a", border: "1px solid #2b2b2b", borderRadius: 8, zIndex: 10, minWidth: 120 }}>
+        {r.status !== "approved" && (
+          <button onClick={() => handleApproveRequest(r._id || r.id)} style={{ display: "block", width: "100%", padding: "8px 12px", background: "none", border: "none", color: "#35c17a", fontSize: 12, textAlign: "left", cursor: "pointer" }}>
+            Approve
+          </button>
+        )}
+        {r.status !== "rejected" && (
+          <button onClick={() => handleRejectRequest(r._id || r.id)} style={{ display: "block", width: "100%", padding: "8px 12px", background: "none", border: "none", color: "#f26d6d", fontSize: 12, textAlign: "left", cursor: "pointer" }}>
+            Reject
+          </button>
+        )}
+      </div>
+    )}
+  </li>
+))}
+           
           </ul>
         </div>
 
@@ -808,7 +822,44 @@ if (loading) {
               )}
             </div>
           </div>
-        )}{rejectModal.open && (
+        )} 
+        {/* REQUEST DETAILS MODAL */}
+{selectedRequest && (
+  <div className="user-modal-overlay" onClick={() => setSelectedRequest(null)}>
+    <div className="user-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px", width: "90%" }}>
+      <button className="user-modal-close" onClick={() => setSelectedRequest(null)}>✕</button>
+      <h2 style={{ marginBottom: "15px", color: "#c9a24b" }}>Verification Request Details</h2>
+      
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px", color: "#ddd" }}>
+        <p><strong>Name:</strong> {selectedRequest.fullName || selectedRequest.user?.fullName || selectedRequest.name || "—"}</p>
+        <p><strong>Email:</strong> {selectedRequest.email || selectedRequest.user?.email || "—"}</p>
+        <p><strong>Phone:</strong> {selectedRequest.phone || selectedRequest.phoneNumber || selectedRequest.user?.phoneNumber || "—"}</p>
+        <p><strong>Status:</strong> <span style={{ textTransform: "capitalize", color: selectedRequest.status === "approved" ? "#35c17a" : selectedRequest.status === "rejected" ? "#f26d6d" : "#f5b301" }}>{selectedRequest.status}</span></p>
+        
+        {selectedRequest.message && (
+          <p><strong>Message / Note:</strong> {selectedRequest.message}</p>
+        )}
+
+        <div style={{ marginTop: "10px" }}>
+          <strong style={{ display: "block", marginBottom: "8px" }}>Submitted Document / ID Image:</strong>
+          {selectedRequest.identityDocument || selectedRequest.image || selectedRequest.document || selectedRequest.file || selectedRequest.idImage ? (
+  <img 
+    src={selectedRequest.identityDocument || selectedRequest.image || selectedRequest.document || selectedRequest.file || selectedRequest.idImage} 
+    alt="Verification Document" 
+    style={{ width: "100%", maxHeight: "250px", objectFit: "contain", borderRadius: "8px", border: "1px solid #2b2b2b", background: "#111" }}
+    onError={(e) => {
+      e.currentTarget.style.display = 'none';
+    }}
+  />
+) : (
+  <p style={{ color: "#9b9b9b", fontStyle: "italic" }}>No image attached to this request.</p>
+)}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+        {rejectModal.open && (
   <div className="reject-modal-overlay">
     <div className="reject-modal">
 
@@ -1058,6 +1109,7 @@ if (loading) {
       </div>
     </div>
   );
+  
      
 }
 

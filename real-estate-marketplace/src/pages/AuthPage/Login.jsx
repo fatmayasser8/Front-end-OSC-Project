@@ -39,7 +39,9 @@ const handleGoogleSuccess = async (credentialResponse) => {
     localStorage.setItem("accessToken", result.data.accessToken);
     localStorage.setItem("refreshToken", result.data.refreshToken); 
 
+    // **[التعديل الأول هنا]**: شلنا الشروط والـ if القديمة، وحطينا السطر ده بس:
     navigate("/home");
+
   } catch (error) {
     console.error("Google Login Error:", error);
     setError("Something went wrong with Google login.");
@@ -71,28 +73,26 @@ const handleLogin = async (e) => {
 
     const result = await response.json();
 
-     // If login failed
-if (!response.ok) { 
-  setError( result.message || "Invalid email, password, or credentials." );
-   return; }
-console.log("Login successful:", result);
+    if (!response.ok) { 
+      setError(result.message || "Invalid email, password, or credentials.");
+      return; 
+    }
+    console.log("Login successful:", result);
 
-// Save user and tokens
-localStorage.setItem("user", JSON.stringify(result.data.user));
-localStorage.setItem("accessToken", result.data.accessToken);
-localStorage.setItem("refreshToken", result.data.refreshToken);
+    // Save user and tokens
+    localStorage.setItem("user", JSON.stringify(result.data.user));
+    localStorage.setItem("accessToken", result.data.accessToken);
+    localStorage.setItem("refreshToken", result.data.refreshToken);
 
-// Redirect based on user role
-if (result.data.user.role === "admin") {
-  navigate("/adminDashBoard");
-} else {
-  navigate("/home");
-}
-}catch (error)
- { console.error("Login error:", error);
-   setError("Something went wrong. Please try again.");
-   } 
-   finally { setLoading(false); }
+    // **[التعديل الثاني هنا]**: استبدلنا كل الشروط القديمة بتاعة الأدمن والسيلر بالسطر ده:
+    navigate("/home");
+
+  } catch (error) {
+    console.error("Login error:", error);
+    setError("Something went wrong. Please try again.");
+  } finally { 
+    setLoading(false); 
+  }
 };
 
   return (
