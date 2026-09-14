@@ -26,6 +26,7 @@ import ErrorPage from "./pages/ErrorPage/ErrorPage";
 import NotFound from "./pages/NotFound/NotFound";
 
 import AdminRoute from "./routes/AdminRoute"
+import SellerRoute from "./routes/SellerRoute";
 import Dashboard from "./pages/adminDashboard";
 import Layout from "./components/footer/footer";
 function App() {
@@ -56,7 +57,6 @@ function App() {
  <Route element={<ProtectedRoute />}>
   <Route path="/profile" element={<Profile />} />
   <Route path="/favorites" element={<Favorites/>} /> 
-  <Route path="/sellerDashboard" element={<SellerDashboard />} /> 
   </Route>
 
         <Route path="/validation" element={<Validation />} />
@@ -81,6 +81,9 @@ function App() {
 />
 
 
+<Route element={<SellerRoute />}>
+  <Route path="/sellerDashboard" element={<SellerDashboard />} /> 
+</Route>
 
 {/* ========================= ERROR PAGE ========================= */}
  <Route path="/error" element={<ErrorPage />} /> 
