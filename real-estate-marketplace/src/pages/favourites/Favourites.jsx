@@ -49,6 +49,45 @@ const getFavorites = async () => {
   useEffect(() => {
     getFavorites();
   }, []);
+ // ================= Toggle / Remove Favorite =================
+  const handleRemoveFavorite = async (propertyId, e) => {
+    e.stopPropagation();
+
+    try {
+      const response = await apiFetch(
+        `https://real-estate-market-place-api.vercel.app/api/v1/users/favorites/${propertyId}`,
+        {
+          method: "PATCH",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate("/auth/login");
+          return;
+        }
+        throw new Error(data.message || "Failed to update favorites");
+      }
+
+      setFavorites((prevFavorites) =>
+        prevFavorites.filter((fav) => {
+          const prop = fav?.property || fav;
+          return prop._id !== propertyId;
+        })
+      );
+
+    } catch (error) {
+      console.error("Toggle favorite error:", error);
+      Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
 
 const handleClearFavorites = async () => { 
   if (clearingFavorites || favorites.length === 0) return;
@@ -90,6 +129,7 @@ catch (error)
 
 } finally { setClearingFavorites(false); }
 }
+
   // ================= Loading =================
   if (loading) {
     return (
@@ -128,6 +168,7 @@ catch (error)
 
   return (
     <div className="favorites-page">
+      
 
       {/* ================= Back Button ================= */}
 
@@ -174,6 +215,7 @@ className="clear-favorites-btn" >
         </div>
 
       </div>
+      
 
 
       {/* ================= Empty State ================= */}
@@ -248,15 +290,19 @@ className="clear-favorites-btn" >
                       property?.title ||
                       "Property"
                     }
+                    onError={(e) => {
+                       e.target.onerror = null;
+                       e.target.src = "../../assets/Villa.jpg"; 
+                     }}
                   />
 
                   {/* Favorite Heart */}
 
-           <button
+          <button
   type="button"
   className="favorite-heart active"
   aria-label="Remove from favorites"
-  onClick={(e) => e.stopPropagation()}
+  onClick={(e) => handleRemoveFavorite(property._id, e)}
 >
   <i className="fa-solid fa-heart"></i>
 </button>

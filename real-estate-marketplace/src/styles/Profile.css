@@ -570,7 +570,10 @@
 
 
 @media (max-width: 600px) {
-
+  .content p {
+    font-size: 11px;
+    word-break: break-all;
+  }
   .upper-profile {
     min-height: 220px;
   }

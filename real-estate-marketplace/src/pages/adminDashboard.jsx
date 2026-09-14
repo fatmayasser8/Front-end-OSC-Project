@@ -250,9 +250,8 @@ async function confirmDelete() {
 
         const [statsRes, usersRes] = await Promise.all([
           getAdminDashboardStats(),
-          getAllUsers({ limit: 20 }),
+          getAllUsers(),
         ]);
-
         if (!isMounted) return;
         setStats(unwrapObject(statsRes));
         setUsers(unwrapArray(usersRes));
@@ -276,11 +275,7 @@ async function confirmDelete() {
       setListingsLoading(true);
       const filters = listingsSearch ? { limit: 20, search: listingsSearch } : { limit: 20 };
       const listingsRes = await getAllListings(filters);
-const arr = unwrapArray(listingsRes);
-
-console.log("LISTINGS:", arr);
-console.log("FIRST LISTING FIELDS:", Object.keys(arr[0] || {}));
-console.log("FIRST LISTING:", arr[0]);
+      const arr = unwrapArray(listingsRes);
 
 setListings(arr);
     } catch (err) {
@@ -322,7 +317,7 @@ function handleReject(id) {
   const totalUsersCount = stats?.totalUsers ?? (Array.isArray(users) ? users.length : 0);
   const sellersCount = stats?.totalSellers ?? (Array.isArray(users) ? users.filter(u => u.role === "seller").length : 0);
   const buyersCount = stats?.buyers ?? Math.max(0, totalUsersCount - sellersCount);
-
+  const pendingRequestsCount = requests.filter((request) => request.status === "pending").length;
   const growthData = [
     { month: "Start", users: Math.floor(totalUsersCount * 0.6), sellers: Math.floor(sellersCount * 0.5), buyers: Math.floor(buyersCount * 0.5) },
     { month: "Mid", users: Math.floor(totalUsersCount * 0.8), sellers: Math.floor(sellersCount * 0.8), buyers: Math.floor(buyersCount * 0.8) },
@@ -346,7 +341,7 @@ function handleReject(id) {
     { icon: <FaHome />, label: "Total Properties", value: totalListingsCount, tone: "blue" },
     { icon: <FaStore />, label: "Sellers", value: sellersCount, tone: "green" },
     { icon: <FaUserTie />, label: "Buyers", value: buyersCount, tone: "red" },
-    { icon: <FaFileAlt />, label: "Pending Requests", value: stats?.pendingListings ?? stats?.pendingRequests ?? stats?.pending ?? 0, tone: "purple" },
+    {icon: <FaFileAlt />,label: "Pending Requests",value: pendingRequestsCount,tone: "purple"},
     { icon: <FaEye />, label: "Total Views", value: stats?.totalViews ?? stats?.views ?? 0, tone: "blue" },
     { icon: <FaHome />, label: "Total Favorites", value: stats?.totalFavorites ?? stats?.favorites ?? 0, tone: "gold" },
   ];
