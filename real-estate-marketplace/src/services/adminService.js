@@ -77,7 +77,7 @@ export async function approveRequest(id) {
 export async function rejectRequest(id, message) {
   const res = await apiFetch(`${BASE}/admins/requests/${id}/reject`, {
     method: "PATCH",
-    body: JSON.stringify({ message }), // هنا غيرناها من rejectionReason إلى message عشان تتوافق مع الباك إند
+    body: JSON.stringify({ message }), 
   });
   return handle(res);
 }

@@ -8,14 +8,14 @@ import Swal from 'sweetalert2';
 import villa1 from "../assets/hero.png";
 
 
-const showAlert = () => {
+const showAlert = (message, type = "success") => {
   Swal.fire({
-    title: 'Success!',
-    text: 'Your message has been sent successfully via WhatsApp!',
-    icon: 'success',
-    confirmButtonText: 'OK',
-    color: '#c9a24b',
-    confirmButtonColor: '#c9a24b'
+    title: type === "success" ? "Success!" : "Error!",
+    text: message,
+    icon: type,
+    confirmButtonText: "OK",
+    color: "#c9a24b",
+    confirmButtonColor: "#c9a24b",
   });
 };
 const CANDIDATE_KEYS = ["data", "listings", "users", "results", "items"];
@@ -72,7 +72,6 @@ useEffect(() => {
   const [actionError, setActionError] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [userDetailsLoading, setUserDetailsLoading] = useState(false);
-  const [deletingUserId, setDeletingUserId] = useState(null);
   const [requests, setRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(true);
   const [openRequestMenuId, setOpenRequestMenuId] = useState(null);
@@ -84,6 +83,12 @@ const [rejectModal, setRejectModal] = useState({
 
 const [rejectionReason, setRejectionReason] = useState("");
 const [rejecting, setRejecting] = useState(false);
+const [deleteModal, setDeleteModal] = useState({
+  open: false,
+  id: null,
+  type: null,
+});
+const [deleting, setDeleting] = useState(false);
 
 
   async function loadRequests() {
@@ -122,16 +127,15 @@ function handleRejectRequest(id) {
 }
 const reasonLength = rejectionReason.trim().length;
 
-const isReasonValid =
-  reasonLength >= 2 && reasonLength <= 10;
-
+const isReasonValid = reasonLength >= 2 ;
 async function confirmReject() {
-  if (!isReasonValid) {
+  if (!isReasonValid || !rejectModal.id) {
     return;
   }
 
   try {
     setRejecting(true);
+    setActionError("");
 
     if (rejectModal.type === "request") {
       await rejectRequest(
@@ -140,9 +144,7 @@ async function confirmReject() {
       );
 
       await loadRequests();
-    }
-
-    if (rejectModal.type === "listing") {
+    } else if (rejectModal.type === "listing") {
       await rejectListing(
         rejectModal.id,
         rejectionReason.trim()
@@ -160,6 +162,7 @@ async function confirmReject() {
     setRejectionReason("");
   } catch (err) {
     console.error("Reject failed:", err);
+
     setActionError(
       err.message || "Couldn't reject this item. Please try again."
     );
@@ -167,48 +170,76 @@ async function confirmReject() {
     setRejecting(false);
   }
 }
-
-
   async function handleViewUser(id) {
     try {
       setUserDetailsLoading(true);
       const data = await getUserById(id);
       setSelectedUser(unwrapObject(data));
     } catch (err) {
-showAlert(err.message || "Couldn't load this user's details.");
-    } finally {
+  console.error("Failed to load user details:", err);
+
+  showAlert(
+    err.message || "Couldn't load this user's details.",
+    "error"
+  );
+}finally {
       setUserDetailsLoading(false);
     }
   }
 
-  async function handleDeleteUser(u) {
-    const id = u._id || u.id;
-    const name = u.fullName || u.name || "this user";
-    if (!window.confirm(`Delete ${name}? This can't be undone.`)) return;
-    try {
-      setDeletingUserId(id);
-      await deleteUser(id);
+  function handleDeleteUser(u) {
+  const id = u._id || u.id;
+
+  setDeleteModal({
+    open: true,
+    id,
+    type: "user",
+  });
+}
+
+ function handleDeleteListing(id) {
+  console.log("DELETE CLICKED:", id);
+
+  setDeleteModal({
+    open: true,
+    id,
+    type: "listing",
+  });
+}
+async function confirmDelete() {
+  if (!deleteModal.id) return;
+
+  try {
+    setDeleting(true);
+    setActionError("");
+
+    if (deleteModal.type === "listing") {
+      await deleteListing(deleteModal.id);
+      await loadListings();
+    }
+
+    if (deleteModal.type === "user") {
+      await deleteUser(deleteModal.id);
+
       const refreshed = await getAllUsers({ limit: 20 });
       setUsers(unwrapArray(refreshed));
-    } catch (err) {
-showAlert(err.message || "Couldn't delete this user. Please try again.");
-    } finally {
-      setDeletingUserId(null);
     }
-  }
 
-  async function handleDeleteListing(id) {
-    if (!window.confirm("Are you sure you want to delete this listing?")) return;
-    try {
-      setActionError("");
-      await deleteListing(id);
-      await loadListings();
-    } catch (err) {
-      console.error("Delete listing failed:", err);
-      setActionError("Couldn't delete this listing. Please try again.");
-    }
-  }
+    setDeleteModal({
+      open: false,
+      id: null,
+      type: null,
+    });
+  } catch (err) {
+    console.error("Delete failed:", err);
 
+    setActionError(
+      err.message || "Couldn't delete this item. Please try again."
+    );
+  } finally {
+    setDeleting(false);
+  }
+}
   useEffect(() => {
     let isMounted = true;
 
@@ -245,8 +276,13 @@ showAlert(err.message || "Couldn't delete this user. Please try again.");
       setListingsLoading(true);
       const filters = listingsSearch ? { limit: 20, search: listingsSearch } : { limit: 20 };
       const listingsRes = await getAllListings(filters);
-      const arr = unwrapArray(listingsRes);
-      setListings(arr);
+const arr = unwrapArray(listingsRes);
+
+console.log("LISTINGS:", arr);
+console.log("FIRST LISTING FIELDS:", Object.keys(arr[0] || {}));
+console.log("FIRST LISTING:", arr[0]);
+
+setListings(arr);
     } catch (err) {
       console.error("Failed to load listings:", err);
     } finally {
@@ -367,9 +403,6 @@ if (loading) {
 </button>
 
           <div className="topbar-right">
-            <button className="icon-btn" aria-label="Notifications">
-              <FaBell />
-            </button>
             <div className="admin-pill">
               <span className="admin-avatar">AD</span>
               <span>Admin</span>
@@ -502,10 +535,9 @@ if (loading) {
                   </span>
                   <span className={`role-tag role-${(u.role || u.userRole || "").toLowerCase()}`}>{u.role || u.userRole}</span>
                   <button
-                    className="icon-action delete-user-btn"
-                    aria-label="Delete user"
-                    disabled={deletingUserId === (u._id || u.id)}
-                    onClick={() => handleDeleteUser(u)}
+                     className="icon-action delete-user-btn"
+                     aria-label="Delete user"
+                     onClick={() => handleDeleteUser(u)}
                   >
                     <FaTrash />
                   </button>
@@ -634,10 +666,18 @@ if (loading) {
                         : item.location?.address || item.location?.city || "—"}
                     </td>
                     <td>
-                      <span className={`type-tag ${item.type === "For Sale" ? "type-sale" : "type-rent"}`}>
-                        {item.type}
-                      </span>
-                    </td>
+  <span
+    className={`type-tag ${
+      item.listingType === "sale" ? "type-sale" : "type-rent"
+    }`}
+  >
+    {item.listingType === "sale"
+      ? "For Sale"
+      : item.listingType === "rent"
+      ? "For Rent"
+      : "—"}
+  </span>
+</td>
                     <td>{item.price}</td>
                     <td>
                       <span
@@ -666,13 +706,16 @@ if (loading) {
 </button>
 
                       <button
-                        className="icon-action delete-listing-btn"
-                        aria-label="Delete listing"
-                        onClick={() => handleDeleteListing(item._id || item.id)}
-                        style={{ background: "none", border: "none", cursor: "pointer", color: "#f26d6d", display: "flex", alignItems: "center" }}>
-                        <FaTrash />
-                      </button>
-
+  type="button"
+  className="icon-action delete-listing-btn"
+  aria-label="Delete listing"
+  onClick={(e) => {
+    e.stopPropagation();
+    handleDeleteListing(item._id || item.id);
+  }}
+>
+  <FaTrash />
+</button>
                       <button
                         className="icon-action"
                         aria-label="More"
@@ -822,9 +865,10 @@ if (loading) {
 
       {rejectionReason.trim().length > 0 && !isReasonValid && (
         <p className="reject-reason-error">
-          Reason must be between 2 and 10 characters.
+             Please enter a valid rejection reason.
         </p>
       )}
+      
 
       <div className="reject-modal-actions">
         <button
@@ -853,13 +897,173 @@ if (loading) {
           {rejecting ? "Rejecting..." : "Confirm Reject"}
         </button>
       </div>
+      
+      
 
     </div>
   </div>
 )}
+{rejectModal.open && (
+  <div className="reject-modal-overlay">
+    <div className="reject-modal">
+
+      <button
+        type="button"
+        className="reject-modal-close"
+        onClick={() => {
+          if (rejecting) return;
+
+          setRejectModal({
+            open: false,
+            id: null,
+            type: null,
+          });
+
+          setRejectionReason("");
+        }}
+      >
+        ✕
+      </button>
+
+      <div className="reject-modal-icon">
+        <FaFileAlt />
+      </div>
+
+      <h2>Reject Request</h2>
+
+      <p className="reject-modal-subtitle">
+        Please provide a reason for rejecting this{" "}
+        {rejectModal.type === "listing"
+          ? "property listing"
+          : "seller request"}.
+      </p>
+
+      <textarea
+        className={`reject-reason-input ${
+          rejectionReason.length > 0 && !isReasonValid
+            ? "input-invalid"
+            : rejectionReason.length > 0 && isReasonValid
+            ? "input-valid"
+            : ""
+        }`}
+        placeholder="Enter rejection reason..."
+        value={rejectionReason}
+        onChange={(e) => setRejectionReason(e.target.value)}
+        disabled={rejecting}
+        rows={5}
+      />
+
+      {rejectionReason.trim().length > 0 && !isReasonValid && (
+        <p className="reject-reason-error">
+          Please enter a valid rejection reason.
+        </p>
+      )}
+
+      <div className="reject-modal-actions">
+
+        <button
+          type="button"
+          className="reject-cancel-btn"
+          disabled={rejecting}
+          onClick={() => {
+            setRejectModal({
+              open: false,
+              id: null,
+              type: null,
+            });
+
+            setRejectionReason("");
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="reject-confirm-btn"
+          disabled={!isReasonValid || rejecting}
+          onClick={confirmReject}
+        >
+          {rejecting ? "Rejecting..." : "Confirm Reject"}
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
+
+{/* DELETE MODAL */}
+{deleteModal.open && (
+  <div className="reject-modal-overlay">
+    <div className="reject-modal">
+
+      <button
+        type="button"
+        className="reject-modal-close"
+        disabled={deleting}
+        onClick={() => {
+          if (deleting) return;
+
+          setDeleteModal({
+            open: false,
+            id: null,
+            type: null,
+          });
+        }}
+      >
+        ✕
+      </button>
+
+      <div className="reject-modal-icon delete-modal-icon">
+        <FaTrash />
+      </div>
+
+      <h2>  {deleteModal.type === "user" ? "Delete User" : "Delete Property"}</h2>
+
+      <p className="reject-modal-subtitle">
+        Are you sure you want to delete this{" "}
+        {deleteModal.type === "user" ? "user" : "property"}?
+        <br />
+        This action cannot be undone.
+      </p>
+
+      <div className="reject-modal-actions">
+
+        <button
+          type="button"
+          className="reject-cancel-btn"
+          disabled={deleting}
+          onClick={() => {
+            setDeleteModal({
+              open: false,
+              id: null,
+              type: null,
+            });
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          className="delete-confirm-btn"
+          disabled={deleting}
+          onClick={confirmDelete}
+        >
+          {deleting ? "Deleting..." : "Delete"}
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   );
+     
 }
 
 export default Dashboard;

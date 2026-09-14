@@ -527,7 +527,18 @@
   color: var(--nova-gold);
   background-color: rgba(245, 179, 1, 0.08);
 }
+/* ---------------- DELETE LISTING BUTTON ---------------- */
 
+.delete-listing-btn {
+  color: var(--nova-red);
+  border-color: var(--nova-border);
+}
+
+.delete-listing-btn:hover {
+  color: var(--nova-red);
+  border-color: var(--nova-red);
+  background-color: rgba(242, 109, 109, 0.08);
+}
 
 
 /* ---------------- THIN SCROLLBAR (for View All expand) ---------------- */
@@ -663,10 +674,7 @@
 .user-modal p strong {
   color: var(--nova-text);
 }
-/* =========================
-   Admin Dashboard Loading
-========================= */
-
+/* ================================== */
 .admin-loading {
   min-height: 100vh;
   width: 100%;
@@ -898,7 +906,22 @@
   display: block;
   flex-shrink: 0;
 }
+/* ============================== */
+.delete-listing-btn {
+  background: none !important;
+  border: none !important;
+  color: #f26d6d !important;
+  cursor: pointer !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
 
+.delete-listing-btn:hover {
+  color: #ff4d4d !important;
+  transform: scale(1.1);
+}
 /* Responsive */
 
 @media (max-width: 500px) {
@@ -916,21 +939,3 @@
   }
 }
 
-/* Responsive */
-
-@media (max-width: 600px) {
-  .admin-loading-logo {
-    width: 60px;
-    height: 60px;
-    font-size: 24px;
-  }
-
-  .admin-loading-content h2 {
-    font-size: 18px;
-    letter-spacing: 2px;
-  }
-
-  .admin-loading-content p {
-    font-size: 13px;
-  }
-}

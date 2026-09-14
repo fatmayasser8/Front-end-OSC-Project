@@ -44,18 +44,6 @@ const profileImage = user?.userImage || userImg;
         <span>{showMap ? "Hide Map" : "Show Map"}</span>
       </button>
 
-          <i
-            className="
-              fa-solid fa-bell
-              cursor-pointer
-              text-base text-[#d4af37]
-              transition duration-300
-              hover:text-[#f0d477]
-              sm:text-lg
-              md:text-[21px]
-            "
-          ></i>
-
 <button
   type="button"
   onClick={() => navigate("/profile")}
