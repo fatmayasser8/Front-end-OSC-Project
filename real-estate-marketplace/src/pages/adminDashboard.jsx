@@ -274,7 +274,7 @@ async function confirmDelete() {
   async function loadListings() {
     try {
       setListingsLoading(true);
-      const filters = listingsSearch ? { limit: 20, search: listingsSearch } : { limit: 20 };
+      const filters = listingsSearch ? { limit: 400, search: listingsSearch } : { limit: 400 };
       const listingsRes = await getAllListings(filters);
       const arr = unwrapArray(listingsRes);
 
@@ -325,16 +325,44 @@ function handleReject(id) {
     { month: "Current", users: totalUsersCount, sellers: sellersCount, buyers: buyersCount },
   ];
 
-  const listingsArray = Array.isArray(listings) ? listings : [];
-  const forSaleCount = listingsArray.filter(item => item.type === "For Sale" || item.status === "approved").length;
-  const soldCount = listingsArray.filter(item => item.status === "sold").length;
-  const pendingCount = listingsArray.filter(item => item.status === "pending").length;
-  const totalListingsCount = stats?.totalListings ?? listingsArray.length;
+const listingsArray = Array.isArray(listings) ? listings : [];
+
+const totalListingsCount = stats?.totalListings ?? listingsArray.length;
+
+const forSaleCount = listingsArray.filter(
+  item =>
+    item.listingType === "sale" &&
+    item.isAvailable === true
+).length;
+
+const soldCount = listingsArray.filter(
+  item =>
+    item.listingType === "sale" &&
+    item.isAvailable === false
+).length;
+
+const forRentCount = listingsArray.filter(
+  item =>
+    item.listingType === "rent" &&
+    item.isAvailable === true
+).length;
+
+const rentedCount = listingsArray.filter(
+  item =>
+    item.listingType === "rent" &&
+    item.isAvailable === false
+).length;
+
+const pendingCount = listingsArray.filter(
+  item => item.status === "pending"
+).length;
 
   const propertyStatusData = [
-    { name: "For Sale", value: forSaleCount, color: "#f5b301" },
-    { name: "Sold", value: soldCount, color: "#3a86ff" },
-    { name: "Pending", value: pendingCount, color: "#f77f00" },
+  { name: "For Sale", value: forSaleCount, color: "#f5b301" },
+  { name: "Sold", value: soldCount, color: "#3a86ff" },
+  { name: "For Rent", value: forRentCount, color: "#6c5ce7" },
+  { name: "Rented", value: rentedCount, color: "#00b894" },
+  { name: "Pending", value: pendingCount, color: "#f77f00" },
   ];
 
   const statCards = [

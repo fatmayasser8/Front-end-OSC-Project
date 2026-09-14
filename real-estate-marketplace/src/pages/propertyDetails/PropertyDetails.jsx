@@ -85,8 +85,6 @@ const handleSave = async () => {
 
     const result = await response.json();
 
-    console.log("Save response:", result);
-
     if (!response.ok) {
       throw new Error(
         result.message || "Failed to update favorite"
@@ -125,11 +123,6 @@ const handleShare = async () => {
   }
 };
 const handleWhatsAppMessage = () => {
-  if (!isAuthenticated()) {
-    showLoginPrompt("message the seller");
-    return;
-  }
-
   const rawPhone = seller?.phoneNumber || property?.owner?.phone || "201116440515";
   let cleanPhone = (typeof rawPhone === "string" ? rawPhone : String(rawPhone)).replace(/\D/g, "");
 
@@ -158,10 +151,6 @@ Is it still available?`;
   window.open(whatsappUrl, "_blank");
 };
 const handleContactSeller = () => {
-  if (!isAuthenticated()) {
-    showLoginPrompt("contact the seller");
-    return;
-  }
 
   if (!seller?.phoneNumber) {
     alert("Seller phone number is not available");
@@ -184,21 +173,15 @@ const handleDirections = () => {
 
 useEffect(() => {
   const fetchProperty = async () => {
-        console.log("DETAIL PAGE ID:", id);
     try {
       
       const response = await apiFetch(
         `https://real-estate-market-place-api.vercel.app/api/v1/listings/${id}`
       );
 
-      console.log("DETAIL STATUS:", response.status);
       const result = await response.json();
 
-      console.log("DETAIL RESPONSE:", result);
-      console.log("PROPERTY ID:", id);
-      console.log("PROPERTY RESPONSE:", result);
-      console.log("STATUS:", response.status);
-
+     
       if (!response.ok) {
         if (result.message?.toLowerCase().includes("not approved")) {
           setErrorType("not_approved");
@@ -264,8 +247,7 @@ useEffect(() => {
           ? property.owner._id || property.owner.id
           : property.owner;
 
-      console.log("SELLER OWNER:", property.owner);
-      console.log("SELLER OWNER ID:", ownerId);
+     
 
       if (!ownerId) {
         console.error("Seller ID not found");
@@ -281,7 +263,6 @@ useEffect(() => {
 
       const result = await response.json();
 
-      console.log("SELLER PROFILE:", result);
 
       if (!response.ok) {
         throw new Error(result.message || "Failed to load seller");
