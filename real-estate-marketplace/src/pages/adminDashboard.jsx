@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaArrowLeft,  FaTrash, FaUsers,FaHome,FaStore,FaUserTie, FaFileAlt, FaSearch, FaBell, FaEye, FaEllipsisH,} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { FaArrowLeft, FaTrash, FaUsers, FaHome, FaStore, FaUserTie, FaFileAlt, FaSearch, FaEye, FaEllipsisH } from "react-icons/fa";
 import {AreaChart, Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer, PieChart,Pie,Cell,} from "recharts";
 import "../styles/adminDashboard.css";
 import { getAdminDashboardStats, getAllListings, getAllUsers,getUserById, deleteUser, approveListing, rejectListing,deleteListing,getAllRequests, approveRequest,rejectRequest,} from "../services/adminService";
@@ -47,18 +47,57 @@ function unwrapObject(res) {
   }
   return res;
 }
+
+// Reads one page of results plus its pagination metadata (total pages),
+// regardless of whether the API wraps it as { data: { data: [...], totalPages } }
+// or returns a flat array with no pagination info.
+function unwrapPage(res) {
+  const container = res && typeof res === "object" && res.data && typeof res.data === "object"
+    ? res.data
+    : res;
+
+  if (container && typeof container === "object" && Array.isArray(container.data)) {
+    return {
+      items: container.data,
+      totalPages: Number(container.totalPages) || 1,
+      page: Number(container.page) || 1,
+    };
+  }
+
+  return { items: unwrapArray(res), totalPages: 1, page: 1 };
+}
+
+const MAX_PAGES_SAFETY = 30; // hard cap so a backend bug can never trigger an infinite fetch loop
+
+// Fetches every page from a paginated admin endpoint (users/listings are capped
+// at 50 items per request server-side) and returns the combined list.
+async function fetchAllPages(fetchFn, baseFilters = {}) {
+  let page = 1;
+  let totalPages = 1;
+  let allItems = [];
+
+  do {
+    const res = await fetchFn({ ...baseFilters, limit: 50, page });
+    const { items, totalPages: tp } = unwrapPage(res);
+    allItems = allItems.concat(items);
+    totalPages = tp;
+    page += 1;
+  } while (page <= totalPages && page <= MAX_PAGES_SAFETY);
+
+  return allItems;
+}
 function Dashboard() {
   const navigate = useNavigate();
 
-useEffect(() => {
-  const token =
-    localStorage.getItem("accessToken") ||
-    sessionStorage.getItem("accessToken");
+  useEffect(() => {
+    const token =
+      localStorage.getItem("accessToken") ||
+      sessionStorage.getItem("accessToken");
 
-  if (!token) {
-    navigate("/auth/login");
-  }
-}, [navigate]);
+    if (!token) {
+      navigate("/auth/login");
+    }
+  }, [navigate]);
   const [stats, setStats] = useState(null);
   const [listings, setListings] = useState([]);
   const [users, setUsers] = useState([]);
@@ -75,22 +114,21 @@ useEffect(() => {
   const [requests, setRequests] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(true);
   const [openRequestMenuId, setOpenRequestMenuId] = useState(null);
-  const [selectedRequest, setSelectedRequest] = useState(null); 
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [rejectModal, setRejectModal] = useState({
-  open: false,
-  id: null,
-  type: null,
-});
+    open: false,
+    id: null,
+    type: null,
+  });
 
-const [rejectionReason, setRejectionReason] = useState("");
-const [rejecting, setRejecting] = useState(false);
-const [deleteModal, setDeleteModal] = useState({
-  open: false,
-  id: null,
-  type: null,
-});
-const [deleting, setDeleting] = useState(false);
-
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [rejecting, setRejecting] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    id: null,
+    type: null,
+  });
+  const [deleting, setDeleting] = useState(false);
 
   async function loadRequests() {
     try {
@@ -99,7 +137,7 @@ const [deleting, setDeleting] = useState(false);
       const arr = unwrapArray(res);
       setRequests(arr);
     } catch (err) {
-      console.error("Failed to load requests:", err);
+      // failed to load requests
     } finally {
       setRequestsLoading(false);
     }
@@ -111,136 +149,117 @@ const [deleting, setDeleting] = useState(false);
       setOpenRequestMenuId(null);
       await loadRequests();
     } catch (err) {
-showAlert(err.message || "Couldn't approve this request.");
+      showAlert(err.message || "Couldn't approve this request.", "error");
     }
   }
 
-function handleRejectRequest(id) {
-  setOpenRequestMenuId(null);
-
-  setRejectionReason("");
-
-  setRejectModal({
-    open: true,
-    id,
-    type: "request",
-  });
-}
-const reasonLength = rejectionReason.trim().length;
-
-const isReasonValid = reasonLength >= 2 ;
-async function confirmReject() {
-  if (!isReasonValid || !rejectModal.id) {
-    return;
-  }
-
-  try {
-    setRejecting(true);
-    setActionError("");
-
-    if (rejectModal.type === "request") {
-      await rejectRequest(
-        rejectModal.id,
-        rejectionReason.trim()
-      );
-
-      await loadRequests();
-    } else if (rejectModal.type === "listing") {
-      await rejectListing(
-        rejectModal.id,
-        rejectionReason.trim()
-      );
-
-      await loadListings();
-    }
-
-    setRejectModal({
-      open: false,
-      id: null,
-      type: null,
-    });
-
+  function handleRejectRequest(id) {
+    setOpenRequestMenuId(null);
     setRejectionReason("");
-  } catch (err) {
-    console.error("Reject failed:", err);
-
-    setActionError(
-      err.message || "Couldn't reject this item. Please try again."
-    );
-  } finally {
-    setRejecting(false);
+    setRejectModal({
+      open: true,
+      id,
+      type: "request",
+    });
   }
-}
+
+  const reasonLength = rejectionReason.trim().length;
+  const isReasonValid = reasonLength >= 2;
+
+  async function confirmReject() {
+    if (!isReasonValid || !rejectModal.id) {
+      return;
+    }
+
+    try {
+      setRejecting(true);
+      setActionError("");
+
+      if (rejectModal.type === "request") {
+        await rejectRequest(rejectModal.id, rejectionReason.trim());
+        await loadRequests();
+      } else if (rejectModal.type === "listing") {
+        await rejectListing(rejectModal.id, rejectionReason.trim());
+        await loadListings();
+      }
+
+      setRejectModal({
+        open: false,
+        id: null,
+        type: null,
+      });
+
+      setRejectionReason("");
+    } catch (err) {
+      setActionError(
+        err.message || "Couldn't reject this item. Please try again."
+      );
+    } finally {
+      setRejecting(false);
+    }
+  }
+
   async function handleViewUser(id) {
     try {
       setUserDetailsLoading(true);
       const data = await getUserById(id);
       setSelectedUser(unwrapObject(data));
     } catch (err) {
-  console.error("Failed to load user details:", err);
-
-  showAlert(
-    err.message || "Couldn't load this user's details.",
-    "error"
-  );
-}finally {
+      showAlert(err.message || "Couldn't load this user's details.", "error");
+    } finally {
       setUserDetailsLoading(false);
     }
   }
 
   function handleDeleteUser(u) {
-  const id = u._id || u.id;
-
-  setDeleteModal({
-    open: true,
-    id,
-    type: "user",
-  });
-}
-
- function handleDeleteListing(id) {
- 
-
-  setDeleteModal({
-    open: true,
-    id,
-    type: "listing",
-  });
-}
-async function confirmDelete() {
-  if (!deleteModal.id) return;
-
-  try {
-    setDeleting(true);
-    setActionError("");
-
-    if (deleteModal.type === "listing") {
-      await deleteListing(deleteModal.id);
-      await loadListings();
-    }
-
-    if (deleteModal.type === "user") {
-      await deleteUser(deleteModal.id);
-
-      const refreshed = await getAllUsers({ limit: 20 });
-      setUsers(unwrapArray(refreshed));
-    }
-
+    const id = u._id || u.id;
     setDeleteModal({
-      open: false,
-      id: null,
-      type: null,
+      open: true,
+      id,
+      type: "user",
     });
-  } catch (err) {
-    console.error("Delete failed:", err);
-
-    setActionError(
-      err.message || "Couldn't delete this item. Please try again."
-    );
-  } finally {
-    setDeleting(false);
   }
-}
+
+  function handleDeleteListing(id) {
+    setDeleteModal({
+      open: true,
+      id,
+      type: "listing",
+    });
+  }
+
+  async function confirmDelete() {
+    if (!deleteModal.id) return;
+
+    try {
+      setDeleting(true);
+      setActionError("");
+
+      if (deleteModal.type === "listing") {
+        await deleteListing(deleteModal.id);
+        await loadListings();
+      }
+
+      if (deleteModal.type === "user") {
+        await deleteUser(deleteModal.id);
+        const refreshedUsers = await fetchAllPages(getAllUsers);
+        setUsers(refreshedUsers);
+      }
+
+      setDeleteModal({
+        open: false,
+        id: null,
+        type: null,
+      });
+    } catch (err) {
+      setActionError(
+        err.message || "Couldn't delete this item. Please try again."
+      );
+    } finally {
+      setDeleting(false);
+    }
+  }
+
   useEffect(() => {
     let isMounted = true;
 
@@ -249,15 +268,14 @@ async function confirmDelete() {
         setLoading(true);
         setError(null);
 
-        const [statsRes, usersRes] = await Promise.all([
+        const [statsRes, allUsers] = await Promise.all([
           getAdminDashboardStats(),
-          getAllUsers(),
+          fetchAllPages(getAllUsers),
         ]);
         if (!isMounted) return;
         setStats(unwrapObject(statsRes));
-        setUsers(unwrapArray(usersRes));
+        setUsers(allUsers);
       } catch (err) {
-        console.error("Failed to load admin dashboard:", err);
         if (isMounted) setError("Couldn't load dashboard data. Please try again.");
       } finally {
         if (isMounted) setLoading(false);
@@ -274,13 +292,11 @@ async function confirmDelete() {
   async function loadListings() {
     try {
       setListingsLoading(true);
-      const filters = listingsSearch ? { limit: 400, search: listingsSearch } : { limit: 400 };
-      const listingsRes = await getAllListings(filters);
-      const arr = unwrapArray(listingsRes);
-
-setListings(arr);
+      const baseFilters = listingsSearch ? { search: listingsSearch } : {};
+      const allListings = await fetchAllPages(getAllListings, baseFilters);
+      setListings(allListings);
     } catch (err) {
-      console.error("Failed to load listings:", err);
+      // failed to load listings
     } finally {
       setListingsLoading(false);
     }
@@ -298,23 +314,32 @@ setListings(arr);
       setOpenMenuId(null);
       await loadListings();
     } catch (err) {
-      console.error("Approve failed:", err);
       setActionError("Couldn't approve this listing. Please try again.");
     }
   }
 
-function handleReject(id) {
-  setOpenMenuId(null);
+  function handleReject(id) {
+    setOpenMenuId(null);
+    setRejectionReason("");
+    setRejectModal({
+      open: true,
+      id,
+      type: "listing",
+    });
+  }
+  // 🔹 Helper function to extract user details for seller requests
+  const getRequesterDetails = (requester) => {
+    // لو الباك إند باعتها Object جاهز أو باعتها ID صافي
+    const id = typeof requester === "object" ? requester?._id : requester;
+    const user = users.find((u) => u._id === id);
 
-  setRejectionReason("");
-
-  setRejectModal({
-    open: true,
-    id,
-    type: "listing",
-  });
-}
-
+    return {
+      fullName: user?.fullName || "N/A",
+      email: user?.email || "N/A",
+      phoneNumber: user?.phoneNumber || "N/A",
+      userImage: user?.userImage || null,
+    };
+  };
   const totalUsersCount = stats?.totalUsers ?? (Array.isArray(users) ? users.length : 0);
   const sellersCount = stats?.totalSellers ?? (Array.isArray(users) ? users.filter(u => u.role === "seller").length : 0);
   const buyersCount = stats?.buyers ?? Math.max(0, totalUsersCount - sellersCount);
@@ -325,44 +350,36 @@ function handleReject(id) {
     { month: "Current", users: totalUsersCount, sellers: sellersCount, buyers: buyersCount },
   ];
 
-const listingsArray = Array.isArray(listings) ? listings : [];
+  const listingsArray = Array.isArray(listings) ? listings : [];
 
-const totalListingsCount = stats?.totalListings ?? listingsArray.length;
+  const totalListingsCount = stats?.totalListings ?? listingsArray.length;
 
-const forSaleCount = listingsArray.filter(
-  item =>
-    item.listingType === "sale" &&
-    item.isAvailable === true
-).length;
+  const forSaleCount = listingsArray.filter(
+    item => item.listingType === "sale" && item.isAvailable === true
+  ).length;
 
-const soldCount = listingsArray.filter(
-  item =>
-    item.listingType === "sale" &&
-    item.isAvailable === false
-).length;
+  const soldCount = listingsArray.filter(
+    item => item.listingType === "sale" && item.isAvailable === false
+  ).length;
 
-const forRentCount = listingsArray.filter(
-  item =>
-    item.listingType === "rent" &&
-    item.isAvailable === true
-).length;
+  const forRentCount = listingsArray.filter(
+    item => item.listingType === "rent" && item.isAvailable === true
+  ).length;
 
-const rentedCount = listingsArray.filter(
-  item =>
-    item.listingType === "rent" &&
-    item.isAvailable === false
-).length;
+  const rentedCount = listingsArray.filter(
+    item => item.listingType === "rent" && item.isAvailable === false
+  ).length;
 
-const pendingCount = listingsArray.filter(
-  item => item.status === "pending"
-).length;
+  const pendingCount = listingsArray.filter(
+    item => item.status === "pending"
+  ).length;
 
   const propertyStatusData = [
-  { name: "For Sale", value: forSaleCount, color: "#f5b301" },
-  { name: "Sold", value: soldCount, color: "#3a86ff" },
-  { name: "For Rent", value: forRentCount, color: "#6c5ce7" },
-  { name: "Rented", value: rentedCount, color: "#00b894" },
-  { name: "Pending", value: pendingCount, color: "#f77f00" },
+    { name: "For Sale", value: forSaleCount, color: "#f5b301" },
+    { name: "Sold", value: soldCount, color: "#3a86ff" },
+    { name: "For Rent", value: forRentCount, color: "#6c5ce7" },
+    { name: "Rented", value: rentedCount, color: "#00b894" },
+    { name: "Pending", value: pendingCount, color: "#f77f00" },
   ];
 
   const statCards = [
@@ -370,26 +387,26 @@ const pendingCount = listingsArray.filter(
     { icon: <FaHome />, label: "Total Properties", value: totalListingsCount, tone: "blue" },
     { icon: <FaStore />, label: "Sellers", value: sellersCount, tone: "green" },
     { icon: <FaUserTie />, label: "Buyers", value: buyersCount, tone: "red" },
-    {icon: <FaFileAlt />,label: "Pending Requests",value: pendingRequestsCount,tone: "purple"},
+    { icon: <FaFileAlt />, label: "Pending Requests", value: pendingRequestsCount, tone: "purple" },
   ];
 
-if (loading) {
-  return (
-    <div className="admin-loading">
-      <div className="admin-loading-content">
-        <div className="admin-loading-logo">
-          <FaHome />
+  if (loading) {
+    return (
+      <div className="admin-loading">
+        <div className="admin-loading-content">
+          <div className="admin-loading-logo">
+            <FaHome />
+          </div>
+
+          <h2>NOVA ESTATES</h2>
+
+          <div className="admin-spinner"></div>
+
+          <p>Loading your dashboard...</p>
         </div>
-
-        <h2>NOVA ESTATES</h2>
-
-        <div className="admin-spinner"></div>
-
-        <p>Loading your dashboard...</p>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
   if (error) {
     return (
@@ -405,24 +422,24 @@ if (loading) {
     <div className="dashboard">
       <div className="main-content full-width">
         <div className="dashboard-top-row">
-<button
-  type="button"
-  className="back-to-home"
-  onClick={() => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
+          <button
+            type="button"
+            className="back-to-home"
+            onClick={() => {
+              localStorage.removeItem("accessToken");
+              localStorage.removeItem("refreshToken");
+              localStorage.removeItem("user");
 
-    sessionStorage.removeItem("accessToken");
-    sessionStorage.removeItem("refreshToken");
-    sessionStorage.removeItem("user");
+              sessionStorage.removeItem("accessToken");
+              sessionStorage.removeItem("refreshToken");
+              sessionStorage.removeItem("user");
 
-    navigate("/src/pages/Home/home.jsx");
-  }}
->
-  <FaArrowLeft />
-  <span>Back to Home</span>
-</button>
+              navigate("/home");
+            }}
+          >
+            <FaArrowLeft />
+            <span>Back to Home</span>
+          </button>
 
           <div className="topbar-right">
             <div className="admin-pill">
@@ -455,11 +472,11 @@ if (loading) {
         </div>
 
         <div className="charts-row">
-         <div className="chart-card growth-card" style={{ minHeight: "260px" }}>
+          <div className="chart-card growth-card" style={{ minHeight: "260px" }}>
             <div className="card-header-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 15 }}>
               <h2 style={{ margin: 0 }}>Users Growth (Sellers vs Buyers)</h2>
             </div>
-            
+
             <div style={{ width: "100%", height: "200px" }}>
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={growthData}>
@@ -487,7 +504,7 @@ if (loading) {
             </div>
           </div>
 
-         <div className="chart-card roles-card">
+          <div className="chart-card roles-card">
             <h2>Property Status</h2>
             <div className="donut-wrapper">
               <ResponsiveContainer width={140} height={140}>
@@ -557,9 +574,9 @@ if (loading) {
                   </span>
                   <span className={`role-tag role-${(u.role || u.userRole || "").toLowerCase()}`}>{u.role || u.userRole}</span>
                   <button
-                     className="icon-action delete-user-btn"
-                     aria-label="Delete user"
-                     onClick={() => handleDeleteUser(u)}
+                    className="icon-action delete-user-btn"
+                    aria-label="Delete user"
+                    onClick={() => handleDeleteUser(u)}
                   >
                     <FaTrash />
                   </button>
@@ -569,7 +586,7 @@ if (loading) {
             </ul>
           </div>
         </div>
-            
+
         <div className="listings-card">
           <div className="card-header-row">
             <h2>Seller Verification Requests</h2>
@@ -581,54 +598,52 @@ if (loading) {
               <li style={{ color: "#9b9b9b", fontSize: 12 }}>No requests yet.</li>
             )}
             {requests.map((r) => (
-  <li key={r._id || r.id} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-    <span className="user-name">
-      {r.fullName || r.user?.fullName || r.name || `Request #${(r._id || r.id || "").toString().slice(-6)}`}
-    </span>
-    
-    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <span className={`status-tag ${r.status === "approved" ? "status-active" : r.status === "rejected" ? "status-rejected" : "status-pending"}`}>
-        {r.status}
-      </span>
+              <li key={r._id || r.id} style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span className="user-name">
+                  {r.fullName || r.user?.fullName || r.name || `Request #${(r._id || r.id || "").toString().slice(-6)}`}
+                </span>
 
-      {/* زر العين الجديد */}
-      <button
-        className="icon-action"
-        aria-label="View request details"
-        title="View request details"
-        onClick={() => setSelectedRequest(r)}
-      >
-        <FaEye />
-      </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span className={`status-tag ${r.status === "approved" ? "status-active" : r.status === "rejected" ? "status-rejected" : "status-pending"}`}>
+                    {r.status}
+                  </span>
 
-      <button
-        className="icon-action"
-        aria-label="More"
-        onClick={() =>
-          setOpenRequestMenuId((current) => (current === (r._id || r.id) ? null : r._id || r.id))
-        }
-      >
-        <FaEllipsisH />
-      </button>
-    </div>
+                  <button
+                    className="icon-action"
+                    aria-label="View request details"
+                    title="View request details"
+                    onClick={() => setSelectedRequest(r)}
+                  >
+                    <FaEye />
+                  </button>
 
-    {openRequestMenuId === (r._id || r.id) && (
-      <div style={{ position: "absolute", top: "100%", right: 0, background: "#1a1a1a", border: "1px solid #2b2b2b", borderRadius: 8, zIndex: 10, minWidth: 120 }}>
-        {r.status !== "approved" && (
-          <button onClick={() => handleApproveRequest(r._id || r.id)} style={{ display: "block", width: "100%", padding: "8px 12px", background: "none", border: "none", color: "#35c17a", fontSize: 12, textAlign: "left", cursor: "pointer" }}>
-            Approve
-          </button>
-        )}
-        {r.status !== "rejected" && (
-          <button onClick={() => handleRejectRequest(r._id || r.id)} style={{ display: "block", width: "100%", padding: "8px 12px", background: "none", border: "none", color: "#f26d6d", fontSize: 12, textAlign: "left", cursor: "pointer" }}>
-            Reject
-          </button>
-        )}
-      </div>
-    )}
-  </li>
-))}
-           
+                  <button
+                    className="icon-action"
+                    aria-label="More"
+                    onClick={() =>
+                      setOpenRequestMenuId((current) => (current === (r._id || r.id) ? null : r._id || r.id))
+                    }
+                  >
+                    <FaEllipsisH />
+                  </button>
+                </div>
+
+                {openRequestMenuId === (r._id || r.id) && (
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "#1a1a1a", border: "1px solid #2b2b2b", borderRadius: 8, zIndex: 10, minWidth: 120 }}>
+                    {r.status !== "approved" && (
+                      <button onClick={() => handleApproveRequest(r._id || r.id)} style={{ display: "block", width: "100%", padding: "8px 12px", background: "none", border: "none", color: "#35c17a", fontSize: 12, textAlign: "left", cursor: "pointer" }}>
+                        Approve
+                      </button>
+                    )}
+                    {r.status !== "rejected" && (
+                      <button onClick={() => handleRejectRequest(r._id || r.id)} style={{ display: "block", width: "100%", padding: "8px 12px", background: "none", border: "none", color: "#f26d6d", fontSize: 12, textAlign: "left", cursor: "pointer" }}>
+                        Reject
+                      </button>
+                    )}
+                  </div>
+                )}
+              </li>
+            ))}
           </ul>
         </div>
 
@@ -684,15 +699,15 @@ if (loading) {
                 {(showAllListings ? listings : (Array.isArray(listings) ? listings : []).slice(0, 4)).map((item) => (
                   <tr key={item._id || item.id}>
                     <td>
-<img
-  className="property-table-image"
-  src={item.images?.[0] || villa1}
-  alt={item.title || "Property"}
-  onError={(e) => {
-    e.currentTarget.onerror = null;
-    e.currentTarget.src = villa1;
-  }}
-/>
+                      <img
+                        className="property-table-image"
+                        src={item.images?.[0] || villa1}
+                        alt={item.title || "Property"}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = villa1;
+                        }}
+                      />
                     </td>
                     <td>{item.title}</td>
                     <td>
@@ -701,18 +716,18 @@ if (loading) {
                         : item.location?.address || item.location?.city || "—"}
                     </td>
                     <td>
-  <span
-    className={`type-tag ${
-      item.listingType === "sale" ? "type-sale" : "type-rent"
-    }`}
-  >
-    {item.listingType === "sale"
-      ? "For Sale"
-      : item.listingType === "rent"
-      ? "For Rent"
-      : "—"}
-  </span>
-</td>
+                      <span
+                        className={`type-tag ${
+                          item.listingType === "sale" ? "type-sale" : "type-rent"
+                        }`}
+                      >
+                        {item.listingType === "sale"
+                          ? "For Sale"
+                          : item.listingType === "rent"
+                          ? "For Rent"
+                          : "—"}
+                      </span>
+                    </td>
                     <td>{item.price}</td>
                     <td>
                       <span
@@ -728,29 +743,29 @@ if (loading) {
                       </span>
                     </td>
                     <td className="actions-cell" style={{ position: "relative", display: "flex", gap: "8px", alignItems: "center" }}>
-<button
-  className="icon-action"
-  aria-label="View"
-  onClick={() =>
-    navigate(`/property/${item._id || item.id}`, {
-      state: { from: "admin" },
-    })
-  }
->
-  <FaEye />
-</button>
+                      <button
+                        className="icon-action"
+                        aria-label="View"
+                        onClick={() =>
+                          navigate(`/property/${item._id || item.id}`, {
+                            state: { from: "admin" },
+                          })
+                        }
+                      >
+                        <FaEye />
+                      </button>
 
                       <button
-  type="button"
-  className="icon-action delete-listing-btn"
-  aria-label="Delete listing"
-  onClick={(e) => {
-    e.stopPropagation();
-    handleDeleteListing(item._id || item.id);
-  }}
->
-  <FaTrash />
-</button>
+                        type="button"
+                        className="icon-action delete-listing-btn"
+                        aria-label="Delete listing"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteListing(item._id || item.id);
+                        }}
+                      >
+                        <FaTrash />
+                      </button>
                       <button
                         className="icon-action"
                         aria-label="More"
@@ -827,7 +842,7 @@ if (loading) {
             </table>
           </div>
         </div>
-        
+
         {(selectedUser || userDetailsLoading) && (
           <div className="user-modal-overlay" onClick={() => setSelectedUser(null)}>
             <div className="user-modal" onClick={(e) => e.stopPropagation()}>
@@ -848,295 +863,224 @@ if (loading) {
               )}
             </div>
           </div>
-        )} 
-        {/* REQUEST DETAILS MODAL */}
-{selectedRequest && (
-  <div className="user-modal-overlay" onClick={() => setSelectedRequest(null)}>
-    <div className="user-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px", width: "90%" }}>
-      <button className="user-modal-close" onClick={() => setSelectedRequest(null)}>✕</button>
-      <h2 style={{ marginBottom: "15px", color: "#c9a24b" }}>Verification Request Details</h2>
-      
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px", color: "#ddd" }}>
-        <p><strong>Name:</strong> {selectedRequest.fullName || selectedRequest.user?.fullName || selectedRequest.name || "—"}</p>
-        <p><strong>Email:</strong> {selectedRequest.email || selectedRequest.user?.email || "—"}</p>
-        <p><strong>Phone:</strong> {selectedRequest.phone || selectedRequest.phoneNumber || selectedRequest.user?.phoneNumber || "—"}</p>
-        <p><strong>Status:</strong> <span style={{ textTransform: "capitalize", color: selectedRequest.status === "approved" ? "#35c17a" : selectedRequest.status === "rejected" ? "#f26d6d" : "#f5b301" }}>{selectedRequest.status}</span></p>
-        
-        {selectedRequest.message && (
-          <p><strong>Message / Note:</strong> {selectedRequest.message}</p>
         )}
 
-        <div style={{ marginTop: "10px" }}>
-          <strong style={{ display: "block", marginBottom: "8px" }}>Submitted Document / ID Image:</strong>
-          {selectedRequest.identityDocument || selectedRequest.image || selectedRequest.document || selectedRequest.file || selectedRequest.idImage ? (
-  <img 
-    src={selectedRequest.identityDocument || selectedRequest.image || selectedRequest.document || selectedRequest.file || selectedRequest.idImage} 
-    alt="Verification Document" 
-    style={{ width: "100%", maxHeight: "250px", objectFit: "contain", borderRadius: "8px", border: "1px solid #2b2b2b", background: "#111" }}
-    onError={(e) => {
-      e.currentTarget.style.display = 'none';
-    }}
-  />
-) : (
-  <p style={{ color: "#9b9b9b", fontStyle: "italic" }}>No image attached to this request.</p>
-)}
+        {/* REQUEST DETAILS MODAL */}
+        {selectedRequest && (() => {
+  const getRequesterDetails = (requesterId) => {
+    if (!requesterId) return null;
+    const id = typeof requesterId === "object" ? requesterId._id : requesterId;
+    return users.find((u) => u._id === id) || null;
+  };
+
+  const user = getRequesterDetails(selectedRequest.requester) || selectedRequest.user || {};
+
+  const name = user.fullName || user.name || selectedRequest.fullName || selectedRequest.name || "—";
+  const email = user.email || selectedRequest.email || "—";
+  const phone = user.phoneNumber || user.phone || selectedRequest.phoneNumber || selectedRequest.phone || "—";
+  const docImg = selectedRequest.identityDocument || selectedRequest.image || selectedRequest.document || selectedRequest.file || selectedRequest.idImage;
+
+  return (
+    <div className="user-modal-overlay" onClick={() => setSelectedRequest(null)}>
+      <div className="user-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px", width: "90%" }}>
+        <button className="user-modal-close" onClick={() => setSelectedRequest(null)}>✕</button>
+        <h2 style={{ marginBottom: "15px", color: "#c9a24b" }}>Verification Request Details</h2>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px", color: "#ddd" }}>
+          <p><strong>Name:</strong> {name}</p>
+          <p><strong>Email:</strong> {email}</p>
+          <p><strong>Phone:</strong> {phone}</p>
+          <p>
+            <strong>Status:</strong>{" "}
+            <span style={{ textTransform: "capitalize", color: selectedRequest.status === "approved" ? "#35c17a" : selectedRequest.status === "rejected" ? "#f26d6d" : "#f5b301" }}>
+              {selectedRequest.status}
+            </span>
+          </p>
+
+          {selectedRequest.message && (
+            <p><strong>Message / Note:</strong> {selectedRequest.message}</p>
+          )}
+
+          <div style={{ marginTop: "10px" }}>
+            <strong style={{ display: "block", marginBottom: "8px" }}>Submitted Document / ID Image:</strong>
+            {docImg ? (
+              <img
+                src={docImg}
+                alt="Verification Document"
+                style={{ width: "100%", maxHeight: "250px", objectFit: "contain", borderRadius: "8px", border: "1px solid #2b2b2b", background: "#111" }}
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+            ) : (
+              <p style={{ color: "#9b9b9b", fontStyle: "italic" }}>No image attached to this request.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  </div>
-)}
+  );
+})()}
+
+        {/* REJECT MODAL */}
         {rejectModal.open && (
-  <div className="reject-modal-overlay">
-    <div className="reject-modal">
+          <div className="reject-modal-overlay">
+            <div className="reject-modal">
 
-      <button
-        type="button"
-        className="reject-modal-close"
-        onClick={() => {
-          if (rejecting) return;
+              <button
+                type="button"
+                className="reject-modal-close"
+                onClick={() => {
+                  if (rejecting) return;
 
-          setRejectModal({
-            open: false,
-            id: null,
-            type: null,
-          });
+                  setRejectModal({
+                    open: false,
+                    id: null,
+                    type: null,
+                  });
 
-          setRejectionReason("");
-        }}
-      >
-        ✕
-      </button>
+                  setRejectionReason("");
+                }}
+              >
+                ✕
+              </button>
 
-      <div className="reject-modal-icon">
-        <FaFileAlt />
-      </div>
+              <div className="reject-modal-icon">
+                <FaFileAlt />
+              </div>
 
-      <h2>Reject Request</h2>
+              <h2>Reject Request</h2>
 
-      <p className="reject-modal-subtitle">
-        Please provide a reason for rejecting this{" "}
-        {rejectModal.type === "listing"
-          ? "property listing"
-          : "seller request"}.
-      </p>
+              <p className="reject-modal-subtitle">
+                Please provide a reason for rejecting this{" "}
+                {rejectModal.type === "listing"
+                  ? "property listing"
+                  : "seller request"}.
+              </p>
 
-      <textarea
-        className={`reject-reason-input ${
-          rejectionReason.length > 0 && !isReasonValid
-            ? "input-invalid"
-            : rejectionReason.length > 0 && isReasonValid
-            ? "input-valid"
-            : ""
-        }`}
-        placeholder="Enter rejection reason..."
-        value={rejectionReason}
-        onChange={(e) => setRejectionReason(e.target.value)}
-        disabled={rejecting}
-        rows={5}
-      />
+              <textarea
+                className={`reject-reason-input ${
+                  rejectionReason.length > 0 && !isReasonValid
+                    ? "input-invalid"
+                    : rejectionReason.length > 0 && isReasonValid
+                    ? "input-valid"
+                    : ""
+                }`}
+                placeholder="Enter rejection reason..."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                disabled={rejecting}
+                rows={5}
+              />
 
-      {rejectionReason.trim().length > 0 && !isReasonValid && (
-        <p className="reject-reason-error">
-             Please enter a valid rejection reason.
-        </p>
-      )}
-      
+              {rejectionReason.trim().length > 0 && !isReasonValid && (
+                <p className="reject-reason-error">
+                  Please enter a valid rejection reason.
+                </p>
+              )}
 
-      <div className="reject-modal-actions">
-        <button
-          type="button"
-          className="reject-cancel-btn"
-          disabled={rejecting}
-          onClick={() => {
-            setRejectModal({
-              open: false,
-              id: null,
-              type: null,
-            });
+              <div className="reject-modal-actions">
+                <button
+                  type="button"
+                  className="reject-cancel-btn"
+                  disabled={rejecting}
+                  onClick={() => {
+                    setRejectModal({
+                      open: false,
+                      id: null,
+                      type: null,
+                    });
 
-            setRejectionReason("");
-          }}
-        >
-          Cancel
-        </button>
+                    setRejectionReason("");
+                  }}
+                >
+                  Cancel
+                </button>
 
-        <button
-          type="button"
-          className="reject-confirm-btn"
-          disabled={!isReasonValid || rejecting}
-          onClick={confirmReject}
-        >
-          {rejecting ? "Rejecting..." : "Confirm Reject"}
-        </button>
-      </div>
-      
-      
+                <button
+                  type="button"
+                  className="reject-confirm-btn"
+                  disabled={!isReasonValid || rejecting}
+                  onClick={confirmReject}
+                >
+                  {rejecting ? "Rejecting..." : "Confirm Reject"}
+                </button>
+              </div>
 
-    </div>
-  </div>
-)}
-{rejectModal.open && (
-  <div className="reject-modal-overlay">
-    <div className="reject-modal">
+            </div>
+          </div>
+        )}
 
-      <button
-        type="button"
-        className="reject-modal-close"
-        onClick={() => {
-          if (rejecting) return;
+        {/* DELETE MODAL */}
+        {deleteModal.open && (
+          <div className="reject-modal-overlay">
+            <div className="reject-modal">
 
-          setRejectModal({
-            open: false,
-            id: null,
-            type: null,
-          });
+              <button
+                type="button"
+                className="reject-modal-close"
+                disabled={deleting}
+                onClick={() => {
+                  if (deleting) return;
 
-          setRejectionReason("");
-        }}
-      >
-        ✕
-      </button>
+                  setDeleteModal({
+                    open: false,
+                    id: null,
+                    type: null,
+                  });
+                }}
+              >
+                ✕
+              </button>
 
-      <div className="reject-modal-icon">
-        <FaFileAlt />
-      </div>
+              <div className="reject-modal-icon delete-modal-icon">
+                <FaTrash />
+              </div>
 
-      <h2>Reject Request</h2>
+              <h2>{deleteModal.type === "user" ? "Delete User" : "Delete Property"}</h2>
 
-      <p className="reject-modal-subtitle">
-        Please provide a reason for rejecting this{" "}
-        {rejectModal.type === "listing"
-          ? "property listing"
-          : "seller request"}.
-      </p>
+              <p className="reject-modal-subtitle">
+                Are you sure you want to delete this{" "}
+                {deleteModal.type === "user" ? "user" : "property"}?
+                <br />
+                This action cannot be undone.
+              </p>
 
-      <textarea
-        className={`reject-reason-input ${
-          rejectionReason.length > 0 && !isReasonValid
-            ? "input-invalid"
-            : rejectionReason.length > 0 && isReasonValid
-            ? "input-valid"
-            : ""
-        }`}
-        placeholder="Enter rejection reason..."
-        value={rejectionReason}
-        onChange={(e) => setRejectionReason(e.target.value)}
-        disabled={rejecting}
-        rows={5}
-      />
+              <div className="reject-modal-actions">
 
-      {rejectionReason.trim().length > 0 && !isReasonValid && (
-        <p className="reject-reason-error">
-          Please enter a valid rejection reason.
-        </p>
-      )}
+                <button
+                  type="button"
+                  className="reject-cancel-btn"
+                  disabled={deleting}
+                  onClick={() => {
+                    setDeleteModal({
+                      open: false,
+                      id: null,
+                      type: null,
+                    });
+                  }}
+                >
+                  Cancel
+                </button>
 
-      <div className="reject-modal-actions">
+                <button
+                  type="button"
+                  className="delete-confirm-btn"
+                  disabled={deleting}
+                  onClick={confirmDelete}
+                >
+                  {deleting ? "Deleting..." : "Delete"}
+                </button>
 
-        <button
-          type="button"
-          className="reject-cancel-btn"
-          disabled={rejecting}
-          onClick={() => {
-            setRejectModal({
-              open: false,
-              id: null,
-              type: null,
-            });
+              </div>
 
-            setRejectionReason("");
-          }}
-        >
-          Cancel
-        </button>
-
-        <button
-          type="button"
-          className="reject-confirm-btn"
-          disabled={!isReasonValid || rejecting}
-          onClick={confirmReject}
-        >
-          {rejecting ? "Rejecting..." : "Confirm Reject"}
-        </button>
-
-      </div>
-
-    </div>
-  </div>
-)}
-
-{/* DELETE MODAL */}
-{deleteModal.open && (
-  <div className="reject-modal-overlay">
-    <div className="reject-modal">
-
-      <button
-        type="button"
-        className="reject-modal-close"
-        disabled={deleting}
-        onClick={() => {
-          if (deleting) return;
-
-          setDeleteModal({
-            open: false,
-            id: null,
-            type: null,
-          });
-        }}
-      >
-        ✕
-      </button>
-
-      <div className="reject-modal-icon delete-modal-icon">
-        <FaTrash />
-      </div>
-
-      <h2>  {deleteModal.type === "user" ? "Delete User" : "Delete Property"}</h2>
-
-      <p className="reject-modal-subtitle">
-        Are you sure you want to delete this{" "}
-        {deleteModal.type === "user" ? "user" : "property"}?
-        <br />
-        This action cannot be undone.
-      </p>
-
-      <div className="reject-modal-actions">
-
-        <button
-          type="button"
-          className="reject-cancel-btn"
-          disabled={deleting}
-          onClick={() => {
-            setDeleteModal({
-              open: false,
-              id: null,
-              type: null,
-            });
-          }}
-        >
-          Cancel
-        </button>
-
-        <button
-          type="button"
-          className="delete-confirm-btn"
-          disabled={deleting}
-          onClick={confirmDelete}
-        >
-          {deleting ? "Deleting..." : "Delete"}
-        </button>
-
-      </div>
-
-    </div>
-  </div>
-)}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
   );
-  
-     
 }
 
 export default Dashboard;
