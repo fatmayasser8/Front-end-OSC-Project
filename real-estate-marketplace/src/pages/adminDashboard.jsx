@@ -47,10 +47,6 @@ function unwrapObject(res) {
   }
   return res;
 }
-
-// Reads one page of results plus its pagination metadata (total pages),
-// regardless of whether the API wraps it as { data: { data: [...], totalPages } }
-// or returns a flat array with no pagination info.
 function unwrapPage(res) {
   const container = res && typeof res === "object" && res.data && typeof res.data === "object"
     ? res.data
@@ -67,10 +63,7 @@ function unwrapPage(res) {
   return { items: unwrapArray(res), totalPages: 1, page: 1 };
 }
 
-const MAX_PAGES_SAFETY = 30; // hard cap so a backend bug can never trigger an infinite fetch loop
-
-// Fetches every page from a paginated admin endpoint (users/listings are capped
-// at 50 items per request server-side) and returns the combined list.
+const MAX_PAGES_SAFETY = 30; 
 async function fetchAllPages(fetchFn, baseFilters = {}) {
   let page = 1;
   let totalPages = 1;
@@ -137,7 +130,7 @@ function Dashboard() {
       const arr = unwrapArray(res);
       setRequests(arr);
     } catch (err) {
-      // failed to load requests
+     
     } finally {
       setRequestsLoading(false);
     }
@@ -296,7 +289,7 @@ function Dashboard() {
       const allListings = await fetchAllPages(getAllListings, baseFilters);
       setListings(allListings);
     } catch (err) {
-      // failed to load listings
+    
     } finally {
       setListingsLoading(false);
     }
@@ -327,9 +320,7 @@ function Dashboard() {
       type: "listing",
     });
   }
-  // 🔹 Helper function to extract user details for seller requests
   const getRequesterDetails = (requester) => {
-    // لو الباك إند باعتها Object جاهز أو باعتها ID صافي
     const id = typeof requester === "object" ? requester?._id : requester;
     const user = users.find((u) => u._id === id);
 
@@ -423,22 +414,14 @@ function Dashboard() {
       <div className="main-content full-width">
         <div className="dashboard-top-row">
           <button
-            type="button"
-            className="back-to-home"
-            onClick={() => {
-              localStorage.removeItem("accessToken");
-              localStorage.removeItem("refreshToken");
-              localStorage.removeItem("user");
-
-              sessionStorage.removeItem("accessToken");
-              sessionStorage.removeItem("refreshToken");
-              sessionStorage.removeItem("user");
-
+              type="button"
+              className="back-to-home"
+              onClick={() => {
               navigate("/home");
-            }}
-          >
-            <FaArrowLeft />
-            <span>Back to Home</span>
+               }}
+                >
+               <FaArrowLeft />
+                <span>Back to Home</span>
           </button>
 
           <div className="topbar-right">
