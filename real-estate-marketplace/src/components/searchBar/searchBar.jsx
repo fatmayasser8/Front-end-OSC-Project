@@ -101,7 +101,6 @@ if (priceRange === "0-500000") {
 
 const filters = {
   search,
-  title: search.trim(),
   city: searchCity,
   propertyType: searchPropertyType,
   listingType: purpose,
@@ -152,7 +151,7 @@ const handleReset = () => {
 
 <input
   type="search"
-  placeholder="Search by title, city or property..."
+  // placeholder="Search by title, city or property..."
   className="!w-full"
   value={search}
   onChange={(e) => setSearch(e.target.value)}

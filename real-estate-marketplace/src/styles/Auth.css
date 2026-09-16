@@ -93,7 +93,7 @@ a{
 .google-login-button:hover i {
   color: #d4af37;
 }
-/* ضبط حاوية وزرار الـ Guest ليطابقا جوجل تماماً */
+
 .guest-login-wrapper {
   position: relative;
   width: 100%;
