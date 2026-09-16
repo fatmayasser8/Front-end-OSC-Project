@@ -122,7 +122,7 @@ const handleReset = () => {
   setPriceRange("");
   setBedrooms("");
 
-  onSearch({});
+  onSearch({reset: true});
 };
 
   return (
