@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaTrash, FaUsers, FaHome, FaStore, FaUserTie, FaFileAlt, FaSearch, FaEye, FaEllipsisH } from "react-icons/fa";
-import {AreaChart, Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer, PieChart,Pie,Cell,} from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import "../styles/adminDashboard.css";
-import { getAdminDashboardStats, getAllListings, getAllUsers,getUserById, deleteUser, approveListing, rejectListing,deleteListing,getAllRequests, approveRequest,rejectRequest,} from "../services/adminService";
+import { 
+  getAdminDashboardStats, 
+  getAllListings, 
+  getAllUsers, 
+  getUserById, 
+  deleteUser, 
+  approveListing, 
+  rejectListing, 
+  deleteListing, 
+  getAllRequests, 
+  approveRequest, 
+  rejectRequest 
+} from "../services/adminService";
 import Swal from 'sweetalert2';
 import villa1 from "../assets/hero.png";
-
 
 const showAlert = (message, type = "success") => {
   Swal.fire({
@@ -18,7 +29,9 @@ const showAlert = (message, type = "success") => {
     confirmButtonColor: "#c9a24b",
   });
 };
+
 const CANDIDATE_KEYS = ["data", "listings", "users", "results", "items"];
+
 function unwrapArray(res) {
   if (Array.isArray(res)) return res;
   if (!res || typeof res !== "object") return [];
@@ -47,6 +60,7 @@ function unwrapObject(res) {
   }
   return res;
 }
+
 function unwrapPage(res) {
   const container = res && typeof res === "object" && res.data && typeof res.data === "object"
     ? res.data
@@ -79,6 +93,7 @@ async function fetchAllPages(fetchFn, baseFilters = {}) {
 
   return allItems;
 }
+
 function Dashboard() {
   const navigate = useNavigate();
 
@@ -91,6 +106,7 @@ function Dashboard() {
       navigate("/auth/login");
     }
   }, [navigate]);
+
   const [stats, setStats] = useState(null);
   const [listings, setListings] = useState([]);
   const [users, setUsers] = useState([]);
@@ -102,6 +118,7 @@ function Dashboard() {
   const [showAllListings, setShowAllListings] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
   const [actionError, setActionError] = useState("");
+  const [modalError, setModalError] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [userDetailsLoading, setUserDetailsLoading] = useState(false);
   const [requests, setRequests] = useState([]);
@@ -130,7 +147,7 @@ function Dashboard() {
       const arr = unwrapArray(res);
       setRequests(arr);
     } catch (err) {
-     
+      
     } finally {
       setRequestsLoading(false);
     }
@@ -140,15 +157,24 @@ function Dashboard() {
     try {
       await approveRequest(id);
       setOpenRequestMenuId(null);
+      
+      // تحديث الحالة فوراً في الـ State
+      setRequests((prev) =>
+        prev.map((r) => ((r._id || r.id) === id ? { ...r, status: "approved" } : r))
+      );
+      
       await loadRequests();
+      showAlert("Request approved successfully!");
     } catch (err) {
-      showAlert(err.message || "Couldn't approve this request.", "error");
+      showAlert(err.response?.data?.message || err.message || "Couldn't approve this request.", "error");
     }
   }
 
   function handleRejectRequest(id) {
     setOpenRequestMenuId(null);
     setRejectionReason("");
+    setActionError("");
+    setModalError("");
     setRejectModal({
       open: true,
       id,
@@ -159,34 +185,58 @@ function Dashboard() {
   const reasonLength = rejectionReason.trim().length;
   const isReasonValid = reasonLength >= 2;
 
+  // *** التعديل الجوهري هنا للتحديث الفوري لـ Rejection ***
   async function confirmReject() {
     if (!isReasonValid || !rejectModal.id) {
+      setModalError("Please enter a valid rejection reason (at least 2 characters).");
       return;
     }
 
     try {
       setRejecting(true);
-      setActionError("");
+      setModalError("");
 
       if (rejectModal.type === "request") {
         await rejectRequest(rejectModal.id, rejectionReason.trim());
-        await loadRequests();
+
+        // 1. تحديث الـ State للـ Requests فوراً
+        setRequests((prevRequests) =>
+          prevRequests.map((req) =>
+            (req._id || req.id) === rejectModal.id
+              ? { ...req, status: "rejected" }
+              : req
+          )
+        );
+
+        loadRequests(); // إعادة الجلب من السيرفر كإجراء تأكيدي
+
       } else if (rejectModal.type === "listing") {
         await rejectListing(rejectModal.id, rejectionReason.trim());
-        await loadListings();
+
+        // 2. تحديث الـ State للـ Listings فوراً بدون reload
+        setListings((prevListings) =>
+          prevListings.map((item) =>
+            (item._id || item.id) === rejectModal.id
+              ? { ...item, status: "rejected" }
+              : item
+          )
+        );
+
+        loadListings(); // إعادة الجلب من السيرفر كإجراء تأكيدي
       }
 
+      // إغلاق المودال وتصفير القيم
       setRejectModal({
         open: false,
         id: null,
         type: null,
       });
-
       setRejectionReason("");
+      showAlert("Item rejected successfully.");
+
     } catch (err) {
-      setActionError(
-        err.message || "Couldn't reject this item. Please try again."
-      );
+      const apiErrorMessage = err.response?.data?.message || err.message || "Couldn't reject this item. Please try again.";
+      setModalError(apiErrorMessage);
     } finally {
       setRejecting(false);
     }
@@ -198,7 +248,7 @@ function Dashboard() {
       const data = await getUserById(id);
       setSelectedUser(unwrapObject(data));
     } catch (err) {
-      showAlert(err.message || "Couldn't load this user's details.", "error");
+      showAlert(err.response?.data?.message || err.message || "Couldn't load this user's details.", "error");
     } finally {
       setUserDetailsLoading(false);
     }
@@ -226,15 +276,19 @@ function Dashboard() {
 
     try {
       setDeleting(true);
-      setActionError("");
+      setModalError("");
 
       if (deleteModal.type === "listing") {
         await deleteListing(deleteModal.id);
-        await loadListings();
+        
+        // حذف من الـ State فوراً
+        setListings((prev) => prev.filter((item) => (item._id || item.id) !== deleteModal.id));
+        loadListings();
       }
 
       if (deleteModal.type === "user") {
         await deleteUser(deleteModal.id);
+        setUsers((prev) => prev.filter((u) => (u._id || u.id) !== deleteModal.id));
         const refreshedUsers = await fetchAllPages(getAllUsers);
         setUsers(refreshedUsers);
       }
@@ -244,10 +298,10 @@ function Dashboard() {
         id: null,
         type: null,
       });
+      showAlert("Item deleted successfully.");
     } catch (err) {
-      setActionError(
-        err.message || "Couldn't delete this item. Please try again."
-      );
+      const apiErrorMessage = err.response?.data?.message || err.message || "Couldn't delete this item. Please try again.";
+      setModalError(apiErrorMessage);
     } finally {
       setDeleting(false);
     }
@@ -289,7 +343,7 @@ function Dashboard() {
       const allListings = await fetchAllPages(getAllListings, baseFilters);
       setListings(allListings);
     } catch (err) {
-    
+      
     } finally {
       setListingsLoading(false);
     }
@@ -305,32 +359,31 @@ function Dashboard() {
       setActionError("");
       await approveListing(id);
       setOpenMenuId(null);
+      
+      // تحديث الحالة فوراً للـ Listing
+      setListings((prev) =>
+        prev.map((item) => ((item._id || item.id) === id ? { ...item, status: "approved" } : item))
+      );
+      
       await loadListings();
+      showAlert("Listing approved successfully!");
     } catch (err) {
-      setActionError("Couldn't approve this listing. Please try again.");
+      setActionError(err.response?.data?.message || err.message || "Couldn't approve this listing. Please try again.");
     }
   }
 
   function handleReject(id) {
     setOpenMenuId(null);
     setRejectionReason("");
+    setActionError("");
+    setModalError("");
     setRejectModal({
       open: true,
       id,
       type: "listing",
     });
   }
-  const getRequesterDetails = (requester) => {
-    const id = typeof requester === "object" ? requester?._id : requester;
-    const user = users.find((u) => u._id === id);
 
-    return {
-      fullName: user?.fullName || "N/A",
-      email: user?.email || "N/A",
-      phoneNumber: user?.phoneNumber || "N/A",
-      userImage: user?.userImage || null,
-    };
-  };
   const totalUsersCount = stats?.totalUsers ?? (Array.isArray(users) ? users.length : 0);
   const sellersCount = stats?.totalSellers ?? (Array.isArray(users) ? users.filter(u => u.role === "seller").length : 0);
   const buyersCount = stats?.buyers ?? Math.max(0, totalUsersCount - sellersCount);
@@ -342,35 +395,13 @@ function Dashboard() {
   ];
 
   const listingsArray = Array.isArray(listings) ? listings : [];
-
   const totalListingsCount = stats?.totalListings ?? listingsArray.length;
 
-  const forSaleCount = listingsArray.filter(
-    item => item.listingType === "sale" && item.isAvailable === true
-  ).length;
-
-  const soldCount = listingsArray.filter(
-    item => item.listingType === "sale" && item.isAvailable === false
-  ).length;
-
-  const forRentCount = listingsArray.filter(
-    item => item.listingType === "rent" && item.isAvailable === true
-  ).length;
-
-  const rentedCount = listingsArray.filter(
-    item => item.listingType === "rent" && item.isAvailable === false
-  ).length;
-
-  const pendingCount = listingsArray.filter(
-    item => item.status === "pending"
-  ).length;
-
+  const forSaleCount = listingsArray.filter(item => item.listingType === "sale" && item.isAvailable === true).length;
+  const forRentCount = listingsArray.filter(item => item.listingType === "rent" && item.isAvailable === true).length;
   const propertyStatusData = [
     { name: "For Sale", value: forSaleCount, color: "#f5b301" },
-    { name: "Sold", value: soldCount, color: "#3a86ff" },
     { name: "For Rent", value: forRentCount, color: "#6c5ce7" },
-    { name: "Rented", value: rentedCount, color: "#00b894" },
-    { name: "Pending", value: pendingCount, color: "#f77f00" },
   ];
 
   const statCards = [
@@ -388,11 +419,8 @@ function Dashboard() {
           <div className="admin-loading-logo">
             <FaHome />
           </div>
-
           <h2>NOVA ESTATES</h2>
-
           <div className="admin-spinner"></div>
-
           <p>Loading your dashboard...</p>
         </div>
       </div>
@@ -414,14 +442,12 @@ function Dashboard() {
       <div className="main-content full-width">
         <div className="dashboard-top-row">
           <button
-              type="button"
-              className="back-to-home"
-              onClick={() => {
-              navigate("/home");
-               }}
-                >
-               <FaArrowLeft />
-                <span>Back to Home</span>
+            type="button"
+            className="back-to-home"
+            onClick={() => navigate("/home")}
+          >
+            <FaArrowLeft />
+            <span>Back to Home</span>
           </button>
 
           <div className="topbar-right">
@@ -570,6 +596,7 @@ function Dashboard() {
           </div>
         </div>
 
+        {/* SELLER VERIFICATION REQUESTS */}
         <div className="listings-card">
           <div className="card-header-row">
             <h2>Seller Verification Requests</h2>
@@ -630,6 +657,7 @@ function Dashboard() {
           </ul>
         </div>
 
+        {/* RECENT PROPERTY LISTINGS */}
         <div className="listings-card">
           <div className="card-header-row">
             <h2>Recent Property Listings</h2>
@@ -814,7 +842,14 @@ function Dashboard() {
                     </td>
                   </tr>
                 ))}
-                {listings.length === 0 && (
+                {listingsLoading && (
+                  <tr>
+                    <td colSpan={7} style={{ color: "#9b9b9b", fontSize: 12, padding: 16, textAlign: "center" }}>
+                      Loading listings…
+                    </td>
+                  </tr>
+                )}
+                {!listingsLoading && listings.length === 0 && (
                   <tr>
                     <td colSpan={7} style={{ color: "#9b9b9b", fontSize: 12, padding: 16 }}>
                       No listings yet.
@@ -826,6 +861,7 @@ function Dashboard() {
           </div>
         </div>
 
+        {/* USER DETAILS MODAL */}
         {(selectedUser || userDetailsLoading) && (
           <div className="user-modal-overlay" onClick={() => setSelectedUser(null)}>
             <div className="user-modal" onClick={(e) => e.stopPropagation()}>
@@ -850,213 +886,148 @@ function Dashboard() {
 
         {/* REQUEST DETAILS MODAL */}
         {selectedRequest && (() => {
-  const getRequesterDetails = (requesterId) => {
-    if (!requesterId) return null;
-    const id = typeof requesterId === "object" ? requesterId._id : requesterId;
-    return users.find((u) => u._id === id) || null;
-  };
+          const getRequesterDetails = (requesterId) => {
+            if (!requesterId) return null;
+            const id = typeof requesterId === "object" ? requesterId._id : requesterId;
+            return users.find((u) => u._id === id) || null;
+          };
 
-  const user = getRequesterDetails(selectedRequest.requester) || selectedRequest.user || {};
+          const user = getRequesterDetails(selectedRequest.requester) || selectedRequest.user || {};
 
-  const name = user.fullName || user.name || selectedRequest.fullName || selectedRequest.name || "—";
-  const email = user.email || selectedRequest.email || "—";
-  const phone = user.phoneNumber || user.phone || selectedRequest.phoneNumber || selectedRequest.phone || "—";
-  const docImg = selectedRequest.identityDocument || selectedRequest.image || selectedRequest.document || selectedRequest.file || selectedRequest.idImage;
+          const name = user.fullName || user.name || selectedRequest.fullName || selectedRequest.name || "—";
+          const email = user.email || selectedRequest.email || "—";
+          const phone = user.phoneNumber || user.phone || selectedRequest.phoneNumber || selectedRequest.phone || "—";
+          const docImg = selectedRequest.identityDocument || selectedRequest.image || selectedRequest.document || selectedRequest.file || selectedRequest.idImage;
 
-  return (
-    <div className="user-modal-overlay" onClick={() => setSelectedRequest(null)}>
-      <div className="user-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: "500px", width: "90%" }}>
-        <button className="user-modal-close" onClick={() => setSelectedRequest(null)}>✕</button>
-        <h2 style={{ marginBottom: "15px", color: "#c9a24b" }}>Verification Request Details</h2>
+          return (
+            <div className="user-modal-overlay" onClick={() => setSelectedRequest(null)}>
+              <div className="user-modal" onClick={(e) => e.stopPropagation()}>
+                <button className="user-modal-close" onClick={() => setSelectedRequest(null)}>✕</button>
+                <h2>Seller Request Details</h2>
+                <p><strong>Applicant Name:</strong> {name}</p>
+                <p><strong>Email:</strong> {email}</p>
+                <p><strong>Phone:</strong> {phone}</p>
+                <p><strong>Status:</strong> {selectedRequest.status}</p>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px", fontSize: "14px", color: "#ddd" }}>
-          <p><strong>Name:</strong> {name}</p>
-          <p><strong>Email:</strong> {email}</p>
-          <p><strong>Phone:</strong> {phone}</p>
-          <p>
-            <strong>Status:</strong>{" "}
-            <span style={{ textTransform: "capitalize", color: selectedRequest.status === "approved" ? "#35c17a" : selectedRequest.status === "rejected" ? "#f26d6d" : "#f5b301" }}>
-              {selectedRequest.status}
-            </span>
-          </p>
-
-          {selectedRequest.message && (
-            <p><strong>Message / Note:</strong> {selectedRequest.message}</p>
-          )}
-
-          <div style={{ marginTop: "10px" }}>
-            <strong style={{ display: "block", marginBottom: "8px" }}>Submitted Document / ID Image:</strong>
-            {docImg ? (
-              <img
-                src={docImg}
-                alt="Verification Document"
-                style={{ width: "100%", maxHeight: "250px", objectFit: "contain", borderRadius: "8px", border: "1px solid #2b2b2b", background: "#111" }}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-            ) : (
-              <p style={{ color: "#9b9b9b", fontStyle: "italic" }}>No image attached to this request.</p>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-})()}
-
-        {/* REJECT MODAL */}
-        {rejectModal.open && (
-          <div className="reject-modal-overlay">
-            <div className="reject-modal">
-
-              <button
-                type="button"
-                className="reject-modal-close"
-                onClick={() => {
-                  if (rejecting) return;
-
-                  setRejectModal({
-                    open: false,
-                    id: null,
-                    type: null,
-                  });
-
-                  setRejectionReason("");
-                }}
-              >
-                ✕
-              </button>
-
-              <div className="reject-modal-icon">
-                <FaFileAlt />
+                {docImg && (
+                  <div style={{ marginTop: 15 }}>
+                    <p><strong>Identity Document:</strong></p>
+                    <img
+                      src={docImg}
+                      alt="Identity Document"
+                      style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8, marginTop: 8 }}
+                    />
+                  </div>
+                )}
               </div>
+            </div>
+          );
+        })()}
 
-              <h2>Reject Request</h2>
+        {/* REJECTION MODAL */}
+        {rejectModal.open && (
+          <div className="user-modal-overlay" onClick={() => setRejectModal({ open: false, id: null, type: null })}>
+            <div className="user-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="user-modal-close" onClick={() => setRejectModal({ open: false, id: null, type: null })}>✕</button>
+              <h2>Reject {rejectModal.type === "request" ? "Seller Request" : "Listing"}</h2>
+              
+              {modalError && (
+                <div style={{ color: "#f26d6d", backgroundColor: "#3a1818", padding: "10px", borderRadius: "6px", fontSize: "13px", marginBottom: "12px" }}>
+                  {modalError}
+                </div>
+              )}
 
-              <p className="reject-modal-subtitle">
-                Please provide a reason for rejecting this{" "}
-                {rejectModal.type === "listing"
-                  ? "property listing"
-                  : "seller request"}.
+              <p style={{ fontSize: "14px", color: "#ccc", marginBottom: "10px" }}>
+                Please specify the clear reason for rejecting this {rejectModal.type}:
               </p>
 
               <textarea
-                className={`reject-reason-input ${
-                  rejectionReason.length > 0 && !isReasonValid
-                    ? "input-invalid"
-                    : rejectionReason.length > 0 && isReasonValid
-                    ? "input-valid"
-                    : ""
-                }`}
-                placeholder="Enter rejection reason..."
+                rows={4}
                 value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                disabled={rejecting}
-                rows={5}
+                onChange={(e) => {
+                  setRejectionReason(e.target.value);
+                  if (modalError) setModalError("");
+                }}
+                placeholder="Enter rejection reason..."
+                style={{
+                  width: "100%",
+                  backgroundColor: "#121212",
+                  color: "#fff",
+                  border: "1px solid #2b2b2b",
+                  borderRadius: "6px",
+                  padding: "10px",
+                  resize: "vertical",
+                  marginBottom: "15px"
+                }}
               />
 
-              {rejectionReason.trim().length > 0 && !isReasonValid && (
-                <p className="reject-reason-error">
-                  Please enter a valid rejection reason.
-                </p>
-              )}
-
-              <div className="reject-modal-actions">
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
                 <button
-                  type="button"
-                  className="reject-cancel-btn"
-                  disabled={rejecting}
-                  onClick={() => {
-                    setRejectModal({
-                      open: false,
-                      id: null,
-                      type: null,
-                    });
-
-                    setRejectionReason("");
-                  }}
+                  onClick={() => setRejectModal({ open: false, id: null, type: null })}
+                  style={{ padding: "8px 16px", background: "#2b2b2b", border: "none", borderRadius: "6px", color: "#fff", cursor: "pointer" }}
                 >
                   Cancel
                 </button>
-
                 <button
-                  type="button"
-                  className="reject-confirm-btn"
-                  disabled={!isReasonValid || rejecting}
                   onClick={confirmReject}
+                  disabled={rejecting || !isReasonValid}
+                  style={{
+                    padding: "8px 16px",
+                    background: "#f26d6d",
+                    border: "none",
+                    borderRadius: "6px",
+                    color: "#fff",
+                    cursor: rejecting || !isReasonValid ? "not-allowed" : "pointer",
+                    opacity: rejecting || !isReasonValid ? 0.6 : 1
+                  }}
                 >
-                  {rejecting ? "Rejecting..." : "Confirm Reject"}
+                  {rejecting ? "Rejecting..." : "Confirm Rejection"}
                 </button>
               </div>
-
             </div>
           </div>
         )}
 
-        {/* DELETE MODAL */}
+        {/* DELETE CONFIRMATION MODAL */}
         {deleteModal.open && (
-          <div className="reject-modal-overlay">
-            <div className="reject-modal">
+          <div className="user-modal-overlay" onClick={() => setDeleteModal({ open: false, id: null, type: null })}>
+            <div className="user-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="user-modal-close" onClick={() => setDeleteModal({ open: false, id: null, type: null })}>✕</button>
+              <h2>Confirm Delete</h2>
 
-              <button
-                type="button"
-                className="reject-modal-close"
-                disabled={deleting}
-                onClick={() => {
-                  if (deleting) return;
+              {modalError && (
+                <div style={{ color: "#f26d6d", backgroundColor: "#3a1818", padding: "10px", borderRadius: "6px", fontSize: "13px", marginBottom: "12px" }}>
+                  {modalError}
+                </div>
+              )}
 
-                  setDeleteModal({
-                    open: false,
-                    id: null,
-                    type: null,
-                  });
-                }}
-              >
-                ✕
-              </button>
-
-              <div className="reject-modal-icon delete-modal-icon">
-                <FaTrash />
-              </div>
-
-              <h2>{deleteModal.type === "user" ? "Delete User" : "Delete Property"}</h2>
-
-              <p className="reject-modal-subtitle">
-                Are you sure you want to delete this{" "}
-                {deleteModal.type === "user" ? "user" : "property"}?
-                <br />
-                This action cannot be undone.
+              <p style={{ fontSize: "14px", color: "#ccc", marginBottom: "20px" }}>
+                Are you sure you want to delete this {deleteModal.type}? This action cannot be undone.
               </p>
 
-              <div className="reject-modal-actions">
-
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
                 <button
-                  type="button"
-                  className="reject-cancel-btn"
-                  disabled={deleting}
-                  onClick={() => {
-                    setDeleteModal({
-                      open: false,
-                      id: null,
-                      type: null,
-                    });
-                  }}
+                  onClick={() => setDeleteModal({ open: false, id: null, type: null })}
+                  style={{ padding: "8px 16px", background: "#2b2b2b", border: "none", borderRadius: "6px", color: "#fff", cursor: "pointer" }}
                 >
                   Cancel
                 </button>
-
                 <button
-                  type="button"
-                  className="delete-confirm-btn"
-                  disabled={deleting}
                   onClick={confirmDelete}
+                  disabled={deleting}
+                  style={{
+                    padding: "8px 16px",
+                    background: "#f26d6d",
+                    border: "none",
+                    borderRadius: "6px",
+                    color: "#fff",
+                    cursor: deleting ? "not-allowed" : "pointer",
+                    opacity: deleting ? 0.6 : 1
+                  }}
                 >
                   {deleting ? "Deleting..." : "Delete"}
                 </button>
-
               </div>
-
             </div>
           </div>
         )}

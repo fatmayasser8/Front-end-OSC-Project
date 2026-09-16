@@ -178,18 +178,21 @@ const handleLogin = async (e) => {
   <div className="google-login-button">
     <i className="fa-brands fa-google mr-[5px] text-base"></i>
     Continue with Google
+    
   </div>
 </div>
 
 {/* Continue as Guest */}
-<button
-  type="button"
-  onClick={() => navigate("/home")}
-  className="mt-1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#333] bg-[#181818] p-3 text-sm font-medium text-white transition duration-300 hover:border-[#d4af37] hover:text-[#d4af37]"
->
-  <i className="fa-solid fa-user-secret"></i>
-  Continue as Guest
-</button>
+<div className="guest-login-wrapper">
+  <button
+    type="button"
+    onClick={() => navigate("/home")}
+    className="guest-login-button"
+  >
+    <i className="fa-solid fa-user-secret mr-[5px] text-base"></i>
+    Continue as Guest
+  </button>
+</div>
       </form>
 
       {/* Forgot Password Modal */}
