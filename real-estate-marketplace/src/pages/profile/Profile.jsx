@@ -1008,6 +1008,7 @@ const handleDeleteImage = () => {
         font-medium
         flex-1
       "
+        onClick={() => window.scrollTo(0, 0)}
     >
       <i className="fa-solid fa-compass"></i>
       Explore Properties

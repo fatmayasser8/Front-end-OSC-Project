@@ -965,6 +965,11 @@ const fetchProperties = async (filters = {}, saveSearch = false, retryCount = 0)
       setProperties(listings);
       setMapProperties(listings);
     }
+if (saveSearch) {
+  setSelectedProperty(null);
+}
+
+
 
     setLoading(false);
     requestInProgress.current = false;

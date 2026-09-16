@@ -31,7 +31,7 @@ const [propertyType, setPropertyType] = useState(
 );
 
 const [purpose, setPurpose] = useState(
-  initialFilters.purpose || ""
+  initialFilters.listingType || ""
 );
 
 const [priceRange, setPriceRange] = useState(
@@ -98,8 +98,10 @@ if (priceRange === "0-500000") {
 } else if (priceRange === "20000000+") {
   minPrice = 20000000;
 }
+
 const filters = {
   search,
+  title: search.trim(),
   city: searchCity,
   propertyType: searchPropertyType,
   listingType: purpose,
@@ -112,6 +114,16 @@ const filters = {
   console.log("SEARCH FILTERS:", filters);
 
   onSearch(filters);
+};
+
+const handleReset = () => {
+  setSearch("");
+  setPropertyType("");
+  setPurpose("");
+  setPriceRange("");
+  setBedrooms("");
+
+  onSearch({});
 };
 
   return (
@@ -138,13 +150,19 @@ const filters = {
       >
         <i className="fa-solid fa-magnifying-glass"></i>
 
-        <input
-          type="search"
-          placeholder="Search by city or property..."
-          className="!w-full"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+<input
+  type="search"
+  placeholder="Search by title, city or property..."
+  className="!w-full"
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSearch();
+    }
+  }}
+/>
       </div>
 
       {/* Property Type */}
@@ -276,6 +294,26 @@ const filters = {
           <span>Search</span>
         </button>
       </div>
+{/* Reset Button */}
+<div
+  className="
+    button-wrapper
+    !w-full
+    sm:!w-auto
+    sm:!flex-1
+    lg:!flex-none
+  "
+>
+  <button
+    type="button"
+    className="btn-reset !w-full"
+    onClick={handleReset}
+  >
+    <i className="fa-solid fa-rotate-left"></i>
+    <span>Reset</span>
+  </button>
+</div>
+
     </div>
   );
 }

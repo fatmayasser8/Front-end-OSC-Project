@@ -101,3 +101,33 @@ background-color: black;
 .button-wrapper{
     display: flex;
 }
+
+.btn-reset {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  background: transparent;
+  color: #d4af37;
+  border: 1.5px solid #d4af37;
+
+  padding: 10px 20px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.btn-reset:hover {
+  background: #d4af37;
+  color: #111;
+}
+
+.btn-reset i {
+  font-size: 14px;
+}

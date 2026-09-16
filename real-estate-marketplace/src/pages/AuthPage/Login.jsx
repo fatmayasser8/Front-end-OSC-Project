@@ -39,7 +39,7 @@ const handleGoogleSuccess = async (credentialResponse) => {
     localStorage.setItem("accessToken", result.data.accessToken);
     localStorage.setItem("refreshToken", result.data.refreshToken); 
 
-    // **[التعديل الأول هنا]**: شلنا الشروط والـ if القديمة، وحطينا السطر ده بس:
+
     navigate("/home");
 
   } catch (error) {
@@ -84,7 +84,7 @@ const handleLogin = async (e) => {
     localStorage.setItem("accessToken", result.data.accessToken);
     localStorage.setItem("refreshToken", result.data.refreshToken);
 
-    // **[التعديل الثاني هنا]**: استبدلنا كل الشروط القديمة بتاعة الأدمن والسيلر بالسطر ده:
+
     navigate("/home");
 
   } catch (error) {
@@ -165,22 +165,31 @@ const handleLogin = async (e) => {
           <span className="h-px flex-1 bg-[#333]"></span>
         </div>
 
-        {/* Google */}
         <div className="relative h-[47px] w-full">
-          <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 ">
-            <GoogleLogin
-              onSuccess={handleGoogleSuccess}
-              onError={() => {
-                setError("Google login failed. Please try again.");
-              }}
-            />
-          </div>
+  <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 ">
+    <GoogleLogin
+      onSuccess={handleGoogleSuccess}
+      onError={() => {
+        setError("Google login failed. Please try again.");
+      }}
+    />
+  </div>
 
-          <div className="google-login-button">
-            <i className="fa-brands fa-google mr-[5px] text-base"></i>
-            Continue with Google
-          </div>
-        </div>
+  <div className="google-login-button">
+    <i className="fa-brands fa-google mr-[5px] text-base"></i>
+    Continue with Google
+  </div>
+</div>
+
+{/* Continue as Guest */}
+<button
+  type="button"
+  onClick={() => navigate("/home")}
+  className="mt-1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#333] bg-[#181818] p-3 text-sm font-medium text-white transition duration-300 hover:border-[#d4af37] hover:text-[#d4af37]"
+>
+  <i className="fa-solid fa-user-secret"></i>
+  Continue as Guest
+</button>
       </form>
 
       {/* Forgot Password Modal */}
