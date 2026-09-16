@@ -926,10 +926,58 @@ function Dashboard() {
 
         {/* REJECTION MODAL */}
         {rejectModal.open && (
-          <div className="user-modal-overlay" onClick={() => setRejectModal({ open: false, id: null, type: null })}>
-            <div className="user-modal" onClick={(e) => e.stopPropagation()}>
-              <button className="user-modal-close" onClick={() => setRejectModal({ open: false, id: null, type: null })}>✕</button>
-              <h2>Reject {rejectModal.type === "request" ? "Seller Request" : "Listing"}</h2>
+          <div 
+            className="user-modal-overlay" 
+            onClick={() => setRejectModal({ open: false, id: null, type: null })}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.75)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1000,
+              backdropFilter: "blur(4px)"
+            }}
+          >
+            <div 
+              className="user-modal" 
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                backgroundColor: "#1a1a1a",
+                border: "1px solid #333",
+                borderRadius: "12px",
+                padding: "24px",
+                width: "100%",
+                maxWidth: "480px",
+                boxShadow: "0 10px 25px rgba(0,0,0,0.5)",
+                position: "relative",
+                boxSizing: "border-box"
+              }}
+            >
+              <button 
+                className="user-modal-close" 
+                onClick={() => setRejectModal({ open: false, id: null, type: null })}
+                style={{
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  background: "none",
+                  border: "none",
+                  color: "#aaa",
+                  fontSize: "18px",
+                  cursor: "pointer"
+                }}
+              >
+                ✕
+              </button>
+
+              <h2 style={{ color: "#fff", fontSize: "20px", marginBottom: "12px", marginTop: 0 }}>
+                Reject {rejectModal.type === "request" ? "Seller Request" : "Listing"}
+              </h2>
               
               {modalError && (
                 <div style={{ color: "#f26d6d", backgroundColor: "#3a1818", padding: "10px", borderRadius: "6px", fontSize: "13px", marginBottom: "12px" }}>
@@ -937,34 +985,45 @@ function Dashboard() {
                 </div>
               )}
 
-              <p style={{ fontSize: "14px", color: "#ccc", marginBottom: "10px" }}>
+              <p style={{ fontSize: "14px", color: "#aaa", marginBottom: "12px", lineHeight: "1.4" }}>
                 Please specify the clear reason for rejecting this {rejectModal.type}:
               </p>
 
               <textarea
-                rows={4}
+                rows={5}
                 value={rejectionReason}
                 onChange={(e) => {
                   setRejectionReason(e.target.value);
                   if (modalError) setModalError("");
                 }}
-                placeholder="Enter rejection reason..."
+                placeholder="Enter rejection reason here..."
                 style={{
                   width: "100%",
                   backgroundColor: "#121212",
                   color: "#fff",
-                  border: "1px solid #2b2b2b",
-                  borderRadius: "6px",
-                  padding: "10px",
+                  border: "1px solid #333",
+                  borderRadius: "8px",
+                  padding: "12px",
+                  fontSize: "14px",
                   resize: "vertical",
-                  marginBottom: "15px"
+                  marginBottom: "20px",
+                  outline: "none",
+                  boxSizing: "border-box"
                 }}
               />
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
                 <button
                   onClick={() => setRejectModal({ open: false, id: null, type: null })}
-                  style={{ padding: "8px 16px", background: "#2b2b2b", border: "none", borderRadius: "6px", color: "#fff", cursor: "pointer" }}
+                  style={{ 
+                    padding: "10px 20px", 
+                    background: "transparent", 
+                    border: "1px solid #444", 
+                    borderRadius: "8px", 
+                    color: "#ccc", 
+                    cursor: "pointer",
+                    fontSize: "14px"
+                  }}
                 >
                   Cancel
                 </button>
@@ -972,13 +1031,15 @@ function Dashboard() {
                   onClick={confirmReject}
                   disabled={rejecting || !isReasonValid}
                   style={{
-                    padding: "8px 16px",
+                    padding: "10px 20px",
                     background: "#f26d6d",
                     border: "none",
-                    borderRadius: "6px",
+                    borderRadius: "8px",
                     color: "#fff",
+                    fontSize: "14px",
                     cursor: rejecting || !isReasonValid ? "not-allowed" : "pointer",
-                    opacity: rejecting || !isReasonValid ? 0.6 : 1
+                    opacity: rejecting || !isReasonValid ? 0.6 : 1,
+                    transition: "opacity 0.2s"
                   }}
                 >
                   {rejecting ? "Rejecting..." : "Confirm Rejection"}
@@ -987,7 +1048,6 @@ function Dashboard() {
             </div>
           </div>
         )}
-
         {/* DELETE CONFIRMATION MODAL */}
         {deleteModal.open && (
           <div className="user-modal-overlay" onClick={() => setDeleteModal({ open: false, id: null, type: null })}>
