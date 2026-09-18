@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "../../styles/Sidebar.css";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -22,6 +23,35 @@ const isSeller = user?.role === "seller";
 
 const accessToken = localStorage.getItem("accessToken");
 const isAuthenticated = !!accessToken;
+
+const showLoginPrompt = (action) => {
+  Swal.fire({
+    title: "Join NOVA",
+    text: `You need an account to ${action}.`,
+    icon: "info",
+    showCancelButton: true,
+    confirmButtonText: "Create Account",
+    cancelButtonText: "Maybe Later",
+    background: "#111",
+    color: "#fff",
+    confirmButtonColor: "#d4af37",
+    cancelButtonColor: "#333",
+  }).then((result) => {
+    setIsOpen(false);
+    if (result.isConfirmed) {
+      navigate("/register");
+    }
+  });
+};
+
+const handleProtectedClick = (e, action) => {
+  if (!isAuthenticated) {
+    e.preventDefault();
+    showLoginPrompt(action);
+    return;
+  }
+  setIsOpen(false);
+};
 
 
 console.log("USER:", user);
@@ -156,7 +186,6 @@ max-lg:!w-[210px]
             </Link>
           </li>
 
-        {/* إظهار الداشبورد للسيلر فقط */}
         {user?.role === "seller" && (
           <li>
             <Link to="/sellerDashboard" onClick={() => setIsOpen(false)}>
@@ -166,7 +195,7 @@ max-lg:!w-[210px]
           </li>
         )}
 
-        {/* إظهار داشبورد الأدمن لو المستخدم أدمن */}
+    
         {user?.role === "admin" && (
           <li>
             <Link to="/adminDashBoard" onClick={() => setIsOpen(false)}>
@@ -176,10 +205,10 @@ max-lg:!w-[210px]
           </li>
         )}
 
-          <li>
+               <li>
             <Link
               to="/favorites"
-              onClick={() => setIsOpen(false)}
+              onClick={(e) => handleProtectedClick(e, "view your favorites")}
             >
               <i className="fa-regular fa-heart"></i>
               <span>Favorites</span>
@@ -203,10 +232,10 @@ max-lg:!w-[210px]
             </Link>
           </li>
 
-          <li>
+             <li>
             <Link
               to="/profile"
-              onClick={() => setIsOpen(false)}
+              onClick={(e) => handleProtectedClick(e, "view your profile")}
             >
               <i className="fa-solid fa-circle-user"></i>
               <span>Profile</span>

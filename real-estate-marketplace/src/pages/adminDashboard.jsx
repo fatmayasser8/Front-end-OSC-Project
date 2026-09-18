@@ -117,6 +117,16 @@ function Dashboard() {
     const [usersLoading, setUsersLoading] = useState(true);  
   const [error, setError] = useState(null);
   const [listingsSearch, setListingsSearch] = useState("");
+
+const [listingsPage, setListingsPage] = useState(1);
+const [listingsTotalPages, setListingsTotalPages] = useState(1);
+const [loadingMoreListings, setLoadingMoreListings] = useState(false);
+
+
+const [usersPage, setUsersPage] = useState(1);
+const [usersTotalPages, setUsersTotalPages] = useState(1);
+const [loadingMoreUsers, setLoadingMoreUsers] = useState(false);
+
   const [showAllUsers, setShowAllUsers] = useState(false);
   const [showAllListings, setShowAllListings] = useState(false);
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -164,7 +174,7 @@ function Dashboard() {
       await approveRequest(id);
       setOpenRequestMenuId(null);
       
-      // تحديث الحالة فوراً في الـ State
+    
       setRequests((prev) =>
         prev.map((r) => ((r._id || r.id) === id ? { ...r, status: "approved" } : r))
       );
@@ -191,7 +201,7 @@ function Dashboard() {
   const reasonLength = rejectionReason.trim().length;
   const isReasonValid = reasonLength >= 2;
 
-  // *** التعديل الجوهري هنا للتحديث الفوري لـ Rejection ***
+ 
   async function confirmReject() {
     if (!isReasonValid || !rejectModal.id) {
       setModalError("Please enter a valid rejection reason (at least 2 characters).");
@@ -319,22 +329,26 @@ function Dashboard() {
         setLoading(true);
         setError(null);
 
-         const requestId = ++usersRequestId.current;
-     setUsersLoading(true);
-        const [statsRes, allUsers] = await Promise.all([
-          getAdminDashboardStats(),
-          fetchAllPages(
-            getAllUsers,
-            {},
-            () => requestId !== usersRequestId.current
-          ),
-        ]);
-        if (!isMounted) return;
-        if (requestId !== usersRequestId.current) return;
+const requestId = ++usersRequestId.current;
+setUsersLoading(true);
+const [statsRes, usersRes] = await Promise.all([
+  getAdminDashboardStats(),
+  getAllUsers({ limit: 20, page: 1 }),
+]);
+if (!isMounted) return;
+if (requestId !== usersRequestId.current) return;
 
-        setStats(unwrapObject(statsRes));
-        setUsers(allUsers);
-        if (requestId === usersRequestId.current) setUsersLoading(false);
+const { items, totalPages } = unwrapPage(usersRes);
+
+console.log(" Users API response:", usersRes);
+console.log(" totalPages:", totalPages, "| items returned:", items.length, "| stats.totalUsers:", unwrapObject(statsRes)?.totalUsers);
+
+setStats(unwrapObject(statsRes));
+setUsers(items);
+setUsersTotalPages(totalPages);
+setUsersPage(1);
+if (requestId === usersRequestId.current) setUsersLoading(false);
+
       } catch (err) {
         if (isMounted) setError("Couldn't load dashboard data. Please try again.");
         if (requestId === usersRequestId.current) setUsersLoading(false);   
@@ -350,58 +364,101 @@ function Dashboard() {
     };
   }, []);
 
-async function loadListings() {
+async function loadListings(page = 1) {
   const requestId = ++listingsRequestId.current;
 
   try {
-    setListingsLoading(true);
+    if (page === 1) {
+      setListingsLoading(true);
+    } else {
+      setLoadingMoreListings(true);
+    }
+
     const baseFilters = listingsSearch ? { search: listingsSearch } : {};
 
-    const allListings = await fetchAllPages(
-      getAllListings,
-      baseFilters,
-      () => requestId !== listingsRequestId.current   
-    );
+    const res = await getAllListings({ ...baseFilters, limit: 20, page });
 
     if (requestId !== listingsRequestId.current) return;
 
-    setListings(allListings);
+    const { items, totalPages } = unwrapPage(res);
+
+setListings((prev) => {
+  if (page === 1) return items;
+
+  // Merge without duplicating items that already exist
+  // (can happen if server-side ordering shifts between pages)
+  const existingIds = new Set(prev.map((item) => item._id || item.id));
+  const newItems = items.filter((item) => !existingIds.has(item._id || item.id));
+
+  return [...prev, ...newItems];
+});
+    setListingsTotalPages(totalPages);
+    setListingsPage(page);
   } catch (err) {
     if (requestId !== listingsRequestId.current) return;
   } finally {
     if (requestId === listingsRequestId.current) {
       setListingsLoading(false);
+      setLoadingMoreListings(false);
     }
   }
 }
 
-  async function loadUsers() {
-    const requestId = ++usersRequestId.current;
+function handleLoadMoreListings() {
+  if (loadingMoreListings || listingsLoading) return; 
+  if (listingsPage < listingsTotalPages) {
+    loadListings(listingsPage + 1);
+  }
+}
 
-    try {
-      setUsersLoading(true);   
+async function loadUsers(page = 1) {
+  const requestId = ++usersRequestId.current;
 
-      const allUsers = await fetchAllPages(
-        getAllUsers,
-        {},
-        () => requestId !== usersRequestId.current
-      );
+  try {
+    if (page === 1) {
+      setUsersLoading(true);
+    } else {
+      setLoadingMoreUsers(true);
+    }
 
-      if (requestId !== usersRequestId.current) return;
+    const res = await getAllUsers({ limit: 20, page });
 
-      setUsers(allUsers);
-    } catch (err) {
-      if (requestId !== usersRequestId.current) return;
-    } finally {
-      if (requestId === usersRequestId.current) {
-        setUsersLoading(false);  
-      }
+    if (requestId !== usersRequestId.current) return;
+
+    const { items, totalPages } = unwrapPage(res);
+
+    setUsers((prev) => {
+      if (page === 1) return items;
+
+      const existingIds = new Set(prev.map((u) => u._id || u.id));
+      const newItems = items.filter((u) => !existingIds.has(u._id || u.id));
+
+      return [...prev, ...newItems];
+    });
+
+    setUsersTotalPages(totalPages);
+    setUsersPage(page);
+  } catch (err) {
+    if (requestId !== usersRequestId.current) return;
+  } finally {
+    if (requestId === usersRequestId.current) {
+      setUsersLoading(false);
+      setLoadingMoreUsers(false);
     }
   }
-  useEffect(() => {
-    const debounce = setTimeout(loadListings, listingsSearch ? 400 : 0);
-    return () => clearTimeout(debounce);
-  }, [listingsSearch]);
+}
+
+function handleLoadMoreUsers() {
+  if (loadingMoreUsers || usersLoading) return;
+  if (usersPage < usersTotalPages) {
+    loadUsers(usersPage + 1);
+  }
+}
+
+useEffect(() => {
+  const debounce = setTimeout(() => loadListings(1), listingsSearch ? 400 : 0);
+  return () => clearTimeout(debounce);
+}, [listingsSearch]);
 
   async function handleApprove(id) {
     try {
@@ -602,23 +659,12 @@ async function loadListings() {
           <div className="chart-card recent-users-card">
             <div className="card-header-row">
               <h2>Recent Users</h2>
-              <button
-                type="button"
-                className="view-all-link"
-                style={{ background: "none", border: "none", cursor: "pointer", font: "inherit" }}
-                onClick={() => setShowAllUsers((v) => !v)}
-              >
-                {showAllUsers ? "Show Less" : "View All"} →
-              </button>
+         
             </div>
-            <ul
-              className="recent-users-list"
-              style={
-                showAllUsers
-                  ? { maxHeight: 260, overflowY: "auto" }
-                  : undefined
-              }
-            >
+       <ul
+  className="recent-users-list"
+  style={{ maxHeight: 260, overflowY: "auto" }}
+>
               {usersLoading &&
                 Array.from({ length: 5 }).map((_, i) => (
                   <li
@@ -631,7 +677,7 @@ async function loadListings() {
                     <span className="h-6 w-6 flex-shrink-0 rounded bg-white/10" />
                   </li>
                 ))}
-              {!usersLoading && (showAllUsers ? users : (Array.isArray(users) ? users : []).slice(0, 5)).map((u) => (
+              {!usersLoading && (Array.isArray(users) ? users : []).map((u) => (
                 <li key={u._id || u.id || u.fullName}>
                   <span className="avatar">
                     {(u.fullName || u.name || "?").split(" ").map((w) => w[0]).slice(0, 2).join("")}
@@ -654,6 +700,28 @@ async function loadListings() {
               ))}
               {!usersLoading && users.length === 0 && <li style={{ color: "#9b9b9b", fontSize: 12 }}>No users yet.</li>}
             </ul>
+            {usersPage < usersTotalPages && !usersLoading && (
+  <div style={{ textAlign: "center", marginTop: 12 }}>
+    <button
+      type="button"
+      onClick={handleLoadMoreUsers}
+      disabled={loadingMoreUsers}
+      style={{
+        padding: "8px 20px",
+        background: "transparent",
+        border: "1px solid #d4af37",
+        borderRadius: 8,
+        color: "#d4af37",
+        cursor: loadingMoreUsers ? "not-allowed" : "pointer",
+        opacity: loadingMoreUsers ? 0.6 : 1,
+        fontSize: 12,
+      }}
+    >
+      {loadingMoreUsers ? "Loading..." : "View More"}
+    </button>
+  </div>
+)}
+            
           </div>
         </div>
 
@@ -733,28 +801,16 @@ async function loadListings() {
               />
             </div>
 
-            <button
-              type="button"
-              className="view-all-link"
-              style={{ background: "none", border: "none", cursor: "pointer", font: "inherit" }}
-              onClick={() => setShowAllListings((v) => !v)}
-            >
-              {showAllListings ? "Show Less" : "View All"} →
-            </button>
           </div>
 
           {actionError && (
             <p style={{ color: "#f26d6d", fontSize: 12, marginBottom: 10 }}>{actionError}</p>
           )}
 
-          <div
-            className="listings-table-wrapper"
-            style={
-              showAllListings
-                ? { maxHeight: 360, overflowY: "auto" }
-                : undefined
-            }
-          >
+   <div
+  className="listings-table-wrapper"
+  style={{ maxHeight: 360, overflowY: "auto" }}
+>
             <table className="listings-table">
               <thead>
                 <tr>
@@ -768,7 +824,7 @@ async function loadListings() {
                 </tr>
               </thead>
               <tbody>
-                {(showAllListings ? listings : (Array.isArray(listings) ? listings : []).slice(0, 4)).map((item) => (
+                {(Array.isArray(listings) ? listings : []).map((item) => (
                   <tr key={item._id || item.id}>
                     <td>
                       <img
@@ -943,6 +999,28 @@ async function loadListings() {
               </tbody>
             </table>
           </div>
+          {listingsPage < listingsTotalPages && (
+  <div style={{ textAlign: "center", marginTop: 16 }}>
+    <button
+      type="button"
+      onClick={handleLoadMoreListings}
+      disabled={loadingMoreListings}
+      style={{
+        padding: "10px 24px",
+        background: "transparent",
+        border: "1px solid #d4af37",
+        marginBottom: "10px",
+        borderRadius: 8,
+        color: "#d4af37",
+        cursor: loadingMoreListings ? "not-allowed" : "pointer",
+        opacity: loadingMoreListings ? 0.6 : 1,
+        fontSize: 13,
+      }}
+    >
+      {loadingMoreListings ? "Loading..." : "View More"}
+    </button>
+  </div>
+)}
         </div>
 
         {/* USER DETAILS MODAL */}

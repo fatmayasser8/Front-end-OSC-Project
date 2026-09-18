@@ -79,20 +79,18 @@ a{
   transition: all 0.3s ease;
 }
 
-.google-login-button:hover {
+.google-login-wrapper:hover .google-login-button {
   transform: translateY(-1px);
   color: #d4af37;
   border-color: #d4af37;
   box-shadow: 0 0 12px rgba(212, 175, 55, 0.15);
 }
 
-.google-login-button i {
-  transition: color 0.3s ease;
-}
-
-.google-login-button:hover i {
+.google-login-wrapper:hover .google-login-button i {
   color: #d4af37;
 }
+
+
 
 .guest-login-wrapper {
   position: relative;
@@ -365,6 +363,12 @@ a{
   animation: spin 0.7s linear infinite;
 }
 
+.TC{
+  color: #c9952e;
+}
+.rounded-1{
+  border-radius: 30px;
+}
 @keyframes spin {
   to {
     transform: rotate(360deg);

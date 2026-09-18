@@ -17,7 +17,6 @@ const shouldCheckVerification = userRoleFromStorage === "seller";
 const { verification, isApproved, loading: verifyLoading, refetch } = useSellerVerification(shouldCheckVerification);
 const [showVerificationModal, setShowVerificationModal] = useState(false);
 
-
   // ================= Edit Profile State =================
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ fullName: "", phoneNumber: "" });
@@ -32,6 +31,10 @@ const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [deletingImage, setDeletingImage] = useState(false);
   const [originalImage, setOriginalImage] = useState(null);
 
+
+
+
+  
 const handleSellClick = (e) => {
   e.preventDefault(); 
 
@@ -300,10 +303,13 @@ const handleDeleteImage = () => {
     );
   }
 
-  const requestStatus = user?.request?.status;
-  const userRole = user?.role || user?.userRole || localStorage.getItem("userRole");
-  const isSeller = userRole === "seller";
-  const isBuyer = !isSeller;
+const requestStatus = user?.request?.status;
+const userRole =
+  user?.role || user?.userRole || localStorage.getItem("userRole");
+
+const isSeller = userRole === "seller";
+const isBuyer = userRole === "buyer";
+const isAdmin = userRole === "admin";
 
   return (
     <div className="profile-page min-h-screen bg-[#111] text-white">
@@ -485,12 +491,29 @@ const handleDeleteImage = () => {
                 {user?.email}
               </p>
 
-              {userRole && (
-                <span className={`role-badge ${isSeller ? "role-seller" : "role-buyer"}`}>
-                  <i className={`fa-solid ${isSeller ? "fa-store" : "fa-house-user"}`}></i>
-                  {isSeller ? "Seller" : "Buyer"}
-                </span>
-              )}
+        {userRole && (
+  <span
+    className={`role-badge ${
+      isSeller
+        ? "role-seller"
+        : isAdmin
+        ? "role-admin"
+        : "role-buyer"
+    }`}
+  >
+    <i
+      className={`fa-solid ${
+        isSeller
+          ? "fa-store"
+          : isAdmin
+          ? "fa-user-shield"
+          : "fa-house-user"
+      }`}
+    ></i>
+
+    {isSeller ? "Seller" : isAdmin ? "Admin" : "Buyer"}
+  </span>
+)}
             </div>
           </div>
 <div className="right-profile w-full sm:w-auto">
@@ -557,108 +580,100 @@ const handleDeleteImage = () => {
       </section>
 
 
-      {/* ================= Statistics ================= */}
-      <section
-        className="
-          profile-stats
-          w-[92%]
-          sm:w-[95%]
-          lg:w-[97%]
-          mx-auto
-          py-2
-          grid
-          grid-cols-1
-          sm:grid-cols-3
-          gap-0
-        "
-      >
+{/* ================= Statistics ================= */}
+<section
+  className="
+    profile-stats
+    w-[92%]
+    sm:w-[95%]
+    lg:w-[97%]
+    mx-auto
+    py-2
+    grid
+    grid-cols-1
+    sm:grid-cols-3
+    gap-0
+  "
+>
+  {/* Properties Saved */}
+  <div
+    className="
+      stat
+      text-center
+      py-4
+      sm:py-[22px]
+      px-2
+      sm:border-b-0
+      sm:border-r
+    "
+  >
+    <h3 className="m-0 mb-1 text-lg sm:text-[25px]">
+      {user?.favoritesCount ?? 0}
+    </h3>
 
-        <div
-          className="
-            stat
-            text-center
-            py-4
-            sm:py-[22px]
-            px-2
-            sm:border-b-0
-            sm:border-r
-          "
-        >
-          <h3 className="m-0 mb-1 text-lg sm:text-[25px]">
-            {user?.favoritesCount ?? 0}
-          </h3>
+    <p className="m-0 text-[9px] sm:text-xs text-[#777]">
+      Properties Saved
+    </p>
+  </div>
 
-          <p className="m-0 text-[9px] sm:text-xs text-[#777]">
-            Properties Saved
-          </p>
-        </div>
+  {/* Account Type */}
+  <div
+    className="
+      stat
+      text-center
+      py-4
+      sm:py-[22px]
+      px-2
+      sm:border-b-0
+      sm:border-r
+    "
+  >
+    <h3
+      className="
+        m-0
+        mb-1
+        text-lg
+        sm:text-[25px]
+        font-bold
+        capitalize
+      "
+    >
+      {userRole || "User"}
+    </h3>
 
+    <p className="m-0 text-[9px] sm:text-xs text-[#777]">
+      Account Type
+    </p>
+  </div>
 
-        <div
-          className="
-            stat
-            text-center
-            py-4
-            sm:py-[22px]
-            px-2
-            sm:border-b-0
-            sm:border-r
-          "
-        >
-          <h3
-            className="
-              m-0
-              mb-1
-              text-white
-              text-xl
-              sm:text-[25px]
-            "
-          >
-            {user?.viewersCount ?? 0}
-          </h3>
+  {/* Profile Views */}
+  <div
+    className="
+      stat
+      text-center
+      py-4
+      sm:py-[22px]
+      px-2
+    "
+  >
+    <h3
+      className="
+        m-0
+        mb-1
+        text-lg
+        sm:text-[25px]
+        font-bold
+      "
+    >
+      {user?.viewersCount ?? 0}
+    </h3>
 
-          <p className="m-0 text-[11px] sm:text-sm text-[#ddd]">
-            Total Views
-          </p>
-        </div>
+    <p className="m-0 text-[9px] sm:text-xs text-[#777]">
+      Profile Views
+    </p>
+  </div>
+</section>
 
-
-        <div
-          className="
-            stat
-            text-center
-            py-4
-            sm:py-[22px]
-            px-2
-          "
-        >
-          <h3
-            className={`
-              m-0
-              mb-1
-              text-lg
-              sm:text-sm
-              font-bold
-              ${
-                requestStatus === "submitted"
-                  ? "text-[#4caf50]"
-                  : requestStatus === "pending"
-                  ? "text-[#d4af37]"
-                  : requestStatus === "rejected"
-                  ? "text-[#e05252]"
-                  : "text-[#777]"
-              }
-            `}
-          >
-            {user?.request ? "Submitted" : "Not Submitted"}
-          </h3>
-
-          <p className="m-0 text-[#777] text-[11px] sm:text-xs">
-            Seller Request
-          </p>
-        </div>
-
-      </section>
 
 
       {/* ================= Profile Details ================= */}

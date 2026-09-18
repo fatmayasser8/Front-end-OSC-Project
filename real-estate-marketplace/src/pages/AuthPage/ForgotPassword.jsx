@@ -78,7 +78,7 @@ function ForgotPassword({ closeModal }) {
         type="button"
         disabled={loading}
         onClick={handleForgotPassword}
-        className="mt-[5px] flex cursor-pointer items-center justify-center rounded-[10px] border-0 bg-gradient-to-br from-[#d4af37] to-[#f0d477] p-3.5 text-base font-bold text-[#0b0b0b] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(212,175,55,0.25)] disabled:cursor-not-allowed disabled:opacity-70"
+        className="mt-[5px] flex cursor-pointer items-center justify-center rounded-1 border-0 bg-gradient-to-br from-[#d4af37] to-[#f0d477] p-3.5 text-base font-bold text-[#0b0b0b] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(212,175,55,0.25)] disabled:cursor-not-allowed disabled:opacity-70"
       >
         {loading ? (
           <>

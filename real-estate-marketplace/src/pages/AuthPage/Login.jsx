@@ -164,9 +164,8 @@ const handleLogin = async (e) => {
           <span>OR</span>
           <span className="h-px flex-1 bg-[#333]"></span>
         </div>
-
-        <div className="relative h-[47px] w-full">
-  <div className="absolute inset-0 z-10 flex items-center justify-center opacity-0 ">
+<div className="google-login-wrapper">
+  <div className="google-login-overlay">
     <GoogleLogin
       onSuccess={handleGoogleSuccess}
       onError={() => {
@@ -178,7 +177,6 @@ const handleLogin = async (e) => {
   <div className="google-login-button">
     <i className="fa-brands fa-google mr-[5px] text-base"></i>
     Continue with Google
-    
   </div>
 </div>
 
@@ -208,7 +206,7 @@ const handleLogin = async (e) => {
               ×
             </button>
 
-            <h2 className="mb-2.5 text-center text-2xl font-bold text-[#e8c877]">
+            <h2 className="mb-2.5 text-center text-2xl font-bold TC">
               Forgot Password?
             </h2>
 

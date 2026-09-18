@@ -1,6 +1,8 @@
 import userImg from "../../assets/user-img.jpg";
 import "../../styles/Navbar.css";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { isAuthenticated } from "../../utils/auth";
 
 function Navbar({ onMenuClick, onMapClick, showMap })  {
 const navigate = useNavigate();
@@ -8,6 +10,32 @@ const navigate = useNavigate();
 const user = JSON.parse(localStorage.getItem("user") || "{}");
 const profileImage = user?.userImage || userImg;
 
+const showLoginPrompt = (action) => {
+  Swal.fire({
+    title: "Join NOVA",
+    text: `You need an account to ${action}.`,
+    icon: "info",
+    showCancelButton: true,
+    confirmButtonText: "Create Account",
+    cancelButtonText: "Maybe Later",
+    background: "#111",
+    color: "#fff",
+    confirmButtonColor: "#d4af37",
+    cancelButtonColor: "#333",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      navigate("/register");
+    }
+  });
+};
+
+const handleProfileClick = () => {
+  if (!isAuthenticated()) {
+    showLoginPrompt("view your profile");
+    return;
+  }
+  navigate("/profile");
+};
 
   return (
 <nav className="fixed left-0 top-0 z-[1050] h-[70px] w-full border-b-2 border-[#d4af37] bg-black lg:relative p-3">
@@ -46,7 +74,7 @@ const profileImage = user?.userImage || userImg;
 
 <button
   type="button"
-  onClick={() => navigate("/profile")}
+  onClick={handleProfileClick}
   className="h-8 w-8 overflow-hidden btn-pic border-2 border-[#d4af37] sm:h-9 sm:w-9 md:h-10 md:w-10"
 >
   <img
