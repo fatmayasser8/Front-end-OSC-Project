@@ -839,9 +839,9 @@ useEffect(() => {
     }
   }
 
-  if (!setupDone || !savedLocation) {
-    setLocationSetupRequired(true);
-  }
+if (!setupDone) {
+  setLocationSetupRequired(true);
+}
 
   setLocationLoaded(true);
 }, []);
@@ -852,17 +852,18 @@ useEffect(() => {
 Handle RestSearch
 ========================================================= */
 const handleResetSearch = () => {
-  setPreferredLocation(null);
-
-  localStorage.removeItem(LOCATION_KEY);
-  localStorage.removeItem(LOCATION_SETUP_KEY);
-
   localStorage.removeItem(SEARCH_KEY);
   setLastSearch({});
 
+  // Clear the map location, but NOT the setup flag
+  localStorage.removeItem(LOCATION_KEY);
+  setPreferredLocation(null);
+
+  setSelectedProperty(null);
+  setShowMap(false);
+
   fetchProperties({}, false, 0, true);
 };
-
 
 
 const handleClearFilters = () => {
