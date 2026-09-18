@@ -20,7 +20,8 @@ const getPriceRangeFromMinMax = (minPrice, maxPrice) => {
 
 function SearchBar({
   onSearch,
-    onReset,   
+  onReset,
+  onClearFilters,
   initialFilters = {},
 }) {
 const [search, setSearch] = useState(
@@ -111,6 +112,18 @@ const filters = {
 };
 
   console.log("SEARCH FILTERS:", filters);
+
+  const isEverythingEmpty =
+    !search.trim() &&
+    !propertyType &&
+    !purpose &&
+    !priceRange &&
+    !bedrooms;
+
+  if (isEverythingEmpty) {
+    onClearFilters?.();
+    return;
+  }
 
   onSearch(filters);
 };

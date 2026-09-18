@@ -862,6 +862,15 @@ const handleResetSearch = () => {
 
   fetchProperties({}, false);
 };
+
+
+
+const handleClearFilters = () => {
+  localStorage.removeItem(SEARCH_KEY);
+  setLastSearch({});
+
+  fetchProperties({}, false, 0, true);
+};
   /* =====================================================
      GET FAVORITES
   ===================================================== */
@@ -924,7 +933,8 @@ const handleResetSearch = () => {
 const fetchProperties = async (
   filters = {},
   saveSearch = false,
-  retryCount = 0
+  retryCount = 0,
+  skipLocationFilter = false
 ) => {
   if (requestInProgress.current) return;
 
@@ -985,6 +995,7 @@ const fetchProperties = async (
     setAllProperties(listings);
 
     if (
+      !skipLocationFilter &&
       preferredLocation?.latitude &&
       preferredLocation?.longitude
     ) {
@@ -1230,11 +1241,11 @@ const handleLocationSearch = (
         ================================================= */}
 
         <section className="search-section -mt-5 px-3 sm:-mt-[30px] sm:px-5 md:px-0">
-
 <SearchBar
   initialFilters={lastSearch}
   onSearch={(filters) => fetchProperties(filters, true)}
   onReset={handleResetSearch}
+  onClearFilters={handleClearFilters}
 />
         </section>
 
