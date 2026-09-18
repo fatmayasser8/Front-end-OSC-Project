@@ -111,7 +111,7 @@ setIsLoading(true);
 
 try {
   const response = await fetch(
-    "https://real-estate-market-place-api.vercel.app/api/v1/users/auth/register",
+    "https://real-estate-market-place-api.vercel.app/api/v1/users/register",
     {
       method: "POST",
       headers: {

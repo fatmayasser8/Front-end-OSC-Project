@@ -37,11 +37,10 @@ function App() {
         <Route element={<Layout />}>
         <Route path="/" element={<Landing />} />
 
-        <Route path="/auth" element={<Auth />}>
-          <Route index element={<Navigate to="login" replace />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-        </Route>
+<Route element={<Auth />}>
+  <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
+</Route>
 
         <Route path="/home" element={<Home />} />
 

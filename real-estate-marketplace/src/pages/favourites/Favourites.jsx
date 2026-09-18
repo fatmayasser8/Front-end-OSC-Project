@@ -28,7 +28,7 @@ const getFavorites = async () => {
 
     if (!response.ok) {
       if (response.status === 401) {
-        navigate("/auth/login");
+        navigate("/login");
         return;
       }
 
@@ -65,7 +65,7 @@ const getFavorites = async () => {
 
       if (!response.ok) {
         if (response.status === 401) {
-          navigate("/auth/login");
+          navigate("/login");
           return;
         }
         throw new Error(data.message || "Failed to update favorites");
@@ -110,7 +110,7 @@ try { setClearingFavorites(true);
 
 if (!response.ok) {
    if (response.status === 401) {
-     navigate("/auth/login"); return;
+     navigate("/login"); return;
      } 
      throw new Error( data.message || "Failed to clear favorites" );
      }

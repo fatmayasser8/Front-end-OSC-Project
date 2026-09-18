@@ -30,7 +30,7 @@ const showLoginPrompt = (action) => {
     cancelButtonColor: "#333",
   }).then((result) => {
     if (result.isConfirmed) {
-      navigate("/auth/register");
+      navigate("/register");
     }
   });
 };

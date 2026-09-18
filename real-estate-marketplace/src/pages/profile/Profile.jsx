@@ -66,7 +66,7 @@ useEffect(() => {
 
       if (!response.ok) {
         if (response.status === 401) {
-          navigate("/auth/login");
+          navigate("/login");
           return;
         }
         throw new Error(result.message || "Failed to get profile");
@@ -155,7 +155,7 @@ const handleSaveProfile = async (e) => {
 
     if (!response.ok) {
       if (response.status === 401) {
-        navigate("/auth/login");
+        navigate("/login");
         return;
       }
 
@@ -250,7 +250,7 @@ console.log("FormData image:", formData.get("image"));
 
       if (!response.ok) {
         if (response.status === 401) {
-          navigate("/auth/login");
+          navigate("/login");
           return;
         }
         throw new Error(result.message || "Failed to upload image");

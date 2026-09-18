@@ -10,7 +10,7 @@ function AdminRoute() {
   if (!token) {
     return (
       <Navigate
-        to="/auth/login"
+        to="/login"
         replace
         state={{
           from: location.pathname,

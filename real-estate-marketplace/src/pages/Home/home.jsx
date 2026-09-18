@@ -860,7 +860,7 @@ const handleResetSearch = () => {
   localStorage.removeItem(SEARCH_KEY);
   setLastSearch({});
 
-  fetchProperties({}, false);
+  fetchProperties({}, false, 0, true);
 };
 
 
@@ -929,7 +929,6 @@ const handleClearFilters = () => {
   /* =====================================================
      FETCH PROPERTIES
   ===================================================== */
-
 const fetchProperties = async (
   filters = {},
   saveSearch = false,
@@ -937,7 +936,6 @@ const fetchProperties = async (
   skipLocationFilter = false
 ) => {
   if (requestInProgress.current) return;
-
   requestInProgress.current = true;
 
   try {
@@ -947,50 +945,58 @@ const fetchProperties = async (
 
     const { priceRange, ...cleanFilters } = filters;
 
-    // Save the current search
+    // Save the current search filters
     if (saveSearch) {
-      localStorage.setItem(
-        SEARCH_KEY,
-        JSON.stringify(cleanFilters)
-      );
-
+      localStorage.setItem(SEARCH_KEY, JSON.stringify(cleanFilters));
       setLastSearch(cleanFilters);
     }
 
     const params = new URLSearchParams();
 
     Object.entries(cleanFilters).forEach(([key, value]) => {
-      if (
-        key === "search" ||
-        value === "" ||
-        value === null ||
-        value === undefined
-      ) {
+      if (key === "search" || value === "" || value === null || value === undefined) {
         return;
       }
-
       params.append(key, value);
     });
 
     const queryString = params.toString();
-
     const url = queryString
       ? `${API_URL}/listings?${queryString}`
       : `${API_URL}/listings`;
 
-    console.log("LISTINGS REQUEST:", url);
-
     const response = await fetch(url);
+
+    // Handle rate limiting separately from other errors
+    if (response.status === 429) {
+      requestInProgress.current = false;
+
+      const retryAfterHeader = response.headers.get("Retry-After");
+      const waitMs = retryAfterHeader
+        ? Number(retryAfterHeader) * 1000
+        : 3000 * Math.pow(2, retryCount); // exponential backoff: 3s, 6s, 12s...
+
+      if (retryCount < 2) {
+        setTimeout(() => {
+          fetchProperties(filters, false, retryCount + 1, skipLocationFilter);
+        }, waitMs);
+        return;
+      }
+
+      setError("The server is under heavy load right now. Please try again shortly.");
+      setNetworkError(true);
+      setProperties([]);
+      setMapProperties([]);
+      setLoading(false);
+      return;
+    }
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
 
     const data = await response.json();
-
-    const listings = Array.isArray(data.data)
-      ? data.data
-      : [];
+    const listings = Array.isArray(data.data) ? data.data : [];
 
     setAllProperties(listings);
 
@@ -1004,7 +1010,6 @@ const fetchProperties = async (
         preferredLocation.latitude,
         preferredLocation.longitude
       );
-
       setProperties(nearby);
       setMapProperties(nearby);
     } else {
@@ -1018,21 +1023,14 @@ const fetchProperties = async (
 
     setLoading(false);
     requestInProgress.current = false;
-
   } catch (err) {
     console.error("Properties error:", err);
-
     requestInProgress.current = false;
 
     if (retryCount < 1) {
       setTimeout(() => {
-        fetchProperties(
-          filters,
-          false,
-          retryCount + 1
-        );
+        fetchProperties(filters, false, retryCount + 1, skipLocationFilter);
       }, 1200);
-
       return;
     }
 
@@ -1055,11 +1053,7 @@ useEffect(() => {
   }
 
   fetchProperties(lastSearch);
-}, [
-  locationSetupRequired,
-  preferredLocation,
-]);
-
+}, [locationSetupRequired]);
   /* =====================================================
      LOCATION SEARCH FROM MAP
   ===================================================== */

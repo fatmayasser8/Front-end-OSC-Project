@@ -105,7 +105,7 @@ function Dashboard() {
       sessionStorage.getItem("accessToken");
 
     if (!token) {
-      navigate("/auth/login");
+      navigate("/login");
     }
   }, [navigate]);
 

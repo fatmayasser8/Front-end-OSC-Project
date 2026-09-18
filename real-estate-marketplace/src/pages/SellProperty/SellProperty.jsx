@@ -724,7 +724,7 @@ if (!isApproved) {
       // =========================
 
       if (response.status === 401) {
-        navigate("/auth/login");
+        navigate("/login");
 
         return;
       }

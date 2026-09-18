@@ -68,7 +68,7 @@ const getDashboardData = async () => {
 
     if (!profileResponse.ok) {
       if (profileResponse.status === 401) {
-        navigate("/auth/login");
+        navigate("/login");
         return;
       }
 
@@ -137,7 +137,7 @@ const getDashboardData = async () => {
 
       if (!response.ok) {
         if (response.status === 401) {
-          navigate("/auth/login");
+          navigate("/login");
           return;
         }
 

@@ -63,7 +63,7 @@ const handleLogin = async (e) => {
     setLoading(true);
 
     const response = await fetch(
-      "https://real-estate-market-place-api.vercel.app/api/v1/users/auth/login",
+      "https://real-estate-market-place-api.vercel.app/api/v1/users/login",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

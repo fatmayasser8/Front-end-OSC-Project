@@ -19,7 +19,7 @@ function ProtectedRoute() {
   if (!isAuthenticated()) {
     return (
       <Navigate
-        to="/auth/login"
+        to="/login"
         replace
         state={{
           from: location.pathname,

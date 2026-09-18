@@ -27,7 +27,7 @@ function PublicProfile() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          navigate("/auth/login");
+          navigate("/login");
           return;
         }
         if (response.status === 404) {

@@ -73,7 +73,7 @@ console.log("ROLE:", user?.userRole);
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
 
-      navigate("/auth/login");
+      navigate("/login");
     }
   };
 
@@ -228,7 +228,7 @@ max-lg:!w-[210px]
       type="button"
       onClick={() => {
         setIsOpen(false);
-        navigate("/auth/login");
+        navigate("/login");
       }}
     >
       <i className="fa-solid fa-right-to-bracket"></i>

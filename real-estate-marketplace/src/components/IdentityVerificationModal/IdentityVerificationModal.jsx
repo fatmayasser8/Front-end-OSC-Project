@@ -41,7 +41,7 @@ function IdentityVerificationModal({ verification, onClose, refetch }) {
       });
 
       if (response.status === 401) {
-        navigate("/auth/login");
+        navigate("/login");
         return;
       }
 
@@ -85,7 +85,7 @@ function IdentityVerificationModal({ verification, onClose, refetch }) {
       });
 
       if (response.status === 401) {
-        navigate("/auth/login");
+        navigate("/login");
         return;
       }
 

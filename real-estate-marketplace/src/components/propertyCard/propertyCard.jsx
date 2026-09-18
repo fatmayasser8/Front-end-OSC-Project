@@ -88,7 +88,7 @@ if (!isAuthenticated()) {
      color: "#fff", 
      confirmButtonColor: "#d4af37", cancelButtonColor: "#333", }).then((result) => {
        if (result.isConfirmed) { 
-        navigate("/auth/register");
+        navigate("/register");
        } });
         return; }
 
@@ -122,7 +122,7 @@ if (!isAuthenticated()) {
 
       if (!response.ok) {
         if (response.status === 401) {
-          navigate("/auth/login");
+          navigate("/login");
           return;
         }
 

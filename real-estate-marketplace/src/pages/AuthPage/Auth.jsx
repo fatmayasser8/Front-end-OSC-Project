@@ -17,13 +17,13 @@ function Auth() {
 
         <div className="mb-7 flex gap-2.5 sm:mb-[30px] auth-tabs">
           <NavLink
-            to="/auth/login"
+            to="/login"
           >
             Login
           </NavLink>
 
           <NavLink
-            to="/auth/register"
+            to="/register"
           >
             Register
           </NavLink>
