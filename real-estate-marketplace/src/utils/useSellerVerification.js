@@ -3,11 +3,13 @@ import { apiFetch } from "./apiFetch";
 
 const API = "https://real-estate-market-place-api.vercel.app/api/v1";
 
-export function useSellerVerification() {
+export function useSellerVerification(enabled = true) {
   const [verification, setVerification] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(enabled);
 
   const fetchVerification = useCallback(async () => {
+    if (!enabled) return;
+
     try {
       setLoading(true);
 
@@ -18,7 +20,7 @@ export function useSellerVerification() {
         return;
       }
 
-      if (response.status === 401) {
+      if (response.status === 401 || response.status === 403) {
         setVerification({ status: "unauthorized" });
         return;
       }
@@ -37,11 +39,15 @@ export function useSellerVerification() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [enabled]);
 
   useEffect(() => {
-    fetchVerification();
-  }, [fetchVerification]);
+    if (enabled) {
+      fetchVerification();
+    } else {
+      setLoading(false);
+    }
+  }, [fetchVerification, enabled]);
 
   const isApproved = verification?.status === "approved";
 

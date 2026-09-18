@@ -11,7 +11,10 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-const { verification, isApproved, loading: verifyLoading, refetch } = useSellerVerification();
+const userRoleFromStorage = localStorage.getItem("userRole");
+const shouldCheckVerification = userRoleFromStorage === "seller";
+
+const { verification, isApproved, loading: verifyLoading, refetch } = useSellerVerification(shouldCheckVerification);
 const [showVerificationModal, setShowVerificationModal] = useState(false);
 
 
@@ -72,6 +75,11 @@ useEffect(() => {
       console.log("Profile Response:", result);
 
       setUser(result.data.user);
+
+      const fetchedRole = result.data.user?.role || result.data.user?.userRole;
+      if (fetchedRole) {
+        localStorage.setItem("userRole", fetchedRole);
+      }
     } catch (error) {
       console.error("Profile error:", error);
       setError(error.message || "Something went wrong");
@@ -293,8 +301,9 @@ const handleDeleteImage = () => {
   }
 
   const requestStatus = user?.request?.status;
-  const userRole = localStorage.getItem("userRole");
+  const userRole = user?.role || user?.userRole || localStorage.getItem("userRole");
   const isSeller = userRole === "seller";
+  const isBuyer = !isSeller;
 
   return (
     <div className="profile-page min-h-screen bg-[#111] text-white">

@@ -848,7 +848,20 @@ useEffect(() => {
 
 
 
+/* =========================================================
+Handle RestSearch
+========================================================= */
+const handleResetSearch = () => {
+  setPreferredLocation(null);
 
+  localStorage.removeItem(LOCATION_KEY);
+  localStorage.removeItem(LOCATION_SETUP_KEY);
+
+  localStorage.removeItem(SEARCH_KEY);
+  setLastSearch({});
+
+  fetchProperties({}, false);
+};
   /* =====================================================
      GET FAVORITES
   ===================================================== */
@@ -908,8 +921,13 @@ useEffect(() => {
      FETCH PROPERTIES
   ===================================================== */
 
-const fetchProperties = async (filters = {}, saveSearch = false, retryCount = 0) => {
+const fetchProperties = async (
+  filters = {},
+  saveSearch = false,
+  retryCount = 0
+) => {
   if (requestInProgress.current) return;
+
   requestInProgress.current = true;
 
   try {
@@ -919,8 +937,13 @@ const fetchProperties = async (filters = {}, saveSearch = false, retryCount = 0)
 
     const { priceRange, ...cleanFilters } = filters;
 
+    // Save the current search
     if (saveSearch) {
-      localStorage.setItem(SEARCH_KEY, JSON.stringify(cleanFilters));
+      localStorage.setItem(
+        SEARCH_KEY,
+        JSON.stringify(cleanFilters)
+      );
+
       setLastSearch(cleanFilters);
     }
 
@@ -939,20 +962,32 @@ const fetchProperties = async (filters = {}, saveSearch = false, retryCount = 0)
       params.append(key, value);
     });
 
-    const response = await fetch(
-      `${API_URL}/listings?${params.toString()}`
-    );
+    const queryString = params.toString();
+
+    const url = queryString
+      ? `${API_URL}/listings?${queryString}`
+      : `${API_URL}/listings`;
+
+    console.log("LISTINGS REQUEST:", url);
+
+    const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
 
     const data = await response.json();
-    const listings = Array.isArray(data.data) ? data.data : [];
+
+    const listings = Array.isArray(data.data)
+      ? data.data
+      : [];
 
     setAllProperties(listings);
 
-    if (preferredLocation?.latitude && preferredLocation?.longitude) {
+    if (
+      preferredLocation?.latitude &&
+      preferredLocation?.longitude
+    ) {
       const nearby = getNearbyProperties(
         listings,
         preferredLocation.latitude,
@@ -965,22 +1000,28 @@ const fetchProperties = async (filters = {}, saveSearch = false, retryCount = 0)
       setProperties(listings);
       setMapProperties(listings);
     }
-if (saveSearch) {
-  setSelectedProperty(null);
-}
 
-
+    if (saveSearch) {
+      setSelectedProperty(null);
+    }
 
     setLoading(false);
     requestInProgress.current = false;
+
   } catch (err) {
     console.error("Properties error:", err);
+
     requestInProgress.current = false;
 
     if (retryCount < 1) {
       setTimeout(() => {
-        fetchProperties(filters, false, retryCount + 1);
+        fetchProperties(
+          filters,
+          false,
+          retryCount + 1
+        );
       }, 1200);
+
       return;
     }
 
@@ -1012,48 +1053,42 @@ useEffect(() => {
      LOCATION SEARCH FROM MAP
   ===================================================== */
 
-  const handleLocationSearch = (
+const handleLocationSearch = (
+  latitude,
+  longitude,
+  locationName
+) => {
+  const nearby =
+    getNearbyProperties(
+      properties,        
+      latitude,
+      longitude
+    );
+
+  const newLocation = {
     latitude,
     longitude,
-    locationName
-  ) => {
-    const nearby =
-      getNearbyProperties(
-        allProperties,
-        latitude,
-        longitude
-      );
-
-    const newLocation = {
-      latitude,
-      longitude,
-      name:
-        locationName ||
-        "Selected Area",
-    };
-
-    setMapProperties(nearby);
-    setProperties(nearby);
-    setPreferredLocation(
-      newLocation
-    );
-
-    /*
-      Save new area immediately
-      when user searches from Map.
-    */
-
-    localStorage.setItem(
-      LOCATION_KEY,
-      JSON.stringify(newLocation)
-    );
-
-    localStorage.setItem(
-      LOCATION_SETUP_KEY,
-      "true"
-    );
+    name:
+      locationName ||
+      "Selected Area",
   };
 
+  setMapProperties(nearby);
+  setProperties(nearby);
+  setPreferredLocation(
+    newLocation
+  );
+
+  localStorage.setItem(
+    LOCATION_KEY,
+    JSON.stringify(newLocation)
+  );
+
+  localStorage.setItem(
+    LOCATION_SETUP_KEY,
+    "true"
+  );
+};
   /* =====================================================
      SAVE LOCATION SETUP
   ===================================================== */
@@ -1140,7 +1175,7 @@ useEffect(() => {
 
       <Sidebar />
 
-   <div className="main-content !ml-0 lg:!ml-[210px]">
+<div className="main-content !ml-0 lg:!ml-[210px] min-h-screen">
 
         <Navbar
           onMenuClick={() =>
@@ -1199,8 +1234,8 @@ useEffect(() => {
 <SearchBar
   initialFilters={lastSearch}
   onSearch={(filters) => fetchProperties(filters, true)}
+  onReset={handleResetSearch}
 />
-
         </section>
 
         {/* =================================================

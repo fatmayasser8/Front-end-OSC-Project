@@ -122,8 +122,28 @@ const handleShare = async () => {
     console.log("Share cancelled");
   }
 };
+
+
+const showInfoAlert = (message) => {
+  Swal.fire({
+    title: "Heads up",
+    text: message,
+    icon: "info",
+    confirmButtonText: "OK",
+    background: "#111",
+    color: "#fff",
+    confirmButtonColor: "#d4af37",
+  });
+};
+
 const handleWhatsAppMessage = () => {
-  const rawPhone = seller?.phoneNumber || property?.owner?.phone || "201116440515";
+  const rawPhone = seller?.phoneNumber || property?.owner?.phone;
+
+  if (!rawPhone) {
+    showInfoAlert("This seller hasn't added a phone number yet.");
+    return;
+  }
+
   let cleanPhone = (typeof rawPhone === "string" ? rawPhone : String(rawPhone)).replace(/\D/g, "");
 
   if (cleanPhone.startsWith("0")) {
@@ -150,26 +170,27 @@ Is it still available?`;
   const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
   window.open(whatsappUrl, "_blank");
 };
-const handleContactSeller = () => {
 
-  if (!seller?.phoneNumber) {
-    alert("Seller phone number is not available");
+const handleContactSeller = () => {
+  const phone = seller?.phoneNumber || property?.owner?.phone;
+
+  if (!phone) {
+    showInfoAlert("This seller hasn't added a phone number yet.");
     return;
   }
 
-  window.location.href = `tel:${seller.phoneNumber}`;
+  window.location.href = `tel:${phone}`;
 };
+
 const handleDirections = () => {
   if (!latitude || !longitude) {
-    alert("Property location is not available");
+    showInfoAlert("This property's location isn't available yet.");
     return;
   }
 
   const url = `https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`;
-
   window.open(url, "_blank");
 };
-
 
 useEffect(() => {
   const fetchProperty = async () => {
@@ -237,6 +258,15 @@ useEffect(() => {
 
   checkFavorite();
 }, [id]);
+
+useEffect(() => {
+  if (property?.owner && typeof property.owner === "object") {
+    setSeller((prev) => prev || property.owner);
+  }
+}, [property]);
+
+
+
 useEffect(() => {
   if (!property?.owner) return;
 

@@ -10,7 +10,7 @@ const profileImage = user?.userImage || userImg;
 
 
   return (
-<nav className="fixed left-0 top-0 z-[1050] h-[70px] w-full border-b-2 border-[#d4af37] bg-black lg:relative">
+<nav className="fixed left-0 top-0 z-[1050] h-[70px] w-full border-b-2 border-[#d4af37] bg-black lg:relative p-3">
       
   <div className="flex h-full w-full items-center justify-between px-4 sm:px-6 lg:justify-end lg:px-8">
 
@@ -33,7 +33,7 @@ const profileImage = user?.userImage || userImg;
         </div>
 
         {/* Navbar Icons */}
-        <div className="nav-icons  flex items-center ">
+<div className="nav-icons flex items-center gap-3 sm:gap-4">
 
       <button
         type="button"

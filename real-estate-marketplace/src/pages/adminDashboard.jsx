@@ -78,17 +78,19 @@ function unwrapPage(res) {
 }
 
 const MAX_PAGES_SAFETY = 30; 
-async function fetchAllPages(fetchFn, baseFilters = {}) {
+async function fetchAllPages(fetchFn, baseFilters = {}, isStale = () => false) {
   let page = 1;
   let totalPages = 1;
   let allItems = [];
 
   do {
+       if (isStale()) break; 
     const res = await fetchFn({ ...baseFilters, limit: 50, page });
     const { items, totalPages: tp } = unwrapPage(res);
     allItems = allItems.concat(items);
     totalPages = tp;
     page += 1;
+      await new Promise((resolve) => setTimeout(resolve, 150));
   } while (page <= totalPages && page <= MAX_PAGES_SAFETY);
 
   return allItems;
@@ -112,6 +114,7 @@ function Dashboard() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [listingsLoading, setListingsLoading] = useState(true);
+    const [usersLoading, setUsersLoading] = useState(true);  
   const [error, setError] = useState(null);
   const [listingsSearch, setListingsSearch] = useState("");
   const [showAllUsers, setShowAllUsers] = useState(false);
@@ -139,6 +142,9 @@ function Dashboard() {
     type: null,
   });
   const [deleting, setDeleting] = useState(false);
+
+  const listingsRequestId = React.useRef(0);
+  const usersRequestId = React.useRef(0); 
 
   async function loadRequests() {
     try {
@@ -199,7 +205,7 @@ function Dashboard() {
       if (rejectModal.type === "request") {
         await rejectRequest(rejectModal.id, rejectionReason.trim());
 
-        // 1. تحديث الـ State للـ Requests فوراً
+
         setRequests((prevRequests) =>
           prevRequests.map((req) =>
             (req._id || req.id) === rejectModal.id
@@ -208,12 +214,12 @@ function Dashboard() {
           )
         );
 
-        loadRequests(); // إعادة الجلب من السيرفر كإجراء تأكيدي
+        loadRequests();
 
       } else if (rejectModal.type === "listing") {
         await rejectListing(rejectModal.id, rejectionReason.trim());
 
-        // 2. تحديث الـ State للـ Listings فوراً بدون reload
+
         setListings((prevListings) =>
           prevListings.map((item) =>
             (item._id || item.id) === rejectModal.id
@@ -222,10 +228,10 @@ function Dashboard() {
           )
         );
 
-        loadListings(); // إعادة الجلب من السيرفر كإجراء تأكيدي
+        loadListings();
       }
 
-      // إغلاق المودال وتصفير القيم
+  
       setRejectModal({
         open: false,
         id: null,
@@ -280,8 +286,7 @@ function Dashboard() {
 
       if (deleteModal.type === "listing") {
         await deleteListing(deleteModal.id);
-        
-        // حذف من الـ State فوراً
+
         setListings((prev) => prev.filter((item) => (item._id || item.id) !== deleteModal.id));
         loadListings();
       }
@@ -289,8 +294,7 @@ function Dashboard() {
       if (deleteModal.type === "user") {
         await deleteUser(deleteModal.id);
         setUsers((prev) => prev.filter((u) => (u._id || u.id) !== deleteModal.id));
-        const refreshedUsers = await fetchAllPages(getAllUsers);
-        setUsers(refreshedUsers);
+        loadUsers();
       }
 
       setDeleteModal({
@@ -315,15 +319,25 @@ function Dashboard() {
         setLoading(true);
         setError(null);
 
+         const requestId = ++usersRequestId.current;
+     setUsersLoading(true);
         const [statsRes, allUsers] = await Promise.all([
           getAdminDashboardStats(),
-          fetchAllPages(getAllUsers),
+          fetchAllPages(
+            getAllUsers,
+            {},
+            () => requestId !== usersRequestId.current
+          ),
         ]);
         if (!isMounted) return;
+        if (requestId !== usersRequestId.current) return;
+
         setStats(unwrapObject(statsRes));
         setUsers(allUsers);
+        if (requestId === usersRequestId.current) setUsersLoading(false);
       } catch (err) {
         if (isMounted) setError("Couldn't load dashboard data. Please try again.");
+        if (requestId === usersRequestId.current) setUsersLoading(false);   
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -336,19 +350,54 @@ function Dashboard() {
     };
   }, []);
 
-  async function loadListings() {
-    try {
-      setListingsLoading(true);
-      const baseFilters = listingsSearch ? { search: listingsSearch } : {};
-      const allListings = await fetchAllPages(getAllListings, baseFilters);
-      setListings(allListings);
-    } catch (err) {
-      
-    } finally {
+async function loadListings() {
+  const requestId = ++listingsRequestId.current;
+
+  try {
+    setListingsLoading(true);
+    const baseFilters = listingsSearch ? { search: listingsSearch } : {};
+
+    const allListings = await fetchAllPages(
+      getAllListings,
+      baseFilters,
+      () => requestId !== listingsRequestId.current   
+    );
+
+    if (requestId !== listingsRequestId.current) return;
+
+    setListings(allListings);
+  } catch (err) {
+    if (requestId !== listingsRequestId.current) return;
+  } finally {
+    if (requestId === listingsRequestId.current) {
       setListingsLoading(false);
     }
   }
+}
 
+  async function loadUsers() {
+    const requestId = ++usersRequestId.current;
+
+    try {
+      setUsersLoading(true);   
+
+      const allUsers = await fetchAllPages(
+        getAllUsers,
+        {},
+        () => requestId !== usersRequestId.current
+      );
+
+      if (requestId !== usersRequestId.current) return;
+
+      setUsers(allUsers);
+    } catch (err) {
+      if (requestId !== usersRequestId.current) return;
+    } finally {
+      if (requestId === usersRequestId.current) {
+        setUsersLoading(false);  
+      }
+    }
+  }
   useEffect(() => {
     const debounce = setTimeout(loadListings, listingsSearch ? 400 : 0);
     return () => clearTimeout(debounce);
@@ -360,7 +409,7 @@ function Dashboard() {
       await approveListing(id);
       setOpenMenuId(null);
       
-      // تحديث الحالة فوراً للـ Listing
+
       setListings((prev) =>
         prev.map((item) => ((item._id || item.id) === id ? { ...item, status: "approved" } : item))
       );
@@ -570,7 +619,19 @@ function Dashboard() {
                   : undefined
               }
             >
-              {(showAllUsers ? users : (Array.isArray(users) ? users : []).slice(0, 5)).map((u) => (
+              {usersLoading &&
+                Array.from({ length: 5 }).map((_, i) => (
+                  <li
+                    key={`user-skeleton-${i}`}
+                    className="flex items-center gap-3 animate-pulse"
+                  >
+                    <span className="h-8 w-8 flex-shrink-0 rounded-full bg-[#d4af37]/15" />
+                    <span className="h-3 flex-1 max-w-[120px] rounded bg-white/10" />
+                    <span className="h-5 w-14 flex-shrink-0 rounded-full bg-white/10" />
+                    <span className="h-6 w-6 flex-shrink-0 rounded bg-white/10" />
+                  </li>
+                ))}
+              {!usersLoading && (showAllUsers ? users : (Array.isArray(users) ? users : []).slice(0, 5)).map((u) => (
                 <li key={u._id || u.id || u.fullName}>
                   <span className="avatar">
                     {(u.fullName || u.name || "?").split(" ").map((w) => w[0]).slice(0, 2).join("")}
@@ -591,7 +652,7 @@ function Dashboard() {
                   </button>
                 </li>
               ))}
-              {users.length === 0 && <li style={{ color: "#9b9b9b", fontSize: 12 }}>No users yet.</li>}
+              {!usersLoading && users.length === 0 && <li style={{ color: "#9b9b9b", fontSize: 12 }}>No users yet.</li>}
             </ul>
           </div>
         </div>
@@ -842,13 +903,36 @@ function Dashboard() {
                     </td>
                   </tr>
                 ))}
-                {listingsLoading && (
-                  <tr>
-                    <td colSpan={7} style={{ color: "#9b9b9b", fontSize: 12, padding: 16, textAlign: "center" }}>
-                      Loading listings…
-                    </td>
-                  </tr>
-                )}
+                {listingsLoading &&
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <tr key={`listing-skeleton-${i}`} className="animate-pulse">
+                      <td>
+                        <span className="block h-10 w-14 rounded bg-white/10" />
+                      </td>
+                      <td>
+                        <span className="block h-3 w-24 rounded bg-white/10" />
+                      </td>
+                      <td>
+                        <span className="block h-3 w-20 rounded bg-white/10" />
+                      </td>
+                      <td>
+                        <span className="block h-5 w-16 rounded-full bg-[#d4af37]/15" />
+                      </td>
+                      <td>
+                        <span className="block h-3 w-14 rounded bg-white/10" />
+                      </td>
+                      <td>
+                        <span className="block h-5 w-16 rounded-full bg-white/10" />
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-2">
+                          <span className="block h-6 w-6 rounded bg-white/10" />
+                          <span className="block h-6 w-6 rounded bg-white/10" />
+                          <span className="block h-6 w-6 rounded bg-white/10" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                 {!listingsLoading && listings.length === 0 && (
                   <tr>
                     <td colSpan={7} style={{ color: "#9b9b9b", fontSize: 12, padding: 16 }}>

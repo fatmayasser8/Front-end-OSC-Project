@@ -12,7 +12,7 @@ const makeRequest = async (token) => {
       ...options,
       headers: {
         ...options.headers,
-        Authorization: `Bearer ${token}`,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(isFormData ? {} : { "Content-Type": "application/json" }),
       },
     });
@@ -20,7 +20,7 @@ const makeRequest = async (token) => {
 
   let response = await makeRequest(accessToken);
 
-  if (response.status === 401) {
+  if (response.status === 401 && accessToken) {
     const newAccessToken = await refreshAccessToken();
 
     if (!newAccessToken) {

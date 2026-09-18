@@ -20,6 +20,7 @@ const getPriceRangeFromMinMax = (minPrice, maxPrice) => {
 
 function SearchBar({
   onSearch,
+    onReset,   
   initialFilters = {},
 }) {
 const [search, setSearch] = useState(
@@ -104,7 +105,6 @@ const filters = {
   city: searchCity,
   propertyType: searchPropertyType,
   listingType: purpose,
-
   minPrice,
   maxPrice,
   bedrooms,
@@ -122,7 +122,7 @@ const handleReset = () => {
   setPriceRange("");
   setBedrooms("");
 
-  onSearch({reset: true});
+  onReset?.();  
 };
 
   return (
@@ -151,7 +151,7 @@ const handleReset = () => {
 
 <input
   type="search"
-  // placeholder="Search by title, city or property..."
+  placeholder="Search by city or property..."
   className="!w-full"
   value={search}
   onChange={(e) => setSearch(e.target.value)}
